@@ -1,7 +1,6 @@
 # Tu implementacion va aqui
 def hola_mundo():
-    return "hola_mundo"
-
+    return "hola_mundo como"
 
 def main():
     # Aqui ejecutas tus soluciones
