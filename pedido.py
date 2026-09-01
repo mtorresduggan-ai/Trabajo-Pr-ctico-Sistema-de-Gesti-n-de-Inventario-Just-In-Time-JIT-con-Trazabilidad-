@@ -1,3 +1,5 @@
+from material import Material
+
 class Pedido_salida:
     todos = []
 
@@ -6,6 +8,12 @@ class Pedido_salida:
         self.fecha_emision = fecha_emision
         self.materiales = materiales
         self.cant_materiales = cant_materiales
+
+        self.validar_id_unico(id_pedido_salida)
+        self.validar_materiales(materiales)
+        self.validar_fecha(fecha_emision)
+        self.validar_cant_materiales(cant_materiales)
+        
 
         Pedido_salida.todos.append(self)
 
@@ -27,3 +35,26 @@ class Pedido_salida:
     @classmethod
     def informar(cls):
         return cls.todos
+
+    @classmethod
+    def validar_id_unico(cls, id):
+        for pedido in cls.todos:
+            if pedido.id == id:
+                raise ValueError(f"Ya existe un pedido con id '{id}'")
+
+    @staticmethod
+    def validar_materiales(materiales):
+        if not isinstance(materiales, list):
+            raise TypeError("Los materiales deben estar en una lista")
+
+        for material in materiales:
+            if not isinstance(material, Material.todos):
+                raise TypeError("Todos los elementos de la lista deben ser objetos de la clase Material")
+
+    @staticmethod
+    def validar_fecha(fecha):
+        if fecha is not None:
+            if not isinstance(fecha, str):
+                raise TypeError(
+                    "La fecha de emision debe ser un texto o None"
+                )

@@ -1,7 +1,8 @@
 class Material:
     todos = []
 
-    def __init__(self,nombre, composicion, unidad_medida, punto_reposicion, fecha_vencimiento):
+    def __init__(self, id_material, nombre, composicion, unidad_medida, punto_reposicion, fecha_vencimiento):
+        self.id_material = id_material
         self.nombre = nombre
         self.composicion = composicion
         self.unidad_medida = unidad_medida
@@ -20,17 +21,21 @@ class Material:
         self.validar_punto_reposicion(nuevo_punto) 
         self.punto_reposicion = nuevo_punto
     
-
     def necesita_reposicion(self, stock_actual):
         return stock_actual <= self.punto_reposicion
     
-
     def __str__(self):
         return 'Material: ' + self.nombre + 'Composicion: ' + self.composicion + 'Unidad de medida: ' + self.unidad_medida
 
     @classmethod
     def informar(cls):
         return cls.todos
+
+    @classmethod
+    def validar_id_unico(cls, id_material):
+        for material in cls.todos:
+            if material.id_material == id_material:
+                raise ValueError(f"Ya existe un material con id '{id_material}'")
 
     @staticmethod
     def validar_nombre(nombre):
@@ -57,7 +62,6 @@ class Material:
     def validar_punto_reposicion(punto_reposicion):
         if not isinstance(punto_reposicion, (int, float)):
             raise TypeError("El punto de reposición debe ser un número")
-
         if punto_reposicion < 0:
             raise ValueError(
                 "El punto de reposición no puede ser negativo"
