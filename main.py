@@ -4,15 +4,15 @@ from remesa import Remesa
 from pedido import Pedido_salida
 from solicitud_proveedor import Solicitud_proveedor
 
-material1 = Material("Aluminio", "Al 7075", "kg", 10, "31/12/2026")
-material2 = Material("Titanio", "Ti-6Al-4V", "kg", 50, "31/12/2030")
-material3 = Material("Acero inoxidable", "316L", "kg", 80, "31/12/2032")
+material1 = Material(1, "Aluminio", "Al 7075", "kg", 10, "31/12/2026")
+material2 = Material(2, "Titanio", "Ti-6Al-4V", "kg", 50, "31/12/2030")
+material3 = Material(3, "Acero inoxidable", "316L", "kg", 80, "31/12/2032")
 materiales = Material.todos
 
 proveedor1 = Proveedor(1, "Proveedor A", 5, "123456")
 
-remesa1 = Remesa(1, [material1, material2, material3], proveedor1, 100, 3, "20/08/2026")
-remesa2 = Remesa(2, [material2], proveedor1, 75, 1, '30/08/2026')
+remesa1 = Remesa(1, [material1, material2, material3], proveedor1, 50, 100, "20/08/2026")
+remesa2 = Remesa(2, [material2], proveedor1, 70, 75, '30/08/2026')
 
 pedido1 = Pedido_salida(1, "31/08/2026", [material2, material3], 20)
 
@@ -40,7 +40,7 @@ def procesar_pedido(remesa, material, pedido):
 
     if remesa in Remesa.todos and material in Material.todos and pedido in Pedido_salida.todos:
          if material in remesa.materiales and material in pedido.materiales:
-            remesa.cambiar_saldo(remesa.saldo_disponible - pedido.cant_materiales)
+            remesa.set_saldo(remesa.saldo_disponible - pedido.cant_materiales)
 
             print("Pedido:", pedido.id_pedido_salida)
             print("Material:", material.nombre)
@@ -60,10 +60,10 @@ def consultar_stock_material(material):
 
     for remesa in Remesa.todos:
         if material in remesa.materiales:
-            total += remesa.cant_materiales
+            total += remesa.saldo_disponible
 
     print(f"Cantidad total de {material.nombre}: {total} {material.unidad_medida}")
 
 consultar_materiales_remesas()
-procesar_pedido(remesa1, pedido1, proveedor1)
+procesar_pedido(remesa1, material2, pedido1)
 consultar_stock_material(material2)

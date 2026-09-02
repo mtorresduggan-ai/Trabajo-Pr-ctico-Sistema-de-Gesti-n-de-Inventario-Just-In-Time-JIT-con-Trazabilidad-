@@ -8,6 +8,7 @@ class Proveedor:
         self.telefono = telefono
 
         self.validar_id_unico(id_proveedor)
+        self.validar_id(id_proveedor)
         self.validar_nombre(nombre)
         self.validar_plazo(plazo_estimado)
         self.validar_telefono(telefono)
@@ -15,13 +16,15 @@ class Proveedor:
         Proveedor.todos.append(self)
 
     def cambiar_plazo_estimado(self, nuevo_plazo):
-            self.plazo_estimado = nuevo_plazo
+        self.validar_plazo(nuevo_plazo)
+        self.plazo_estimado = nuevo_plazo
 
     def proveedor_no_cumple(self, plazo_real):
-          return plazo_real > self.plazo_estimado
+        self.validar_plazo(plazo_real)
+        return plazo_real > self.plazo_estimado
 
     def __str__(self):
-        return 'Nombre: ' + self.nombre + 'Telefono: ' + self.telefono
+        return 'Nombre: ' + self.nombre + '  Telefono: ' + self.telefono
 
     @classmethod
     def informar(cls):
@@ -36,9 +39,9 @@ class Proveedor:
     @staticmethod
     def validar_nombre(nombre):
         if not isinstance(nombre, str):
-            raise TypeError("El nombre del material debe ser un str")
+            raise TypeError("El nombre del proveedor debe ser un str")
         if nombre.strip() == "":
-            raise ValueError("El nombre del material no puede estar vacio")
+            raise ValueError("El nombre del proveedor no puede estar vacio")
 
     @staticmethod
     def validar_plazo(plazo):
@@ -48,9 +51,21 @@ class Proveedor:
             raise ValueError("El plazo de entrega debe ser mayor a 0 días")
 
     @staticmethod
+    def validar_id(id_proveedor):
+        if not isinstance(id_proveedor, int):
+            raise TypeError("El ID del proveedor debe ser un entero")
+        if id_proveedor <= 0:
+            raise ValueError("El ID del proveedor debe ser mayor a 0")
+    
+    @staticmethod
     def validar_telefono(telefono):
         if not isinstance(telefono, str):
             raise TypeError("El telefono debe ser un str")
+        
         telefono_limpio = telefono.replace("+", "").replace("-", "").replace(" ", "")
+        
+        if telefono.strip() == "":
+            raise ValueError("El telefono no puede estar vacio")
+
         if not telefono_limpio.isdigit():
             raise ValueError("El telefono debe contener solo numeros, espacios, '+' o '-'")

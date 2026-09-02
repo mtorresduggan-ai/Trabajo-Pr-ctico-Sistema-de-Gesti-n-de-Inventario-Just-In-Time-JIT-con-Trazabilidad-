@@ -1,4 +1,5 @@
 from proveedor import Proveedor
+from material import Material
 
 class Remesa:
     todos = []
@@ -17,19 +18,28 @@ class Remesa:
         self.validar_cant_y_saldo(saldo_disponible,cant_materiales)
         self.validar_proveedor(proveedor)
         self.validar_fecha(fecha_llegada)
+        self.validar_materiales(materiales)
+        self.validar_id(id_remesa)
 
         Remesa.todos.append(self)
 
-    def cambiar_saldo(self, nuevo_saldo):
+    def set_saldo(self, nuevo_saldo):
+        self.validar_saldo_disponible(nuevo_saldo)
+        self.validar_cant_y_saldo(nuevo_saldo, self.cant_materiales)
         self.saldo_disponible = nuevo_saldo
 
-    def cambiar_cantidad(self, nueva_cantidad):
+    def set_cantidad(self, nueva_cantidad):
+        self.validar_cant_recibida(nueva_cantidad)
+        self.validar_cant_y_saldo(self.saldo_disponible, nueva_cantidad)
         self.cant_materiales = nueva_cantidad
 
     def agregar_material(self, material):
+        self.validar_materiales([material])
         self.materiales.append(material)
 
     def quitar_material(self, material):
+        if material not in self.materiales:
+            raise ValueError("El material no se encuentra en la remesa")
         self.materiales.remove(material)
 
     def __str__(self):
@@ -47,17 +57,17 @@ class Remesa:
 
     @staticmethod
     def validar_cant_recibida(cantidad):
+        if not isinstance(cantidad, (int, float)):
+            raise TypeError("La cantidad debe ser un número")
         if cantidad <= 0:
             raise ValueError("El cantidad recibida debe ser mayor que cero")
-        if not isinstance(cantidad, (int, float)):
-                    raise TypeError("La cantidad debe ser un número")
 
     @staticmethod
     def validar_saldo_disponible(saldo_disponible):
-        if saldo_disponible < 0:
-            raise ValueError("El saldo disponible debe ser mayor o igual a cero")
         if not isinstance(saldo_disponible, (int, float)):
                             raise TypeError("El saldo debe ser un número")
+        if saldo_disponible < 0:
+            raise ValueError("El saldo disponible debe ser mayor o igual a cero")
 
     @staticmethod
     def validar_cant_y_saldo(saldo_disponible,cant_recibida):
@@ -66,13 +76,16 @@ class Remesa:
 
     @staticmethod
     def validar_proveedor(proveedor):
-        if not isinstance(proveedor, Proveedor.todos):
-            raise TypeError("El proveedor debe ser un objeto de la clase Proveedor")
+        if proveedor not in Proveedor.todos:
+            raise ValueError("El proveedor no esta registrado")
 
     @staticmethod
     def validar_materiales(materiales):
         if not isinstance(materiales, list):
             raise TypeError("Los materiales deben estar en una lista")
+        for material in materiales:
+            if material not in Material.todos:
+                raise ValueError("El material no esta registrado")
 
     @staticmethod
     def validar_fecha(fecha):
@@ -81,3 +94,10 @@ class Remesa:
                 raise TypeError(
                     "La fecha de llegada debe ser un texto o None"
                 )
+
+    @staticmethod
+    def validar_id(id_remesa):
+        if not isinstance(id_remesa, int):
+            raise TypeError("El ID de la remesa debe ser un entero")
+        if id_remesa <= 0:
+            raise ValueError("El ID de la remesa debe ser mayor a 0")

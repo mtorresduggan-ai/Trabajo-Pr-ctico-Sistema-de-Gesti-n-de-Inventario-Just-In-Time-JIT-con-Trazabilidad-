@@ -13,6 +13,7 @@ class Pedido_salida:
         self.validar_materiales(materiales)
         self.validar_fecha(fecha_emision)
         self.validar_cant_materiales(cant_materiales)
+        self.validar_id(id_pedido_salida)
         
 
         Pedido_salida.todos.append(self)
@@ -71,3 +72,11 @@ class Pedido_salida:
             raise TypeError("La cantidad de materiales debe ser un entero")
         if cant_materiales < 0:
             raise ValueError("La cantidad de materiales no puede ser negativa")
+    
+    @staticmethod
+    def validar_id(id_pedido_salida):
+        if not isinstance(id_pedido_salida, int):
+            raise TypeError("El ID del pedido debe ser un entero")
+        if id_pedido_salida <= 0:
+            raise ValueError("El ID del pedido debe ser mayor a 0")
+    

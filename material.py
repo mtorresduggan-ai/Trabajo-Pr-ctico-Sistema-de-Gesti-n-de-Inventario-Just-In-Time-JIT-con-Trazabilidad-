@@ -15,6 +15,7 @@ class Material:
         self.validar_punto_reposicion(punto_reposicion)
         self.validar_fecha_vencimiento(fecha_vencimiento)
         self.validar_id_unico(id_material)
+        self.validar_id(id_material)
 
         Material.todos.append(self)
 
@@ -41,6 +42,14 @@ class Material:
         for material in cls.todos:
             if material.id_material == id_material:
                 raise ValueError(f"Ya existe un material con id '{id_material}'")
+
+    @staticmethod
+    def validar_id(id_material):
+        if not isinstance(id_material, int):
+            raise TypeError("El ID del material debe ser un entero")
+        if id_material <= 0:
+            raise ValueError("El ID del material debe ser mayor a 0")
+    
 
     @staticmethod
     def validar_nombre(nombre):
@@ -71,7 +80,7 @@ class Material:
             raise ValueError(
                 "El punto de reposición no puede ser negativo"
             )
-#### ACA HAY QUE VALIDAR BIEN
+
     @staticmethod
     def validar_fecha_vencimiento(fecha_vencimiento):
         if fecha_vencimiento is not None:
