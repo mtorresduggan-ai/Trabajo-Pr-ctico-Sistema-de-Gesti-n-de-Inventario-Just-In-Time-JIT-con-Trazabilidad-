@@ -17,29 +17,35 @@ class Pedido_salida:
 
         Pedido_salida.todos.append(self)
 
-    def cambiar_fecha_emision(self, nueva_fecha):
+    def set_fecha_emision(self, nueva_fecha):
+        self.validar_fecha(nueva_fecha)
         self.fecha_emision = nueva_fecha
 
-    def cambiar_cantidad(self, nueva_cantidad):
+    def set_cantidad(self, nueva_cantidad):
+        self.validar_cant_materiales(nueva_cantidad)
         self.cant_materiales = nueva_cantidad
 
     def agregar_material(self, material):
+        if material not in Material.todos:
+            raise ValueError("El material no esta registrado")
         self.materiales.append(material)
 
     def quitar_material(self, material):
+        if material not in self.materiales:
+            raise ValueError("El material no se encuentra en la lista de materiales del pedido")
         self.materiales.remove(material)
 
     def informar(self):
         return 'ID Pedido: ' + str(self.id_pedido_salida) + ' Fecha de emision: ' + str(self.fecha_emision) + ' Cantidad de materiales: ' + str(self.cant_materiales)
 
     @classmethod
-    def informar(cls):
+    def informar_todos(cls):
         return cls.todos
 
     @classmethod
     def validar_id_unico(cls, id):
         for pedido in cls.todos:
-            if pedido.id == id:
+            if pedido.id_pedido_salida == id:
                 raise ValueError(f"Ya existe un pedido con id '{id}'")
 
     @staticmethod
@@ -48,8 +54,8 @@ class Pedido_salida:
             raise TypeError("Los materiales deben estar en una lista")
 
         for material in materiales:
-            if not isinstance(material, Material.todos):
-                raise TypeError("Todos los elementos de la lista deben ser objetos de la clase Material")
+            if material not in Material.todos:
+                raise ValueError("El material no esta registrado")
 
     @staticmethod
     def validar_fecha(fecha):
@@ -58,3 +64,10 @@ class Pedido_salida:
                 raise TypeError(
                     "La fecha de emision debe ser un texto o None"
                 )
+
+    @staticmethod 
+    def validar_cant_materiales(cant_materiales):
+        if not isinstance(cant_materiales, int):
+            raise TypeError("La cantidad de materiales debe ser un entero")
+        if cant_materiales < 0:
+            raise ValueError("La cantidad de materiales no puede ser negativa")

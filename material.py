@@ -14,14 +14,19 @@ class Material:
         self.validar_unidad_medida(unidad_medida)
         self.validar_punto_reposicion(punto_reposicion)
         self.validar_fecha_vencimiento(fecha_vencimiento)
+        self.validar_id_unico(id_material)
 
         Material.todos.append(self)
 
-    def cambiar_punto_reposicion(self, nuevo_punto):
+    def set_punto_reposicion(self, nuevo_punto):
         self.validar_punto_reposicion(nuevo_punto) 
         self.punto_reposicion = nuevo_punto
     
     def necesita_reposicion(self, stock_actual):
+        if not isinstance(stock_actual, (int, float)):
+            raise TypeError("El stock actual debe ser un número")
+        if stock_actual < 0:
+            raise ValueError("El stock actual no puede ser negativo")
         return stock_actual <= self.punto_reposicion
     
     def __str__(self):
