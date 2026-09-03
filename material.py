@@ -88,5 +88,5 @@ class Material:
         if fecha is not None:
             if not isinstance(fecha, date):
                 raise TypeError(
-                    "La fecha de vencimiento debe ser un texto o None"
+                    "La fecha de vencimiento debe ser en formato fecha"
                 )

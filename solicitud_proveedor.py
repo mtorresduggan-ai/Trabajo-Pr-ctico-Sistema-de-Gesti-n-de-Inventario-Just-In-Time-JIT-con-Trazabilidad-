@@ -60,7 +60,7 @@ class Solicitud_proveedor:
         if fecha is not None:
             if not isinstance(fecha, date):
                 raise TypeError(
-                    "La fecha de emision debe ser un texto o None"
+                    "La fecha de emision debe ser en formato fecha"
                 )
 
     @staticmethod

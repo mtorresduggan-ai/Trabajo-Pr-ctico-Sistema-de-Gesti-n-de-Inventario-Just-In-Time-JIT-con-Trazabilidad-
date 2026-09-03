@@ -3,20 +3,21 @@ from proveedor import Proveedor
 from remesa import Remesa
 from pedido import Pedido_salida
 from solicitud_proveedor import Solicitud_proveedor
+from datetime import date
 
-material1 = Material(1, "Aluminio", "Al 7075", "kg", 10, "31/12/2026")
-material2 = Material(2, "Titanio", "Ti-6Al-4V", "kg", 50, "31/12/2030")
-material3 = Material(3, "Acero inoxidable", "316L", "kg", 80, "31/12/2032")
+material1 = Material(1, "Aluminio", "Al 7075", "kg", 10, date(2026, 12,31))
+material2 = Material(2, "Titanio", "Ti-6Al-4V", "kg", 50, date(2030, 11, 26))
+material3 = Material(3, "Acero inoxidable", "316L", "kg", 80, date(2028, 5, 8))
 materiales = Material.todos
 
 proveedor1 = Proveedor(1, "Proveedor A", 5, "123456")
 
-remesa1 = Remesa(1, [material1, material2, material3], proveedor1, 50, 100, "20/08/2026")
-remesa2 = Remesa(2, [material2], proveedor1, 70, 75, '30/08/2026')
+remesa1 = Remesa(1, [material1, material2, material3], proveedor1, 50, 100, date(2025, 8, 19))
+remesa2 = Remesa(2, [material2], proveedor1, 70, 75, date(2026, 1, 25))
 
-pedido1 = Pedido_salida(1, "31/08/2026", [material2, material3], 20)
+pedido1 = Pedido_salida(1, date(2026, 3, 14), [material2, material3], 20)
 
-solicitud1 = Solicitud_proveedor(1, proveedor1, "31/08/2026", [material1, material3], 200)
+solicitud1 = Solicitud_proveedor(1, proveedor1, date(2025, 2, 3), [material1, material3], 200)
 
 
 #mostrar las fechas de vencimiento de cada material en una remesa
