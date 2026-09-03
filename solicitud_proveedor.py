@@ -1,5 +1,6 @@
 from proveedor import Proveedor
 from material import Material
+from datetime import date
 
 class Solicitud_proveedor:
     todos = []
@@ -57,7 +58,7 @@ class Solicitud_proveedor:
     @staticmethod
     def validar_fecha(fecha):
         if fecha is not None:
-            if not isinstance(fecha, str):
+            if not isinstance(fecha, date):
                 raise TypeError(
                     "La fecha de emision debe ser un texto o None"
                 )

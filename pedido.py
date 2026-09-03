@@ -1,4 +1,5 @@
 from material import Material
+from datetime import date
 
 class Pedido_salida:
     todos = []
@@ -61,7 +62,7 @@ class Pedido_salida:
     @staticmethod
     def validar_fecha(fecha):
         if fecha is not None:
-            if not isinstance(fecha, str):
+            if not isinstance(fecha, date):
                 raise TypeError(
                     "La fecha de emision debe ser un texto o None"
                 )

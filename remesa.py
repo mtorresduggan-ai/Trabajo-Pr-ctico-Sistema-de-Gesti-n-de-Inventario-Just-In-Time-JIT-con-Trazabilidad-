@@ -1,5 +1,6 @@
 from proveedor import Proveedor
 from material import Material
+from datetime import date
 
 class Remesa:
     todos = []
@@ -90,7 +91,7 @@ class Remesa:
     @staticmethod
     def validar_fecha(fecha):
         if fecha is not None:
-            if not isinstance(fecha, str):
+            if not isinstance(fecha, date):
                 raise TypeError(
                     "La fecha de llegada debe ser un texto o None"
                 )

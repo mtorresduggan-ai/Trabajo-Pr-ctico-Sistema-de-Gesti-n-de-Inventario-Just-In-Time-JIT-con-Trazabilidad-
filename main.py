@@ -47,7 +47,7 @@ def procesar_pedido(remesa, material, pedido):
             print("Remesa utilizada:", remesa.id_remesa)
             print("Proveedor:", remesa.proveedor.nombre)
             print("Cantidad retirada:", pedido.cant_materiales)
-            print("Nuevo saldo de la remesa:", remesa.saldo_disponible)
+            print("Nuevo saldo de la remesa:", remesa.saldo_disponible, '\n')
 
     else:
         print('Hubo un error en el sistema.')
@@ -62,8 +62,10 @@ def consultar_stock_material(material):
         if material in remesa.materiales:
             total += remesa.saldo_disponible
 
-    print(f"Cantidad total de {material.nombre}: {total} {material.unidad_medida}")
+    print(f"Cantidad total de {material.nombre}: {total} {material.unidad_medida}", '\n')
 
 consultar_materiales_remesas()
+print('---', '\n')
 procesar_pedido(remesa1, material2, pedido1)
+print('---', '\n')
 consultar_stock_material(material2)

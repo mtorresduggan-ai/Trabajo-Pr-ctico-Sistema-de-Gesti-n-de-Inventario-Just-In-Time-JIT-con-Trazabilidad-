@@ -1,3 +1,5 @@
+from datetime import date
+
 class Material:
     todos = []
 
@@ -13,7 +15,7 @@ class Material:
         self.validar_composicion(composicion)
         self.validar_unidad_medida(unidad_medida)
         self.validar_punto_reposicion(punto_reposicion)
-        self.validar_fecha_vencimiento(fecha_vencimiento)
+        self.validar_fecha(fecha_vencimiento)
         self.validar_id_unico(id_material)
         self.validar_id(id_material)
 
@@ -82,9 +84,9 @@ class Material:
             )
 
     @staticmethod
-    def validar_fecha_vencimiento(fecha_vencimiento):
-        if fecha_vencimiento is not None:
-            if not isinstance(fecha_vencimiento, str):
+    def validar_fecha(fecha):
+        if fecha is not None:
+            if not isinstance(fecha, date):
                 raise TypeError(
                     "La fecha de vencimiento debe ser un texto o None"
                 )
