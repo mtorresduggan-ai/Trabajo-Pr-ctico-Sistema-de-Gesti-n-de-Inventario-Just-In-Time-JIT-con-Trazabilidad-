@@ -34,7 +34,6 @@ class Empleado(Individuo):
             self.validar_estado(estado)
             self.estado = estado
 
-
     def cambiar_clave(self, nueva_clave):
         self.validar_clave(nueva_clave)
         if nueva_clave == self.clave: 
