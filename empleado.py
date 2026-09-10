@@ -14,22 +14,27 @@ class Empleado(Individuo):
         self.validar_clave(clave)
         self.validar_estado(estado)
 
-    def actualizar_datos(self, nombre=None, telefono=None, dni=None, fecha_alta=None, usuario=None, estado = None):
+    def actualizar_nombre(self, nombre=None):
         if  nombre is not None:
             self.validar_nombre(nombre)
             self.nombre = nombre
+    def actualizar_telefono(self, telefono=None):
         if  telefono is not None:
             self.validar_telefono(telefono)
             self.telefono = telefono
+    def actualizar_dni(self, dni=None):
         if  dni is not None:
             self.validar_dni(dni)
             self.dni = dni
+    def actualizar_fecha_alta(self,fecha_alta=None):
         if  fecha_alta is not None:
             self.validar_fecha_inicio(fecha_alta)
             self.fecha_inicio = fecha_alta
+    def actualizar_usuario(self,usuario=None) :
         if  usuario is not None:
             self.validar_usuario(usuario)
             self.usuario = usuario
+    def actualizar_estado(self, estado):
         if estado is not None:
             self.validar_estado(estado)
             self.estado = estado
