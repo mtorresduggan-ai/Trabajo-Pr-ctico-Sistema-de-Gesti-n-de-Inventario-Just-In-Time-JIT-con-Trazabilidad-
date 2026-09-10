@@ -8,7 +8,7 @@ class Pedido_salida(Movimiento):
         super().__init__(id_movimiento, fecha, materiales, cantidades)
         self.cliente = cliente
         self.estado = estado
-        self.estado = vendedor
+        self.vendedor = vendedor
 
         Pedido_salida.todos.append(self)
 
