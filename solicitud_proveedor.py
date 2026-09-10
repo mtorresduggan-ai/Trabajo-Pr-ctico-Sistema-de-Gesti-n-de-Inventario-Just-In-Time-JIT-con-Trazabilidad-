@@ -1,67 +1,30 @@
+from movimiento import Movimiento
 from proveedor import Proveedor
-from material import Material
-from datetime import date
 
-class Solicitud_proveedor:
+class Solicitud_proveedor(Movimiento):
     todos = []
 
-    def __init__(self, id_solicitud, proveedor, fecha_emision, materiales, cant_materiales):
-        self.id_solicitud = id_solicitud
+    def __init__(self, id_movimiento, proveedor, fecha, materiales, cantidades, estado, comprador):
+        super().__init__(id_movimiento, fecha, materiales, cantidades)
         self.proveedor = proveedor
-        self.fecha_emision = fecha_emision
-        self.materiales = materiales
-        self.cant_materiales = cant_materiales
+        self.estado = estado
+        self.comprador = comprador
 
-        self.validar_fecha(fecha_emision)
-        self.validar_id_unico(id_solicitud)
         self.validar_proveedor(proveedor)
-        self.validar_materiales(materiales)
-        self.validar_cant_materiales(cant_materiales)
-        self.validar_id(id_solicitud)
 
         Solicitud_proveedor.todos.append(self)
 
-    def cambiar_fecha_emision(self, nueva_fecha):
-        self.validar_fecha(nueva_fecha)
-        self.fecha_emision = nueva_fecha
-
-    def cambiar_cantidad(self, nueva_cantidad):
-        self.validar_cant_materiales(nueva_cantidad)
-        self.cant_materiales = nueva_cantidad
-
     def cambiar_proveedor(self, nuevo_proveedor):
-        self.validar_proveedor(nuevo_proveedor)
+        if nuevo_proveedor not in Proveedor.todos:
+            raise ValueError("El proveedor no se encuentra en la lista de proveedores registrados en el sistema")        
         self.proveedor = nuevo_proveedor
 
-    def agregar_material(self, material):
-        self.validar_materiales([material])
-        self.materiales.append(material)
-
-    def quitar_material(self, material):
-        if material not in self.materiales:
-            raise ValueError("El material no se encuentra en la lista de materiales de la solicitud")
-        self.materiales.remove(material)
-
     def informar(self):
-        return 'ID Solicitud: ' + str(self.id_solicitud) + ' Proveedor: ' + self.proveedor.nombre + ' Fecha de emision: ' + str(self.fecha_emision) + ' Cantidad de materiales: ' + str(self.cant_materiales)
+        return 'ID Solicitud: ' + str(self.id_movimiento) + ' Proveedor: ' + self.proveedor.nombre + ' Fecha de emision: ' + str(self.fecha) + ' Cantidad de materiales: ' + str(self.cantidades)
 
     @classmethod
     def informar_todos(cls):
         return cls.todos
-
-    @classmethod
-    def validar_id_unico(cls, id):
-        for solicitud in cls.todos:
-            if solicitud.id_solicitud == id:
-                raise ValueError(f"Ya existe una solicitud con id '{id}'")
-
-    @staticmethod
-    def validar_fecha(fecha):
-        if fecha is not None:
-            if not isinstance(fecha, date):
-                raise TypeError(
-                    "La fecha de emision debe ser en formato fecha"
-                )
 
     @staticmethod
     def validar_proveedor(proveedor):
@@ -69,23 +32,14 @@ class Solicitud_proveedor:
             raise ValueError("El proveedor no esta registrado")
 
     @staticmethod
-    def validar_materiales(materiales):
-        if not isinstance(materiales, list):
-            raise TypeError("Los materiales deben estar en una lista")
-        for material in materiales:
-            if material not in Material.todos:
-                raise ValueError("El material no esta registrado") 
+    def validar_estado(estado):
+        estados_validos = ['Pendiente', 'En preparacion', 'Despachado', 'Entregado', 'Cancelado']
+
+        if estado not in estados_validos:
+            raise ValueError(f"Estado no valido. Solo se permiten: {estados_validos}")
 
     @staticmethod
-    def validar_cant_materiales(cantidad):
-        if not isinstance(cantidad, (int, float)):
-                    raise TypeError("La cantidad debe ser un número")
-        if cantidad <= 0:
-            raise ValueError("La cantidad pedida debe ser mayor que cero")
-
-    @staticmethod
-    def validar_id(id):
-        if not isinstance(id, int):
-            raise TypeError("El ID de la solicitud debe ser un entero")
-        if id <= 0:
-            raise ValueError("El ID de la solicitud debe ser mayor a 0")
+    def validar_estado(estado):
+        estados_validos = ['Pendiente', 'Enviada', 'Aceptada', 'En transito', 'Recibida', 'Cancelada']
+        if estado not in estados_validos:
+            raise ValueError(f"Estado no valido. Solo se permiten: {estados_validos}")

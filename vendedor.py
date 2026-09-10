@@ -6,7 +6,7 @@ class Vendedor(Empleado):
         super().__init__(id_empleado, nombre, telefono, dni)
 
     def crear_pedido_salida(self, id_pedido, materiales, cantidades, fecha, cliente):
-        pedido = Pedido_salida(id_pedido, materiales, cantidades, fecha, self, cliente)
+        pedido = Pedido_salida(self, id_pedido, materiales, cantidades, fecha, cliente)
         return pedido
 
     

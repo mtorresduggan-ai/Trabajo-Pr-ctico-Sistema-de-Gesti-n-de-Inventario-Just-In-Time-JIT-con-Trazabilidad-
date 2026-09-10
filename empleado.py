@@ -3,74 +3,82 @@ from datetime import date
 class Empleado:
     todos= []
 
-    def __init__(self, id_empleado, nombre, telefono, dni, fecha_inicio, email):
+    def _init_(self, id_empleado, nombre, telefono, dni, fecha_inicio, email, usuario, clave, fecha_contratacion, estado):
         self.id_empleado = id_empleado
         self.nombre = nombre
         self.telefono = telefono
         self.dni = dni
         self.fecha_inicio = fecha_inicio
         self.email = email
+        self.usuario = usuario
+        self.clave = clave
+        self.fecha_contratacion = fecha_contratacion
+        self.estado = estado
 
-        self.validar_id_unico(id_empleado)
-        self.validar_fecha(fecha_inicio)
-        self.validar_id(id_empleado)
-        self.validar_nombre(nombre)
-        self.validar_telefono(telefono)
-        self.validar_dni(dni)
-        self.validar_email(email)
+        self.validar_usuario(usuario)
+        self.validar_clave(clave)
+        self.validar_fecha_contratacion(fecha_contratacion)
+        self.validar_estado(estado)
 
-    @classmethod
-    def validar_id_unico(cls, id):
-        for solicitud in cls.todos:
-            if solicitud.id_solicitud == id:
-                raise ValueError(f"Ya existe un empleado con id '{id}'")
+    def actualizar_datos(self, nombre=None, telefono=None, dni=None, fecha_inicio=None, usuario=None, fecha_contratacion = None, estado = None):
+        if  nombre is not None:
+            self.validar_nombre(nombre)
+            self.nombre = nombre
+        if  telefono is not None:
+            self.validar_telefono(telefono)
+            self.telefono = telefono
+        if  dni is not None:
+            self.validar_dni(dni)
+            self.dni = dni
+        if  fecha_inicio is not None:
+            self.validar_fecha_inicio(fecha_inicio)
+            self.fecha_inicio = fecha_inicio
+        if  usuario is not None:
+            self.validar_usuario(usuario)
+            self.usuario = usuario
+        if fecha_contratacion is not None:
+            self.validar_fecha_contratacion(fecha_contratacion)
+            self.fecha_contratacion = fecha_contratacion
+        if estado is not None:
+            self.validar_estado(estado)
+            self.estado = estado
 
-    @staticmethod
-    def validar_fecha(fecha):
-        if fecha is not None:
-            if not isinstance(fecha, date):
-                raise TypeError(
-                    "La fecha de inicio debe ser en formato fecha"
-                )
 
-    @staticmethod
-    def validar_id(id):
-        if not isinstance(id, int):
-            raise TypeError("El ID del empleado debe ser un entero")
-        if id <= 0:
-            raise ValueError("El ID del empleado debe ser mayor a 0")
+    def cambiar_clave(self, nueva_clave):
+        self.validar_clave(nueva_clave)
+        if nueva_clave == self.clave: 
+            raise ValueError("La nueva clave debe ser distinta a la clave anterior")
+        self.clave = nueva_clave
 
-    @staticmethod
-    def validar_nombre(nombre):
-        if not isinstance(nombre, str):
-            raise TypeError("El nombre del empleado debe ser un str")
-        if nombre.strip() == "":
-            raise ValueError("El nombre del empleado no puede estar vacio")
-
-    @staticmethod
-    def validar_telefono(telefono):
-        if not isinstance(telefono, str):
-            raise TypeError("El telefono debe ser un str")
-        
-        telefono_limpio = telefono.replace("+", "").replace("-", "").replace(" ", "")
-        
-        if telefono.strip() == "":
-            raise ValueError("El telefono no puede estar vacio")
-
-        if not telefono_limpio.isdigit():
-            raise ValueError("El telefono debe contener solo numeros, espacios, '+' o '-'")
 
     @staticmethod
-    def validar_dni(dni):
-        if not isinstance(dni, int):
-            raise TypeError("El DNI del empleado debe ser un entero")
-        if dni <= 0:
-            raise ValueError("El DNI del empleado debe ser mayor a 0")
+    def validar_usuario(usuario):
+        if not isinstance(usuario,str):
+            raise TypeError("El usuario debe ser un sstr")
+        if usuario.strip() == "":
+            raise ValueError("El usuario no puede estar vacio")
 
     @staticmethod
-    def validar_email(email):
-        if not isinstance(email, str):
-            raise TypeError("El email del empleado debe ser un str")
-        if email.strip() == "":
-            raise ValueError("El email del empleado no puede estar vacio")
+    def validar_clave(clave):
+        if not isinstance(clave,str):
+            raise TypeError("La clave debe ser un str")
+        if len(clave) < 8:
+            raise ValueError("La clave debe tener al menos 8 caracteres")
+        if not any(caracter.isupper() for caracter in clave):
+            raise ValueError("La clave debe contener al menos una mayuscula")
+        if not any(caracter.islower() for caracter in clave):
+            raise ValueError("La clave debe contener la menos una minuscula")
+        if not any(caracter.isdigit() for caracter in clave):
+            raise ValueError("La clave debe tener al menos un numero")
+        if not any(caracter.isalum() for caracter in clave):
+            raise ValueError("La clave debe tener al menos un caracter especial")
 
+    @staticmethod
+    def validar_fecha_contratacion(fecha_contratacion):
+        if not isinstance(fecha_contratacion, date):
+            raise TypeError("La fecha de contratacion debe ser una fecha")
+
+    @staticmethod
+    def validar_estado(estado):
+        if not isinstance(estado, str):
+            raise ValueError("El estado debe ser un str")
