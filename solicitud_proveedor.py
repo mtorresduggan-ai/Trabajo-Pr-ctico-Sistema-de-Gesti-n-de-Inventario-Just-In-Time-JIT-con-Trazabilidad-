@@ -84,8 +84,8 @@ class Solicitud_proveedor:
             raise ValueError("La cantidad pedida debe ser mayor que cero")
 
     @staticmethod
-    def validar_id(id_solicitud):
-        if not isinstance(id_solicitud, int):
+    def validar_id(id):
+        if not isinstance(id, int):
             raise TypeError("El ID de la solicitud debe ser un entero")
-        if id_solicitud <= 0:
+        if id <= 0:
             raise ValueError("El ID de la solicitud debe ser mayor a 0")
