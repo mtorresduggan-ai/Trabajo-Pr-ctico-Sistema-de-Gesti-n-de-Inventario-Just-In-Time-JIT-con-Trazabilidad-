@@ -1,15 +1,18 @@
-class Proveedor:
+from individuo import Individuo
+
+class Proveedor(Individuo):
     todos = []
 
-    def __init__(self, id, nombre, plazo_estimado, telefono, dni, email, fecha_alta, fecha_baja):
-        super().__init__(id, nombre, telefono, dni, email, fecha_alta, fecha_baja)
-        self.plazo_estimado = plazo_estimado
-
+    def __init__(self, nombre, plazo_estimado, telefono, dni, email, fecha_alta, fecha_baja = None):
+        
         self.validar_plazo(plazo_estimado)
+
+        super().__init__(nombre, telefono, dni, email, fecha_alta, fecha_baja)
+        self.plazo_estimado = plazo_estimado
 
         Proveedor.todos.append(self)
 
-    def cambiar_plazo_estimado(self, nuevo_plazo):
+    def set_plazo_estimado(self, nuevo_plazo):
         self.validar_plazo(nuevo_plazo)
         self.plazo_estimado = nuevo_plazo
 

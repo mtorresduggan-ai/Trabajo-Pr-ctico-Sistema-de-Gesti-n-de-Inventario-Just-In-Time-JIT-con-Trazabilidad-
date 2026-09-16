@@ -2,11 +2,11 @@ from empleado import Empleado
 from pedido import Pedido_salida
 
 class Vendedor(Empleado):
-    def __init__(self, id_empleado, nombre, telefono, dni):
-        super().__init__(id_empleado, nombre, telefono, dni)
+    def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
+        super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
 
     def crear_pedido_salida(self, id_movimiento, fecha, materiales, cantidades, cliente):
-        pedido = Pedido_salida(id_movimiento, fecha, materiales, cantidades,cliente, "Pendiente", self)
+        pedido = Pedido_salida(id_movimiento, fecha, materiales, cantidades, cliente, "Pendiente", self)
         return pedido
 
     def consultar_pedidos(self):
