@@ -3,14 +3,13 @@ from solicitud_proveedor import Solicitud_proveedor
 
 
 class Comprador(Empleado):
-    def __init__(self, id_empleado, nombre, telefono, dni):
-        super().__init__(id_empleado, nombre, telefono, dni)
+    def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
+        super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
 
     def crear_solicitud(self, id_movimiento, fecha, materiales, cantidades, proveedor):
         solicitud = Solicitud_proveedor(
             id_movimiento, proveedor, fecha, materiales,
-            cantidades, "Pendiente", self
-        )
+            cantidades, "Pendiente", self)
         return solicitud
 
     def consultar_solicitudes(self):
@@ -42,5 +41,3 @@ class Comprador(Empleado):
             solicitud.estado = estado
 
         return solicitud
-
-    

@@ -1,5 +1,5 @@
 from empleado import Empleado
 
 class Administrador(Empleado):
-    def __init__(self, id_empleado, nombre, telefono, dni):
-        super().__init__(id_empleado, nombre, telefono, dni)
+    def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
+        super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)

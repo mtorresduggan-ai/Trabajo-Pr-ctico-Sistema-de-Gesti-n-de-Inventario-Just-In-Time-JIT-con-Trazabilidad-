@@ -1,45 +1,33 @@
-from datetime import date
 from individuo import Individuo
 
 class Empleado(Individuo):
     todos= []
 
-    def _init_(self, id, nombre, telefono, dni, fecha_alta, email, usuario, clave, estado):
-        super().__init__(id, nombre, telefono, dni, email, fecha_alta)
-        self.usuario = usuario
-        self.clave = clave       
-        self.estado = estado
-
+    def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
+        
         self.validar_usuario(usuario)
         self.validar_clave(clave)
-        self.validar_estado(estado)
+        #self.validar_estado(estado)
+        
+        super().__init__(nombre, telefono, dni, email, fecha_alta, fecha_baja=None)
 
-    def actualizar_nombre(self, nombre=None):
-        if  nombre is not None:
-            self.validar_nombre(nombre)
-            self.nombre = nombre
-    def actualizar_telefono(self, telefono=None):
-        if  telefono is not None:
-            self.validar_telefono(telefono)
-            self.telefono = telefono
-    def actualizar_dni(self, dni=None):
-        if  dni is not None:
-            self.validar_dni(dni)
-            self.dni = dni
-    def actualizar_fecha_alta(self,fecha_alta=None):
-        if  fecha_alta is not None:
-            self.validar_fecha_inicio(fecha_alta)
-            self.fecha_inicio = fecha_alta
+        self.usuario = usuario
+        self.clave = clave       
+        #self.estado = estado
+
+        Empleado.todos.append(self)
+
     def actualizar_usuario(self,usuario=None) :
         if  usuario is not None:
             self.validar_usuario(usuario)
             self.usuario = usuario
-    def actualizar_estado(self, estado):
-        if estado is not None:
-            self.validar_estado(estado)
-            self.estado = estado
+    
+    #def actualizar_estado(self, estado):
+    #    if estado is not None:
+    #        self.validar_estado(estado)
+    #        self.estado = estado
 
-    def cambiar_clave(self, nueva_clave):
+    def set_clave(self, nueva_clave):
         self.validar_clave(nueva_clave)
         if nueva_clave == self.clave: 
             raise ValueError("La nueva clave debe ser distinta a la clave anterior")
@@ -48,7 +36,7 @@ class Empleado(Individuo):
     @staticmethod
     def validar_usuario(usuario):
         if not isinstance(usuario,str):
-            raise TypeError("El usuario debe ser un sstr")
+            raise TypeError("El usuario debe ser un str")
         if usuario.strip() == "":
             raise ValueError("El usuario no puede estar vacio")
 
@@ -61,13 +49,13 @@ class Empleado(Individuo):
         if not any(caracter.isupper() for caracter in clave):
             raise ValueError("La clave debe contener al menos una mayuscula")
         if not any(caracter.islower() for caracter in clave):
-            raise ValueError("La clave debe contener la menos una minuscula")
+            raise ValueError("La clave debe contener al menos una minuscula")
         if not any(caracter.isdigit() for caracter in clave):
             raise ValueError("La clave debe tener al menos un numero")
-        if not any(caracter.isalum() for caracter in clave):
+        if not any(not caracter.isalnum() for caracter in clave):
             raise ValueError("La clave debe tener al menos un caracter especial")
 
-    @staticmethod
-    def validar_estado(estado):
-        if not isinstance(estado, str):
-            raise ValueError("El estado debe ser un str")
+    #@staticmethod
+    #def validar_estado(estado):
+    #    if not isinstance(estado, str):
+    #        raise ValueError("El estado debe ser un str")
