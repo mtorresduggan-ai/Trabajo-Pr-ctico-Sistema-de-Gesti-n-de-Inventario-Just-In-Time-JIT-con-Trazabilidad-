@@ -9,7 +9,7 @@ class Vendedor(Empleado):
         pedido = Pedido_salida(id_movimiento, fecha, materiales, cantidades, cliente, "Pendiente", self)
         return pedido
 
-    def consultar_pedidos(self):
+    def consultar_pedido(self):
         return list(filter(lambda p: p.vendedor == self, Pedido_salida.todos))
 
     def cancelar_pedido(self, id_movimiento):

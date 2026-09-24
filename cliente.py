@@ -8,6 +8,3 @@ class Cliente(Individuo):
         super().__init__(id, nombre, telefono, dni, email, fecha_alta, fecha_baja)
 
         Cliente.todos.append(self)
-    
-    def mostrar_historial_pedidos(self):
-        pass

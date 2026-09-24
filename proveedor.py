@@ -18,7 +18,8 @@ class Proveedor(Individuo):
 
     def proveedor_no_cumple(self, plazo_real):
         self.validar_plazo(plazo_real)
-        return plazo_real > self.plazo_estimado
+        #if(plazo_real > self.plazo_estimado) --> cambiar puntaje
+
 
     def __str__(self):
         return 'Nombre: ' + self.nombre + '  Telefono: ' + self.telefono

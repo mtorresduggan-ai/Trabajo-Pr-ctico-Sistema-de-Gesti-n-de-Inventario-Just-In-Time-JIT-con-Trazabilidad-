@@ -22,6 +22,20 @@ class Individuo:
 
         Individuo.todos.append(self)
 
+    def actualizar_datos(self, nombre=None, telefono=None, email=None, fecha_baja=None):
+        if nombre is not None:
+            self.validar_nombre(nombre)
+            self.nombre = nombre
+        if telefono is not None:
+            self.validar_telefono(telefono)
+            self.telefono = telefono
+        if email is not None:
+            self.validar_email(email)
+            self.email = email
+        if fecha_baja is not None:
+            self.validar_fecha(fecha_baja)
+            self.fecha_baja = fecha_baja
+
     @staticmethod
     def validar_fecha(fecha):
         if fecha is not None:
@@ -59,16 +73,4 @@ class Individuo:
         if email.strip() == "":
             raise ValueError("El email del individuo no puede estar vacio")
 
-    def actualizar_datos(self, nombre=None, telefono=None, email=None, fecha_baja=None):
-        if nombre is not None:
-            self.validar_nombre(nombre)
-            self.nombre = nombre
-        if telefono is not None:
-            self.validar_telefono(telefono)
-            self.telefono = telefono
-        if email is not None:
-            self.validar_email(email)
-            self.email = email
-        if fecha_baja is not None:
-            self.validar_fecha(fecha_baja)
-            self.fecha_baja = fecha_baja
+    

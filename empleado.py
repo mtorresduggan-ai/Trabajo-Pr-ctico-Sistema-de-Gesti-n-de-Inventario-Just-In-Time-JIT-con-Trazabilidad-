@@ -7,13 +7,11 @@ class Empleado(Individuo):
         
         self.validar_usuario(usuario)
         self.validar_clave(clave)
-        #self.validar_estado(estado)
         
         super().__init__(nombre, telefono, dni, email, fecha_alta, fecha_baja=None)
 
         self.usuario = usuario
         self.clave = clave       
-        #self.estado = estado
 
         Empleado.todos.append(self)
 
@@ -21,11 +19,6 @@ class Empleado(Individuo):
         if  usuario is not None:
             self.validar_usuario(usuario)
             self.usuario = usuario
-    
-    #def actualizar_estado(self, estado):
-    #    if estado is not None:
-    #        self.validar_estado(estado)
-    #        self.estado = estado
 
     def set_clave(self, nueva_clave):
         self.validar_clave(nueva_clave)
@@ -54,8 +47,3 @@ class Empleado(Individuo):
             raise ValueError("La clave debe tener al menos un numero")
         if not any(not caracter.isalnum() for caracter in clave):
             raise ValueError("La clave debe tener al menos un caracter especial")
-
-    #@staticmethod
-    #def validar_estado(estado):
-    #    if not isinstance(estado, str):
-    #        raise ValueError("El estado debe ser un str")
