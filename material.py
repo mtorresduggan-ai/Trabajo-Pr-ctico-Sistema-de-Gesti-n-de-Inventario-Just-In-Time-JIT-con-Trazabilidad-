@@ -3,19 +3,17 @@ from datetime import date
 class Material:
     todos = []
 
-    def __init__(self, id_material, nombre, composicion, unidad_medida, punto_reposicion, fecha_vencimiento):
+    def __init__(self, id_material, nombre, composicion, unidad_medida, punto_reposicion):
         self.id_material = id_material
         self.nombre = nombre
         self.composicion = composicion
         self.unidad_medida = unidad_medida
         self.punto_reposicion = punto_reposicion
-        self.fecha_vencimiento = fecha_vencimiento
 
         self.validar_nombre(nombre)
         self.validar_composicion(composicion)
         self.validar_unidad_medida(unidad_medida)
         self.validar_punto_reposicion(punto_reposicion)
-        self.validar_fecha(fecha_vencimiento)
         self.validar_id_unico(id_material)
         self.validar_id(id_material)
 
@@ -82,11 +80,3 @@ class Material:
             raise ValueError(
                 "El punto de reposición no puede ser negativo"
             )
-
-    @staticmethod
-    def validar_fecha(fecha):
-        if fecha is not None:
-            if not isinstance(fecha, date):
-                raise TypeError(
-                    "La fecha de vencimiento debe ser en formato fecha"
-                )
