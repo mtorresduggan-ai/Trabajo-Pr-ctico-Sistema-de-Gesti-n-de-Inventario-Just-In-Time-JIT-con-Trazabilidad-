@@ -1,4 +1,6 @@
 from individuo import Individuo
+from material import Material
+from datetime import date
 
 class Empleado(Individuo):
     todos= []
@@ -47,3 +49,27 @@ class Empleado(Individuo):
             raise ValueError("La clave debe tener al menos un numero")
         if not any(not caracter.isalnum() for caracter in clave):
             raise ValueError("La clave debe tener al menos un caracter especial")
+
+    @staticmethod
+    def validar_fecha(fecha):
+        if fecha is not None:
+            if not isinstance(fecha, date):
+                raise TypeError(
+                    "La fecha de inicio debe ser en formato fecha"
+                )
+
+    @staticmethod 
+    def validar_cantidades(cant):
+        if not isinstance(cant, float):
+            raise TypeError("La cantidad debe ser un numero real")
+        if cant < 0:
+            raise ValueError("La cantidad no puede ser negativa")
+
+    @staticmethod
+    def validar_materiales(materiales):
+        if not isinstance(materiales, list):
+            raise TypeError("Los materiales deben estar en una lista")
+
+        for material in materiales:
+            if material not in Material.todos:
+                raise ValueError("El material no esta registrado")

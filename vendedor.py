@@ -1,11 +1,18 @@
 from empleado import Empleado
 from pedido import Pedido_salida
+from solicitud_proveedor import Solicitud_proveedor
 
 class Vendedor(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
         super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
 
-    def crear_pedido_salida(self, id_movimiento, fecha, materiales, cantidades, cliente):
+    def crear_pedido_salida(self, fecha, materiales, cantidades, cliente):
+        Empleado.validar_fecha(fecha)
+        Empleado.validar_cantidades(cantidades)
+        Empleado.validar_materiales(materiales)
+
+        id_movimiento= len(Pedido_salida.todos) + len(Solicitud_proveedor.todos) + 1
+
         pedido = Pedido_salida(id_movimiento, fecha, materiales, cantidades, cliente, "Pendiente", self)
         return pedido
 
@@ -21,6 +28,10 @@ class Vendedor(Empleado):
 
     def modificar_pedido(self, id_movimiento, materiales=None, cantidades=None, fecha=None, cliente=None, estado=None):
         pedido = self.consultar_pedido(id_movimiento)
+        Empleado.validar_fecha(fecha)
+        Empleado.validar_cantidades(cantidades)
+        Empleado.validar_materiales(materiales)
+        
         if pedido.estado in ("Entregado", "Cancelado"):
             raise ValueError(f"No se puede modificar un pedido en estado '{pedido.estado}'")
 

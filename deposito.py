@@ -1,6 +1,5 @@
 from remesa import Remesa
 
-
 class Deposito:
 
     def __init__(self):
@@ -8,11 +7,7 @@ class Deposito:
 
         for remesa in Remesa.todos:
 
-            for material, cantidad, fecha in zip(
-                remesa.materiales,
-                remesa.cantidades,
-                remesa.fechas_vencimiento
-            ):
+            for material, cantidad, fecha in zip(remesa.materiales, remesa.cantidades, remesa.fechas_vencimiento):
 
                 if material not in self.stock:
                     self.stock[material] = {}

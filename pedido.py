@@ -10,14 +10,11 @@ class Pedido_salida(Movimiento):
         self.estado = estado
         self.vendedor = vendedor
 
+        self.validar_estado(estado)
+
         Pedido_salida.todos.append(self)
 
-    def cambiar_cliente(self, nuevo_cliente):
-        if nuevo_cliente not in Cliente.todos:
-            raise ValueError("El cliente no se encuentra en la lista de clientes registrados en el sistema")
-        self.cliente = nuevo_cliente
-
-    def informar(self):
+    def __str__(self):
         return 'ID Pedido: ' + str(self.id_movimiento) + ' Cliente: ' + self.cliente.nombre + ' Fecha de emision: ' + str(self.fecha) + ' Cantidad de materiales: ' + str(self.cantidades)
 
     @classmethod
