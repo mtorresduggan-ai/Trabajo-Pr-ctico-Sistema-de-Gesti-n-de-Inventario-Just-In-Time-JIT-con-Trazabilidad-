@@ -1,8 +1,8 @@
 class Material:
     todos = []
 
-    def __init__(self, id_material, nombre, composicion, unidad_medida, punto_reposicion):
-        self.id_material = id_material
+    def __init__(self, nombre, composicion, unidad_medida, punto_reposicion):
+        self.id_material = len(Material.todos)+1
         self.nombre = nombre
         self.composicion = composicion
         self.unidad_medida = unidad_medida
@@ -12,9 +12,7 @@ class Material:
         self.validar_composicion(composicion)
         self.validar_unidad_medida(unidad_medida)
         self.validar_punto_reposicion(punto_reposicion)
-        self.validar_id_unico(id_material)
-        self.validar_id(id_material)
-
+        
         Material.todos.append(self)
 
     def set_punto_reposicion(self, nuevo_punto):
@@ -34,20 +32,6 @@ class Material:
     @classmethod
     def informar(cls):
         return cls.todos
-
-    @classmethod
-    def validar_id_unico(cls, id_material):
-        for material in cls.todos:
-            if material.id_material == id_material:
-                raise ValueError(f"Ya existe un material con id '{id_material}'")
-
-    @staticmethod
-    def validar_id(id_material):
-        if not isinstance(id_material, int):
-            raise TypeError("El ID del material debe ser un entero")
-        if id_material <= 0:
-            raise ValueError("El ID del material debe ser mayor a 0")
-    
 
     @staticmethod
     def validar_nombre(nombre):

@@ -5,12 +5,12 @@ from datetime import date
 class Remesa:
     todos = []
 
-    def __init__(self, id_remesa, materiales, proveedor, saldo_disponible,
-                 cantidades, fechas_vencimiento, fecha_llegada):
+    def __init__(self, id_remesa, materiales, proveedor, solicitud, saldo_disponible, cantidades, fechas_vencimiento, fecha_llegada):
 
         self.id_remesa = id_remesa
         self.materiales = materiales
         self.proveedor = proveedor
+        self.solicitud = solicitud
         self.saldo_disponible = saldo_disponible
         self.cantidades = cantidades
         self.fechas_vencimiento = fechas_vencimiento
@@ -142,3 +142,9 @@ class Remesa:
             raise ValueError(
                 "El ID de la remesa debe ser mayor a 0"
             )
+
+    @staticmethod
+    def validar_fecha(fecha):
+        if fecha is not None:
+            if not isinstance(fecha, date):
+                raise TypeError("La fecha debe ser en formato fecha")

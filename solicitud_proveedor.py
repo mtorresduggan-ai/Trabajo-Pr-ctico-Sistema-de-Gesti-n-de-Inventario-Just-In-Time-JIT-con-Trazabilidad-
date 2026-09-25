@@ -10,7 +10,6 @@ class Solicitud_proveedor(Movimiento):
         self.estado = estado
         self.comprador = comprador
 
-        self.validar_proveedor(proveedor)
         self.validar_estado(estado)
         
         Solicitud_proveedor.todos.append(self)

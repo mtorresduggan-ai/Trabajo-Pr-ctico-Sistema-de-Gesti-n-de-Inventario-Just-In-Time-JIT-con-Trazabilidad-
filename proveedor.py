@@ -3,23 +3,19 @@ from individuo import Individuo
 class Proveedor(Individuo):
     todos = []
 
-    def __init__(self, nombre, plazo_estimado, telefono, dni, email, fecha_alta, fecha_baja = None):
+    def __init__(self, nombre, plazo_estimado, telefono, dni, email, puntaje, fecha_alta, fecha_baja = None):
         
         self.validar_plazo(plazo_estimado)
 
         super().__init__(nombre, telefono, dni, email, fecha_alta, fecha_baja)
         self.plazo_estimado = plazo_estimado
+        self.puntaje = 5
 
         Proveedor.todos.append(self)
 
     def set_plazo_estimado(self, nuevo_plazo):
         self.validar_plazo(nuevo_plazo)
         self.plazo_estimado = nuevo_plazo
-
-    def proveedor_no_cumple(self, plazo_real):
-        self.validar_plazo(plazo_real)
-        #if(plazo_real > self.plazo_estimado) --> cambiar puntaje
-
 
     def __str__(self):
         return 'Nombre: ' + self.nombre + '  Telefono: ' + self.telefono
