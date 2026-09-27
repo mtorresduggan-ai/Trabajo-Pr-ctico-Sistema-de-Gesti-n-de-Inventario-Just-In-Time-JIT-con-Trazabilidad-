@@ -1,21 +1,22 @@
 from movimiento import Movimiento
-from cliente import Cliente
 
 class Pedido_salida(Movimiento):
     todos = []
 
     def __init__(self, id_movimiento, fecha, materiales, cantidades, cliente, estado, vendedor):
+        
+        self.validar_estado(estado)
+        
         super().__init__(id_movimiento, fecha, materiales, cantidades)
+       
         self.cliente = cliente
         self.estado = estado
         self.vendedor = vendedor
 
-        self.validar_estado(estado)
-
         Pedido_salida.todos.append(self)
 
     def __str__(self):
-        return 'ID Pedido: ' + str(self.id_movimiento) + ' Cliente: ' + self.cliente.nombre + ' Fecha de emision: ' + str(self.fecha) + ' Cantidad de materiales: ' + str(self.cantidades)
+        return 'ID Pedido: ' + str(self.id_movimiento) + ' Cliente: ' + self.cliente.nombre + ' Fecha de emision: ' + str(self.fecha) + ' Estado: ' + self.estado
 
     @classmethod
     def informar_todos(cls):

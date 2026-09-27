@@ -9,8 +9,6 @@ class Deposito:
         for material, datos in self.stock.items():
             for dato in datos:
                 texto += (
-                    f"{material.nombre}: {dato['cantidad']} unidades "
-                    f"- vence {dato['fecha_vencimiento']}\n"
-                )
-
+                    f"{material.nombre}: {dato['cantidad']} {material.unidad_medida}"
+                    f" - vence {dato['fecha_vencimiento']}\n")
         return texto

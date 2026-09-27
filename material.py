@@ -2,17 +2,18 @@ class Material:
     todos = []
 
     def __init__(self, nombre, composicion, unidad_medida, punto_reposicion):
+        self.validar_nombre(nombre)
+        self.validar_composicion(composicion)
+        self.validar_unidad_medida(unidad_medida)
+        self.validar_punto_reposicion(punto_reposicion)
+        
+        
         self.id_material = len(Material.todos)+1
         self.nombre = nombre
         self.composicion = composicion
         self.unidad_medida = unidad_medida
         self.punto_reposicion = punto_reposicion
 
-        self.validar_nombre(nombre)
-        self.validar_composicion(composicion)
-        self.validar_unidad_medida(unidad_medida)
-        self.validar_punto_reposicion(punto_reposicion)
-        
         Material.todos.append(self)
 
     def set_punto_reposicion(self, nuevo_punto):
@@ -27,7 +28,7 @@ class Material:
         return stock_actual <= self.punto_reposicion
     
     def __str__(self):
-        return 'Material: ' + self.nombre + 'Composicion: ' + self.composicion + 'Unidad de medida: ' + self.unidad_medida
+        return 'Material: ' + self.nombre + ', Composicion: ' + self.composicion + ', Unidad de medida: ' + self.unidad_medida
 
     @classmethod
     def informar(cls):
@@ -59,6 +60,4 @@ class Material:
         if not isinstance(punto_reposicion, (int, float)):
             raise TypeError("El punto de reposición debe ser un número")
         if punto_reposicion < 0:
-            raise ValueError(
-                "El punto de reposición no puede ser negativo"
-            )
+            raise ValueError("El punto de reposición no puede ser negativo")

@@ -1,6 +1,5 @@
 from individuo import Individuo
 from material import Material
-from datetime import date
 
 class Empleado(Individuo):
     todos= []
@@ -17,10 +16,11 @@ class Empleado(Individuo):
 
         Empleado.todos.append(self)
 
-    def actualizar_usuario(self,usuario=None) :
-        if  usuario is not None:
-            self.validar_usuario(usuario)
-            self.usuario = usuario
+    def actualizar_usuario(self,usuario) :
+        self.validar_usuario(usuario)
+        if usuario == self.usuario:
+            raise ValueError("El nuevo usuario debe ser distinto al usuario anterior")
+        self.usuario = usuario
 
     def set_clave(self, nueva_clave):
         self.validar_clave(nueva_clave)
@@ -50,26 +50,18 @@ class Empleado(Individuo):
         if not any(not caracter.isalnum() for caracter in clave):
             raise ValueError("La clave debe tener al menos un caracter especial")
 
-    @staticmethod
-    def validar_fecha(fecha):
-        if fecha is not None:
-            if not isinstance(fecha, date):
-                raise TypeError(
-                    "La fecha de inicio debe ser en formato fecha"
-                )
-
     @staticmethod 
-    def validar_cantidades(cant):
-        if not isinstance(cant, float):
-            raise TypeError("La cantidad debe ser un numero real")
-        if cant < 0:
-            raise ValueError("La cantidad no puede ser negativa")
+    def validar_cantidades(cantidades):
+        if not isinstance(cantidades, list):
+            raise TypeError("Las cantidades deben estar en una lista")
+        if not all(isinstance(cantidad, (int, float)) for cantidad in cantidades):
+            raise TypeError("Cada cantidad debe ser un numero")
+        if any(cantidad <= 0 for cantidad in cantidades):
+            raise ValueError("La cantidad debe ser mayor a cero")
 
     @staticmethod
     def validar_materiales(materiales):
         if not isinstance(materiales, list):
             raise TypeError("Los materiales deben estar en una lista")
-
-        for material in materiales:
-            if material not in Material.todos:
-                raise ValueError("El material no esta registrado")
+        if not all (material in Material.todos for material in materiales):
+            raise ValueError("Todos los materiales deben estar registrados")

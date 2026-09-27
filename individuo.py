@@ -72,5 +72,5 @@ class Individuo:
             raise TypeError("El email del individuo debe ser un str")
         if email.strip() == "":
             raise ValueError("El email del individuo no puede estar vacio")
-
-    
+        if "@" not in email:
+            raise ValueError("El email del individuo debe contener un '@'")

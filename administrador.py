@@ -1,10 +1,21 @@
 from empleado import Empleado
+from datetime import date
 
 class Administrador(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
         super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
 
     def aceptar_remesa(self, remesa, deposito):
+        Empleado.validar_materiales(remesa.materiales)
+        Empleado.validar_cantidades(remesa.cantidades)
+        self.validar_fechas_vencimiento(remesa.fechas_vencimiento)
+        self.validar_listas(remesa.materiales, remesa.cantidades, remesa.fechas_vencimiento)
+
+        if remesa.fecha_llegada is None:
+            raise ValueError("La remesa todavia no tiene fecha de llegada")
+
+        Empleado.validar_fecha(remesa.fecha_llegada)
+
         for material, cantidad, fecha in zip(remesa.materiales, remesa.cantidades, remesa.fechas_vencimiento):
 
             if material not in deposito.stock:
@@ -29,14 +40,12 @@ class Administrador(Empleado):
 
 
     def evaluar_plazo_remesa(self, remesa):
-        dias_reales = remesa.fecha_llegada - remesa.solicitud.fecha_solicitud
+        dias_reales = remesa.fecha_llegada - remesa.solicitud.fecha
 
         if dias_reales.days <= remesa.proveedor.plazo_estimado:
             remesa.proveedor.modificar_puntaje(0.5)
         else:
             remesa.proveedor.modificar_puntaje(-0.5)
-
-    from empleado import Empleado
 
 
     def aceptar_pedido_salida(self, pedido, deposito):
@@ -76,3 +85,16 @@ class Administrador(Empleado):
                     cantidad_faltante = 0
 
         pedido.estado = "Despachado" 
+
+    @staticmethod
+    def validar_fechas_vencimiento(fechas):
+        if not isinstance(fechas, list):
+            raise TypeError("Las fechas de vencimiento deben estar en una lista")
+
+        if not all(isinstance(fecha, date) for fecha in fechas):
+            raise TypeError("Todas las fechas de vencimiento deben ser fechas")
+
+    @staticmethod
+    def validar_listas(materiales, cantidades, fechas_vencimiento):
+        if len(materiales) != len(cantidades) or len(materiales) != len(fechas_vencimiento):
+            raise ValueError("Debe haber una cantidad y una fecha de vencimiento por cada material")

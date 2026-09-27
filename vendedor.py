@@ -1,7 +1,7 @@
 from empleado import Empleado
 from pedido import Pedido_salida
-from solicitud_proveedor import Solicitud_proveedor
 from cliente import Cliente
+from movimiento import Movimiento
 
 class Vendedor(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
@@ -12,8 +12,9 @@ class Vendedor(Empleado):
         Empleado.validar_cantidades(cantidades)
         Empleado.validar_materiales(materiales)
         self.validar_cliente(cliente)
+        self.validar_listas(materiales, cantidades)
 
-        id_movimiento= len(Pedido_salida.todos) + len(Solicitud_proveedor.todos) + 1
+        id_movimiento = len(Movimiento.todos) + 1
 
         pedido = Pedido_salida(id_movimiento, fecha, materiales, cantidades, cliente, "Pendiente", self)
         return pedido
@@ -22,10 +23,7 @@ class Vendedor(Empleado):
         return list(filter(lambda p: p.vendedor == self, Pedido_salida.todos))
 
     def consultar_pedido(self, id_movimiento):
-        pedidos = list(filter(
-            lambda p: p.vendedor == self and p.id_movimiento == id_movimiento,
-            Pedido_salida.todos
-        ))
+        pedidos = list(filter(lambda p: p.vendedor == self and p.id_movimiento == id_movimiento, Pedido_salida.todos))
 
         if not pedidos:
             raise ValueError("No existe ese pedido")
@@ -41,6 +39,9 @@ class Vendedor(Empleado):
 
     def modificar_pedido(self, id_movimiento, materiales=None, cantidades=None, fecha=None, cliente=None, estado=None):
         pedido = self.consultar_pedido(id_movimiento)
+        
+        if pedido.estado in ("Entregado", "Cancelado"):
+            raise ValueError(f"No se puede modificar un pedido en estado '{pedido.estado}'")
         if materiales is not None:
             Empleado.validar_materiales(materiales)
             pedido.materiales = materiales
@@ -50,11 +51,9 @@ class Vendedor(Empleado):
         if fecha is not None:
             Empleado.validar_fecha(fecha)
             pedido.fecha = fecha
-        if pedido.estado in ("Entregado", "Cancelado"):
-            raise ValueError(f"No se puede modificar un pedido en estado '{pedido.estado}'")
         if cliente is not None:
             self.validar_cliente(cliente)
-            pedido.cambiar_cliente(cliente)
+            pedido.cliente = cliente
         if estado is not None:
             Pedido_salida.validar_estado(estado)
             pedido.estado = estado
@@ -65,3 +64,8 @@ class Vendedor(Empleado):
     def validar_cliente(cliente):
         if cliente not in Cliente.todos:
             raise ValueError("El cliente no esta registrado")
+
+    @staticmethod
+    def validar_listas(materiales, cantidades):
+        if len(materiales) != len(cantidades):
+            raise ValueError("Debe haber una cantidad por cada material")
