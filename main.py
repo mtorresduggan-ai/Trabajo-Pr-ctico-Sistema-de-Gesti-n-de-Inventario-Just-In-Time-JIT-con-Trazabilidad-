@@ -1,72 +1,45 @@
-from material import Material
-from proveedor import Proveedor
-from remesa import Remesa
-from pedido import Pedido_salida
-from solicitud_proveedor import Solicitud_proveedor
 from datetime import date
 
-material1 = Material(1, "Aluminio", "Al 7075", "kg", 10, date(2026, 12,31))
-material2 = Material(2, "Titanio", "Ti-6Al-4V", "kg", 50, date(2030, 11, 26))
-material3 = Material(3, "Acero inoxidable", "316L", "kg", 80, date(2028, 5, 8))
-materiales = Material.todos
+from material import Material
+from proveedor import Proveedor
+from cliente import Cliente
+from comprador import Comprador
+from vendedor import Vendedor
+from administrador import Administrador
+from deposito import Deposito
 
-proveedor1 = Proveedor(1, "Proveedor A", 5, "123456")
+def main():
 
-remesa1 = Remesa(1, [material1, material2, material3], proveedor1, 50, 100, date(2025, 8, 19))
-remesa2 = Remesa(2, [material2], proveedor1, 70, 75, date(2026, 1, 25))
+    print("=== SISTEMA DE INVENTARIO AEROTECH ===")
 
-pedido1 = Pedido_salida(1, date(2026, 3, 14), [material2, material3], 20)
+    # Materiales
+    aluminio = Material("Aluminio","Al","kg",100)
 
-solicitud1 = Solicitud_proveedor(1, proveedor1, date(2025, 2, 3), [material1, material3], 200)
+    acero = Material("Acero","Fe","kg",50)
 
+    # Proveedor
+    proveedor = Proveedor("Metalúrgica Sur",5,"1123456789", 30123456, "proveedor@gmail.com",date(2026, 9, 1))
 
-#mostrar las fechas de vencimiento de cada material en una remesa
-def consultar_materiales_remesas(remesa=None, material=None):
+    # Cliente
+    cliente = Cliente( "AeroParts","1198765432",30987654,"cliente@gmail.com",date(2026, 9, 1))
 
-    if remesa:
-        remesas = [remesa]
-    else:
-        remesas = Remesa.todos
+    # Empleados
+    comprador = Comprador("Juan Pérez","1112345678",40123456,date(2026, 9, 1),"juan@aerotech.com", "jperez","Juan123!")
 
-    for r in remesas:
-        print("Remesa:", r.id_remesa, '\n')
-        for m in r.materiales:
-            if material is None or m == material:
-                print("Material:", m.nombre)
-                print("Vencimiento:", m.fecha_vencimiento, '\n')
+    vendedor = Vendedor("Ana López","1155555555",40234567,date(2026, 9, 1),"ana@aerotech.com", "alopez","Ana123!")
 
+    administrador = Administrador("Carlos Gómez","1166666666",40345678,date(2026, 9, 1),"carlos@aerotech.com","cgomez","Carlos123!")
 
-#procesar pedido de salida descontando saldo de la remesa
-def procesar_pedido(remesa, material, pedido):
+    # Depósito
+    deposito = Deposito()
 
-    if remesa in Remesa.todos and material in Material.todos and pedido in Pedido_salida.todos:
-         if material in remesa.materiales and material in pedido.materiales:
-            remesa.set_saldo(remesa.saldo_disponible - pedido.cant_materiales)
-
-            print("Pedido:", pedido.id_pedido_salida)
-            print("Material:", material.nombre)
-            print("Remesa utilizada:", remesa.id_remesa)
-            print("Proveedor:", remesa.proveedor.nombre)
-            print("Cantidad retirada:", pedido.cant_materiales)
-            print("Nuevo saldo de la remesa:", remesa.saldo_disponible, '\n')
-
-    else:
-        print('Hubo un error en el sistema.')
+    print("\n=== OBJETOS CREADOS ===")
+    print(aluminio)
+    print(acero)
+    print(proveedor)
+    print(cliente)
+    print(deposito)
 
 
-#sumar cantidades de un material entre todas las remesas
-def consultar_stock_material(material):
-
-    total = 0
-
-    for remesa in Remesa.todos:
-        if material in remesa.materiales:
-            total += remesa.saldo_disponible
-
-    print(f"Cantidad total de {material.nombre}: {total} {material.unidad_medida}", '\n')
-
-consultar_materiales_remesas()
-print('---', '\n')
-procesar_pedido(remesa1, material2, pedido1)
-print('---', '\n')
-consultar_stock_material(material2)
+if __name__ == "__main__":
+    main()
