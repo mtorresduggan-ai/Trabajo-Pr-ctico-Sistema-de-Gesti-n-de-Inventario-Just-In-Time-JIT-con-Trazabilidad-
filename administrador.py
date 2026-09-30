@@ -1,5 +1,7 @@
 from empleado import Empleado
 from datetime import date
+from proveedor import Proveedor
+from cliente import Cliente
 
 class Administrador(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
@@ -82,7 +84,114 @@ class Administrador(Empleado):
                     dato.update(cantidad=cantidad_disponible - cantidad_faltante)
                     cantidad_faltante = 0
 
-        pedido.estado = "Despachado" 
+        pedido.estado = "Despachado"
+
+
+    def baja_empleado(self, empleado):
+        if empleado not in Empleado.todos:
+            raise ValueError("El empleado no está registrado")
+
+        if empleado.fecha_baja is not None:
+            raise ValueError("El empleado ya está dado de baja")
+
+        empleado.fecha_baja = date.today()
+
+    def modificar_empleado(self, empleado, nombre=None, telefono=None, email=None, usuario=None, clave=None):
+        if empleado not in Empleado.todos:
+            raise ValueError("El empleado no está registrado")
+        if nombre is not None:
+            empleado.nombre = nombre
+        if telefono is not None:
+            empleado.telefono = telefono
+        if email is not None:
+            empleado.email = email
+        if usuario is not None:
+            empleado.actualizar_usuario(usuario)
+        if clave is not None:
+            empleado.set_clave(clave) 
+
+    def baja_proveedor(self, proveedor):
+        if proveedor not in Proveedor.todos:
+            raise ValueError("Este proveedor no está registrado")
+
+        if proveedor.fecha_baja is not None:
+            raise ValueError("El proveedor ya está dado de baja")
+
+        proveedor.fecha_baja = date.today()    
+
+    def baja_cliente(self, cliente):
+        if cliente not in Cliente.todos:
+            raise ValueError("El cliente no está registrado")
+
+        if cliente.fecha_baja is not None:
+            raise ValueError("Este cliente ya está dado de baja")
+
+        cliente.fecha_baja = date.today()
+
+    def generar_reporte_empleados(self):
+        reporte = "Reporte de empleados:\n"
+
+        for empleado in Empleado.todos:
+            if empleado.fecha_baja is None:
+                estado = "Activo"
+            else:
+                estado = f"Baja: {empleado.fecha_baja}"
+
+            reporte += (f"Nombre: {empleado.nombre}\nDNI: {empleado.dni}\nTelefono: {empleado.telefono}\nEmail: {empleado.email}\nUsuario: {empleado.usuario}\nEstado: {estado}\n")
+
+        return reporte
+
+
+    def generar_reporte_proveedores(self):
+        reporte = "Reporte de proveedores:\n"
+
+        for proveedor in Proveedor.todos:
+            if proveedor.fecha_baja is None:
+                estado = "Activo"
+            else:
+                estado = f"Baja: {proveedor.fecha_baja}"
+
+            reporte += (
+                f"Nombre: {proveedor.nombre}\nDNI: {proveedor.dni}\nTelefono: {proveedor.telefono}\nEmail: {proveedor.email}\nPlazo estimado: {proveedor.plazo_estimado} dias\nPuntaje: {proveedor.puntaje}\nEstado: {estado}\n")
+
+        return reporte
+
+
+    def generar_reporte_clientes(self):
+        reporte = "Reporte de clientes:\n"
+
+        for cliente in Cliente.todos:
+            if cliente.fecha_baja is None:
+                estado = "Activo"
+            else:
+                estado = f"Baja: {cliente.fecha_baja}"
+
+            reporte += (f"Nombre: {cliente.nombre}\nDNI: {cliente.dni}\nTelefono: {cliente.telefono}\nEmail: {cliente.email}\nEstado: {estado}\n")
+
+        return reporte
+
+
+    def generar_reporte_stock(self, deposito):
+        reporte = "Reporte de stock:\n"
+
+        for material, datos in deposito.stock.items():
+            cantidad_total = sum(dato["cantidad"] for dato in datos)
+
+            if material.necesita_reposicion(cantidad_total):
+                reposicion = "Si"
+            else:
+                reposicion = "No"
+
+            reporte += (
+                f"Material: {material.nombre}\nCantidad total: {cantidad_total} {material.unidad_medida}\nPunto de reposicion: {material.punto_reposicion}\nNecesita reposicion: {reposicion}\n")
+
+            for dato in datos:
+                reporte += (f"Cantidad: {dato['cantidad']} {material.unidad_medida} - Vence: {dato['fecha_vencimiento']}\n")
+
+            reporte += "\n"
+
+        return reporte
+    
 
     @staticmethod
     def validar_fechas_vencimiento(fechas):
