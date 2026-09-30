@@ -13,7 +13,6 @@ class Administrador(Empleado):
 
         if remesa.fecha_llegada is None:
             raise ValueError("La remesa todavia no tiene fecha de llegada")
-
         Empleado.validar_fecha(remesa.fecha_llegada)
 
         for material, cantidad, fecha in zip(remesa.materiales, remesa.cantidades, remesa.fechas_vencimiento):
@@ -33,8 +32,7 @@ class Administrador(Empleado):
                     dato.update(cantidad=dato.get("cantidad") + cantidad)
 
                 else:
-                    datos_material.append(
-                        dict(cantidad=cantidad, fecha_vencimiento=fecha))
+                    datos_material.append(dict(cantidad=cantidad, fecha_vencimiento=fecha))
 
         self.evaluar_plazo_remesa(remesa)
 

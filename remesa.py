@@ -34,7 +34,6 @@ class Remesa:
             raise ValueError("El material no se encuentra en la remesa")
 
         posicion = self.materiales.index(material)
-
         self.materiales.pop(posicion)
         self.cantidades.pop(posicion)
         self.fechas_vencimiento.pop(posicion)
@@ -69,7 +68,6 @@ class Remesa:
     def validar_id(id_remesa):
         if not isinstance(id_remesa, int):
             raise TypeError("El ID de la remesa debe ser un entero")
-
         if id_remesa <= 0:
             raise ValueError("El ID de la remesa debe ser mayor a 0")
 
