@@ -86,6 +86,7 @@ class Administrador(Empleado):
 
         pedido.estado = "Despachado"
 
+        return [m for m in pedido.materiales if m.necesita_reposicion(deposito.stock_total(m))]
 
     def baja_empleado(self, empleado):
         if empleado not in Empleado.todos:
