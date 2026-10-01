@@ -28,7 +28,7 @@ class Administrador(Empleado):
                 coincidencias = list(filter(
                     lambda dato: dato.get("fecha_vencimiento") == fecha,
                     datos_material))
-
+#indice
                 if coincidencias:
                     dato = coincidencias[0]
                     dato.update(cantidad=dato.get("cantidad") + cantidad)
@@ -59,6 +59,7 @@ class Administrador(Empleado):
 
             datos_material.sort(key=lambda dato: dato.get("fecha_vencimiento"))
 
+#while faltante>0
             for dato in datos_material:
                 if cantidad_faltante == 0:
                     break
