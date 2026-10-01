@@ -101,10 +101,13 @@ class Administrador(Empleado):
         if empleado not in Empleado.todos:
             raise ValueError("El empleado no está registrado")
         if nombre is not None:
+            empleado.validar_nombre(nombre)
             empleado.nombre = nombre
         if telefono is not None:
+            empleado.validar_telefono(telefono)
             empleado.telefono = telefono
         if email is not None:
+            empleado.validar_email(email)
             empleado.email = email
         if usuario is not None:
             empleado.actualizar_usuario(usuario)
