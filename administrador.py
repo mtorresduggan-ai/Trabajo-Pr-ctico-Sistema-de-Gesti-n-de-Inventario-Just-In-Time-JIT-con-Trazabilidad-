@@ -111,7 +111,7 @@ class Administrador(Empleado):
                         caja.update(cantidad=cant_disponible - cantidad_faltante)
                         cantidad_faltante = 0
 
-                deposito_origen.stock[material] = [c for c in estante_origen if c["cantidad"] > 0]
+                deposito_origen.stock[material] = [caja for caja in estante_origen if c["cantidad"] > 0]
 
                 if material not in deposito_destino.stock:
                     deposito_destino.stock[material] = []
