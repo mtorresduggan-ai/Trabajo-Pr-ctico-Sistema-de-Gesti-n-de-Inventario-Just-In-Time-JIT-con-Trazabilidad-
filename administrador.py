@@ -91,43 +91,43 @@ class Administrador(Empleado):
             if stock_disponible < cantidad:
                 raise ValueError(f"Transferencia cancelada: Stock insuficiente de {material.nombre} en origen. ")
             
-            for material, cantidad in zip(materiales, cantidades):
-                estante_origen = deposito_origen.stock.get(material)
-                cantidad_faltante = cantidad
-                cajas_a_mover = []
-            
-                for caja in estante_origen:
-                    if cantidad_faltante == 0:
-                        break
+        for material, cantidad in zip(materiales, cantidades):
+            estante_origen = deposito_origen.stock.get(material)
+            cantidad_faltante = cantidad
+            cajas_a_mover = []
+        
+            for caja in estante_origen:
+                if cantidad_faltante == 0:
+                    break
 
-                    cant_disponible = caja.get("cantidad")
+                cant_disponible = caja.get("cantidad")
 
-                    if cant_disponible <= cantidad_faltante:
-                        cantidad_faltante -= cant_disponible
-                        cajas_a_mover.append(dict(cantidad=cant_disponible, fecha_vencimiento=caja["fecha_vencimiento"]))
-                        caja.update(cantidad=0)
-                    else:
-                        cajas_a_mover.append(dict(cantidad=cantidad_faltante, fecha_vencimiento=caja["fecha_vencimiento"]))
-                        caja.update(cantidad=cant_disponible - cantidad_faltante)
-                        cantidad_faltante = 0
+                if cant_disponible <= cantidad_faltante:
+                    cantidad_faltante -= cant_disponible
+                    cajas_a_mover.append(dict(cantidad=cant_disponible, fecha_vencimiento=caja["fecha_vencimiento"]))
+                    caja.update(cantidad=0)
+                else:
+                    cajas_a_mover.append(dict(cantidad=cantidad_faltante, fecha_vencimiento=caja["fecha_vencimiento"]))
+                    caja.update(cantidad=cant_disponible - cantidad_faltante)
+                    cantidad_faltante = 0
 
-                deposito_origen.stock[material] = [caja for caja in estante_origen if caja["cantidad"] > 0]
+            deposito_origen.stock[material] = [caja for caja in estante_origen if caja["cantidad"] > 0]
 
-                if material not in deposito_destino.stock:
-                    deposito_destino.stock[material] = []
+            if material not in deposito_destino.stock:
+                deposito_destino.stock[material] = []
 
-                estante_destino = deposito_destino.stock.get(material)
+            estante_destino = deposito_destino.stock.get(material)
 
-                for caja_nueva in cajas_a_mover:
-                    cant_caja = caja_nueva["cantidad"]
-                    fecha_caja = caja_nueva["fecha_vencimiento"]
+            for caja_nueva in cajas_a_mover:
+                cant_caja = caja_nueva["cantidad"]
+                fecha_caja = caja_nueva["fecha_vencimiento"]
 
-                    coincidencias = list(filter(lambda c: c.get("fecha_vencimiento")==fecha_caja, estante_destino))
+                coincidencias = list(filter(lambda c: c.get("fecha_vencimiento")==fecha_caja, estante_destino))
 
-                    if coincidencias:
-                        coincidencias[0].update(cantidad=coincidencias[0]["cantidad"] + cant_caja)
-                    else:
-                        estante_destino.append(dict(cantidad=cant_caja, fecha_vencimiento=fecha_caja))
+                if coincidencias:
+                    coincidencias[0].update(cantidad=coincidencias[0]["cantidad"] + cant_caja)
+                else:
+                    estante_destino.append(dict(cantidad=cant_caja, fecha_vencimiento=fecha_caja))
 
 
     def baja_empleado(self, empleado):
