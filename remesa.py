@@ -1,7 +1,7 @@
 class Remesa:
     todos = []
 
-    def __init__(self, id_remesa, materiales, proveedor, solicitud, saldo_disponible, cantidades, fechas_vencimiento, fecha_llegada):
+    def __init__(self, id_remesa, materiales, proveedor, solicitud, saldo_disponible, cantidades, fechas_vencimiento, fecha_llegada, **datos):
 
         self.validar_id(id_remesa)
         self.validar_id_unico(id_remesa)
@@ -16,6 +16,7 @@ class Remesa:
         self.cantidades = cantidades
         self.fechas_vencimiento = fechas_vencimiento
         self.fecha_llegada = fecha_llegada
+        self.datos = datos
 
         Remesa.todos.append(self)
 
