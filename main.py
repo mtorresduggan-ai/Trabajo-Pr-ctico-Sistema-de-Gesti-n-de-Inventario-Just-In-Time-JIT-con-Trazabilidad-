@@ -24,7 +24,7 @@ deposito_s = Deposito('Deposito sur')
 
 # Compra: solicitud -> remesa -> depósito
 solicitud = comprador.crear_solicitud(date(2026, 9, 29), [aluminio, acero],[150, 80], proveedor)
-remesa = Remesa(1, [aluminio, acero], proveedor, solicitud, 230, [150, 80],[date(2027, 12, 31), date(2028, 6, 30)], date(2026, 10, 4))
+remesa = Remesa([aluminio, acero], proveedor, solicitud, 230, [150, 80],[date(2027, 12, 31), date(2028, 6, 30)], date(2026, 10, 4))
     
 administrador.aceptar_remesa(remesa, deposito)
 print("Depósito tras la remesa:")
