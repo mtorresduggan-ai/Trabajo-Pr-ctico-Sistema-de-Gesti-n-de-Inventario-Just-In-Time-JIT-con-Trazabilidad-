@@ -1,14 +1,14 @@
+from datetime import timedelta
+
 class Remesa:
     todos = []
 
-    def __init__(self, id_remesa, materiales, proveedor, solicitud, saldo_disponible, cantidades, fechas_vencimiento, fecha_llegada, **datos):
+    def __init__(self, materiales, proveedor, solicitud, saldo_disponible, cantidades, fechas_vencimiento, fecha_llegada, **datos):
 
-        self.validar_id(id_remesa)
-        self.validar_id_unico(id_remesa)
         self.validar_saldo_disponible(saldo_disponible)
         self.validar_cant_y_saldo(saldo_disponible, cantidades)
 
-        self.id_remesa = id_remesa
+        self.id_remesa = len(Remesa.todos)+1
         self.materiales = materiales
         self.proveedor = proveedor
         self.solicitud = solicitud
@@ -18,7 +18,17 @@ class Remesa:
         self.fecha_llegada = fecha_llegada
         self.datos = datos
 
+        self.evaluar_proveedor()
+
         Remesa.todos.append(self)
+
+    def evaluar_proveedor(self):
+        if self.solicitud and self.proveedor:
+            dias_reales = (self.fecha_llegada - self.solicitud.fecha).days
+            if dias_reales <= self.proveedor.plazo_estimado:
+                self.proveedor.modificar_puntaje(0.5)
+            else:
+                self.proveedor.modificar_puntaje(-0.5)
 
     def set_saldo(self, nuevo_saldo):
         self.validar_saldo_disponible(nuevo_saldo)
@@ -46,17 +56,11 @@ class Remesa:
             ' Saldo disponible: ' + str(self.saldo_disponible) +
             ' Materiales: ' + str(self.materiales) +
             ' Cantidades: ' + str(self.cantidades) +
-            ' Fecha de llegada: ' + str(self.fecha_llegada)
-        )
+            ' Fecha de llegada: ' + str(self.fecha_llegada))
 
     @classmethod
     def informar(cls):
         return cls.todos
-
-    @classmethod
-    def validar_id_unico(cls, id_remesa):
-        if any(remesa.id_remesa == id_remesa for remesa in cls.todos):
-            raise ValueError(f"Ya existe una remesa con id '{id_remesa}'")
 
     @staticmethod
     def validar_saldo_disponible(saldo_disponible):
@@ -64,13 +68,6 @@ class Remesa:
             raise TypeError("El saldo debe ser un número")
         if saldo_disponible < 0:
             raise ValueError("El saldo disponible debe ser mayor o igual a cero")
-
-    @staticmethod
-    def validar_id(id_remesa):
-        if not isinstance(id_remesa, int):
-            raise TypeError("El ID de la remesa debe ser un entero")
-        if id_remesa <= 0:
-            raise ValueError("El ID de la remesa debe ser mayor a 0")
 
     @staticmethod
     def validar_cant_y_saldo(saldo_disponible, cantidades):

@@ -9,11 +9,11 @@ class Deposito:
     def __str__(self):
         texto = ""
 
-        for material, datos in self.stock.items():
-            for dato in datos:
-                texto += (f"{material.nombre}: {dato['cantidad']} {material.unidad_medida}"
-                    f" - vence {dato['fecha_vencimiento']}\n")
+        for material, estante in self.stock.items():
+            for caja in estante:
+                texto += (f"{material.nombre}: {caja['cantidad']} {material.unidad_medida}"
+                    f" - vence {caja['fecha_vencimiento']}\n")
         return texto
 
     def stock_total(self, material):
-        return sum(lote["cantidad"] for lote in self.stock.get(material, []))
+        return sum(caja["cantidad"] for caja in self.stock.get(material, []))

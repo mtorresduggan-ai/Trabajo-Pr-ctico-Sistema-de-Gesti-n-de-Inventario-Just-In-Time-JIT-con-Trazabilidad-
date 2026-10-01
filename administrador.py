@@ -36,17 +36,6 @@ class Administrador(Empleado):
                 else:
                     datos_material.append(dict(cantidad=cantidad, fecha_vencimiento=fecha))
 
-        self.evaluar_plazo_remesa(remesa)
-
-
-    def evaluar_plazo_remesa(self, remesa):
-        dias_reales = remesa.fecha_llegada - remesa.solicitud.fecha
-
-        if dias_reales.days <= remesa.proveedor.plazo_estimado:
-            remesa.proveedor.modificar_puntaje(0.5)
-        else:
-            remesa.proveedor.modificar_puntaje(-0.5)
-
 
     def aceptar_pedido_salida(self, pedido, deposito):
 
