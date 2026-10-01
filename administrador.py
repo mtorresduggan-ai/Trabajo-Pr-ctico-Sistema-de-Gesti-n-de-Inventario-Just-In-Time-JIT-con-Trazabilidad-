@@ -14,7 +14,7 @@ class Administrador(Empleado):
         self.validar_listas(remesa.materiales, remesa.cantidades, remesa.fechas_vencimiento)
 
         if remesa.fecha_llegada is None:
-            raise ValueError("La remesa todavia no tiene fecha de llegada")
+            raise ValueError("La remesa todavia no llegó")
         Empleado.validar_fecha(remesa.fecha_llegada)
 
         for material, cantidad, fecha in zip(remesa.materiales, remesa.cantidades, remesa.fechas_vencimiento):
@@ -87,6 +87,59 @@ class Administrador(Empleado):
         pedido.estado = "Despachado"
 
         return [m for m in pedido.materiales if m.necesita_reposicion(deposito.stock_total(m))]
+
+    def transferir_stock(self, deposito_origen, deposito_destino, materiales, cantidades):
+        self.validar_listas_2(materiales, cantidades)
+
+        if deposito_destino==deposito_origen:
+            raise ValueError('El deposito origen y deposito destino no puede ser el mismo')
+
+        for material, cantidad in zip(materiales, cantidades):
+            if material not in deposito_origen.stock:
+                raise ValueError(f"No hay stock de {material.nombre} en el depósito de origen")
+
+            stock_disponible = deposito_origen.stock_total(material)
+            if stock_disponible < cantidad:
+                raise ValueError(f"Transferencia cancelada: Stock insuficiente de {material.nombre} en origen. ")
+            
+            for material, cantidad in zip(materiales, cantidades):
+                estante_origen = deposito_origen.stock.get(material)
+                cantidad_faltante = cantidad
+                cajas_a_mover = []
+            
+                for caja in estante_origen:
+                    if cantidad_faltante == 0:
+                        break
+
+                    cant_disponible = caja.get("cantidad")
+
+                    if cant_disponible <= cantidad_faltante:
+                        cantidad_faltante -= cant_disponible
+                        cajas_a_mover.append(dict(cantidad=cant_disponible, fecha_vencimiento=caja["fecha_vencimiento"]))
+                        caja.update(cantidad=0)
+                    else:
+                        cajas_a_mover.append(dict(cantidad=cantidad_faltante, fecha_vencimiento=caja["fecha_vencimiento"]))
+                        caja.update(cantidad=cant_disponible - cantidad_faltante)
+                        cantidad_faltante = 0
+
+                deposito_origen.stock[material] = [c for c in estante_origen if c["cantidad"] > 0]
+
+                if material not in deposito_destino.stock:
+                    deposito_destino.stock[material] = []
+
+                estante_destino = deposito_destino.stock.get(material)
+
+                for caja_nueva in cajas_a_mover:
+                    cant_caja = caja_nueva["cantidad"]
+                    fecha_caja = caja_nueva["fecha_vencimiento"]
+
+                    coincidencias = list(filter(lambda c: c.get("fecha_vencimiento")==fecha_caja, estante_destino))
+
+                    if coincidencias:
+                        coincidencias[0].update(cantidad=coincidencias[0]["cantidad"] + cant_caja)
+                    else:
+                        estante_destino.append(dict(cantidad=cant_caja, fecha_vencimiento=fecha_caja))
+
 
     def baja_empleado(self, empleado):
         if empleado not in Empleado.todos:
@@ -209,3 +262,10 @@ class Administrador(Empleado):
     def validar_listas(materiales, cantidades, fechas_vencimiento):
         if len(materiales) != len(cantidades) or len(materiales) != len(fechas_vencimiento):
             raise ValueError("Debe haber una cantidad y una fecha de vencimiento por cada material")
+
+    @staticmethod
+    def validar_listas_2(materiales, cantidades):
+        if not isinstance(materiales, list) or not isinstance(cantidades, list):
+            raise TypeError("Materiales y cantidades deben ser listas")
+        if len(materiales) != len(cantidades):
+            raise ValueError("Debe haber una cantidad por cada material")

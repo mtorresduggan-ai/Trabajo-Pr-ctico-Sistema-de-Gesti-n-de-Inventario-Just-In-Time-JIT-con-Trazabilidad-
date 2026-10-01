@@ -19,7 +19,8 @@ def main():
     comprador = Comprador("Juan Pérez", "1112345678", 40123456, date(2026, 9, 1),"juan@aerotech.com", "jperez", "Juan123!")
     vendedor = Vendedor("Ana López", "1155555555", 40234567, date(2026, 9, 1),"ana@aerotech.com", "alopez", "Ana1234!")
     administrador = Administrador("Carlos Gómez", "1166666666", 40345678, date(2026, 9, 1),"carlos@aerotech.com", "cgomez", "Carlos123!")
-    deposito = Deposito()
+    deposito = Deposito('Deposito central')
+    deposito_s = Deposito('Deposito sur')
 
     # Compra: solicitud -> remesa -> depósito
     solicitud = comprador.crear_solicitud(date(2026, 9, 29), [aluminio, acero],[150, 80], proveedor)
@@ -47,6 +48,15 @@ def main():
         administrador.aceptar_pedido_salida(pedido2, deposito)
     except ValueError as e:
         print("Error esperado:", e)
+
+    #Transferencia: deposito central -> deposito sur
+    administrador.transferir_stock(deposito, deposito_s, [aluminio], [10])
+
+    print("\nDepósito Central tras transferir 5kg de Aluminio:")
+    print(deposito)
+
+    print("Depósito Sur tras recibir la transferencia:")
+    print(deposito_s)
 
 
 if __name__ == "__main__":

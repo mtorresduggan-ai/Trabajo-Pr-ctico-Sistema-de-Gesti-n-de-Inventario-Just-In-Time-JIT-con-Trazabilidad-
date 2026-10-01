@@ -1,7 +1,10 @@
 class Deposito:
+    todos=[]
 
-    def __init__(self):
+    def __init__(self, nombre):
         self.stock = dict()
+        self.nombre = nombre
+        Deposito.todos.append(self)
 
     def __str__(self):
         texto = ""
