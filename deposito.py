@@ -10,10 +10,25 @@ class Deposito:
         texto = ""
 
         for material, estante in self.stock.items():
-            for caja in estante:
-                texto += (f"{material.nombre}: {caja['cantidad']} {material.unidad_medida}"
-                    f" - vence {caja['fecha_vencimiento']}\n")
+            actual = estante.primero
+
+            while actual is not None:
+                texto += (f"{material.nombre}: {actual.cantidad} "
+                        f"{material.unidad_medida}"
+                        f" - vence {actual.fecha_vencimiento}\n")
+                actual = actual.siguiente
+
         return texto
 
     def stock_total(self, material):
-        return sum(caja["cantidad"] for caja in self.stock.get(material, []))
+        total = 0
+        estante = self.stock.get(material)
+
+        if estante is not None:
+            actual = estante.primero
+
+            while actual is not None:
+                total += actual.cantidad
+                actual = actual.proximo
+
+        return total

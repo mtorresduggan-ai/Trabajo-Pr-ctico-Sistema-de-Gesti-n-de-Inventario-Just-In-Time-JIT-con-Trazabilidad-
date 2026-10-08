@@ -1,16 +1,17 @@
 from datetime import date
 
 class Caja:
-    def __init__(self, fecha_vencimineto, cantidad, prox=None):
+    def __init__(self, fecha_vencimineto, cantidad, proximo=None):
         self.fecha_fecha_vencimineto= fecha_vencimineto
         self.cantidad= cantidad
-        self.prox = prox
+        self.prox = proximo
 
         self.validar_fecha(fecha_vencimineto)
         self.validar_cantidad(cantidad)
 
     def __str__(self):
-        return self.str(self.fecha_vencimineto)
+        return ('Fecha de vencimiento:' + str(self.fecha_vencimineto)
+                + 'Cantidad:' + str(self.cantidad))
 
     @staticmethod
     def validar_fecha(fecha):
