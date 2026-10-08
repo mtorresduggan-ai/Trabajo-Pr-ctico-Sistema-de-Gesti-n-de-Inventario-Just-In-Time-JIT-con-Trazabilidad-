@@ -3,16 +3,12 @@ from datetime import timedelta
 class Remesa:
     todos = []
 
-    def __init__(self, materiales, proveedor, solicitud, saldo_disponible, cantidades, fechas_vencimiento, fecha_llegada, **datos):
-
-        self.validar_saldo_disponible(saldo_disponible)
-        self.validar_cant_y_saldo(saldo_disponible, cantidades)
+    def __init__(self, materiales, proveedor, solicitud, cantidades, fechas_vencimiento, fecha_llegada, **datos):
 
         self.id_remesa = len(Remesa.todos)+1
         self.materiales = materiales
         self.proveedor = proveedor
         self.solicitud = solicitud
-        self.saldo_disponible = saldo_disponible
         self.cantidades = cantidades
         self.fechas_vencimiento = fechas_vencimiento
         self.fecha_llegada = fecha_llegada
@@ -30,10 +26,6 @@ class Remesa:
             else:
                 self.proveedor.modificar_puntaje(-0.5)
 
-    def set_saldo(self, nuevo_saldo):
-        self.validar_saldo_disponible(nuevo_saldo)
-        self.validar_cant_y_saldo(nuevo_saldo, self.cantidades)
-        self.saldo_disponible = nuevo_saldo
 
     def agregar_material(self, material, cantidad, fecha_vencimiento):
         self.materiales.append(material)
@@ -62,14 +54,3 @@ class Remesa:
     def informar(cls):
         return cls.todos
 
-    @staticmethod
-    def validar_saldo_disponible(saldo_disponible):
-        if not isinstance(saldo_disponible, (int, float)):
-            raise TypeError("El saldo debe ser un número")
-        if saldo_disponible < 0:
-            raise ValueError("El saldo disponible debe ser mayor o igual a cero")
-
-    @staticmethod
-    def validar_cant_y_saldo(saldo_disponible, cantidades):
-        if saldo_disponible > sum(cantidades):
-            raise ValueError("El saldo disponible debe ser menor o igual a la cantidad total recibida")
