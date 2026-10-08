@@ -8,6 +8,11 @@ class Administrador(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
         super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
 
+    def aceptar_solicitud(self, solicitud):
+        if solicitud.estado != "Pendiente": 
+            raise ValueError("Solo se pueden aceptar solicitudes en estado Pendiente")
+        solicitud.estado = "Aprobada"
+
     def aceptar_remesa(self, remesa, deposito):
         Empleado.validar_materiales(remesa.materiales)
         Empleado.validar_cantidades(remesa.cantidades)
