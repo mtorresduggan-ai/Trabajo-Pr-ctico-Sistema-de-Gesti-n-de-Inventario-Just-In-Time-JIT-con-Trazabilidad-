@@ -3,7 +3,7 @@ from datetime import date
 
 class Estante:
     def __init__(self):
-        self.prox_a_vencer=None
+        self.primera=None
 
     def agregar_caja(self, fecha_vencimiento, cantidad):
         self.validar_fecha(fecha_vencimiento)
@@ -32,18 +32,40 @@ class Estante:
 
 
     def sacar_cajas(self, cantidad):
+        self.validar_cantidad(cantidad)
+
+        if self.stock_total() < cantidad:
+            raise ValueError("Stock insuficiente")
+
         faltante = cantidad
+        cajas_a_mover = []
+
 
         while faltante > 0:
             caja = self.primera
 
             if caja.cantidad <= faltante:
+                cajas_a_mover.append(Caja(caja.fecha_vencimiento, caja.cantidad))
                 faltante -= caja.cantidad
                 self.primera = caja.prox
 
             else:
+                cajas_a_mover.append(Caja(caja.fecha_vencimiento, faltante))
                 caja.cantidad -= faltante
-                faltante = 0        
+                faltante = 0  
+
+        return cajas_a_mover
+            
+
+    def stock_total(self):
+        total = 0
+        actual = self.primera
+
+        while actual is not None:
+            total += actual.cantidad
+            actual = actual.prox
+
+        return total  
 
     @staticmethod
     def validar_fecha(fecha):

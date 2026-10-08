@@ -37,7 +37,7 @@ class Administrador(Empleado):
                 raise ValueError(f"No hay stock de {material.nombre}")
 
 
-            stock_total = sum(dato.get("cantidad") for dato in datos_material)
+            stock_total = deposito.stock_total(material)
 
             if stock_total < cantidad:
                 raise ValueError(f"No hay suficiente stock de {material.nombre}")
@@ -81,7 +81,7 @@ class Administrador(Empleado):
                 estante_destino= Estante()
                 deposito_destino.stock[material]= estante_destino
             
-            cajas_a_mover = estante_origen.sacaar_cajas(cantidad)
+            cajas_a_mover = estante_origen.sacar_cajas(cantidad)
         
             for caja in cajas_a_mover:
                 estante_destino.agregar_caja(caja.fecha_vencimiento, caja.cantidad)
