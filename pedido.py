@@ -3,11 +3,11 @@ from movimiento import Movimiento
 class Pedido_salida(Movimiento):
     todos = []
 
-    def __init__(self, id_movimiento, fecha, materiales, cantidades, cliente, estado, vendedor):
+    def __init__(self, fecha, materiales, cantidades, cliente, estado, vendedor):
         
         self.validar_estado(estado)
         
-        super().__init__(id_movimiento, fecha, materiales, cantidades)
+        super().__init__(fecha, materiales, cantidades)
        
         self.cliente = cliente
         self.estado = estado

@@ -14,9 +14,7 @@ class Comprador(Empleado):
         self.validar_proveedor(proveedor)
         self.validar_listas(materiales, cantidades)
 
-        id_movimiento = len(Movimiento.todos) + 1
-
-        solicitud = Solicitud_proveedor(id_movimiento, proveedor, fecha, materiales, cantidades, "Pendiente", self)
+        solicitud = Solicitud_proveedor(proveedor, fecha, materiales, cantidades, "Pendiente", self)
         return solicitud
 
     def consultar_solicitudes(self):

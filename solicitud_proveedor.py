@@ -3,11 +3,11 @@ from movimiento import Movimiento
 class Solicitud_proveedor(Movimiento):
     todos = []
 
-    def __init__(self, id_movimiento, proveedor, fecha, materiales, cantidades, estado, comprador):
+    def __init__(self, proveedor, fecha, materiales, cantidades, estado, comprador):
         
         self.validar_estado(estado)
         
-        super().__init__(id_movimiento, fecha, materiales, cantidades)
+        super().__init__(fecha, materiales, cantidades)
 
         self.proveedor = proveedor
         self.estado = estado

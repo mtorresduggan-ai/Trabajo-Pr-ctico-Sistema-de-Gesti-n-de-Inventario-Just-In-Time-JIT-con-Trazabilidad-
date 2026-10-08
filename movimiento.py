@@ -1,9 +1,9 @@
 class Movimiento:
     todos=[]
 
-    def __init__(self, id_movimiento, fecha, materiales, cantidades):
+    def __init__(self, fecha, materiales, cantidades):
         
-        self.id_movimiento = id_movimiento
+        self.id_movimiento = len(Movimiento.todos) + 1
         self.fecha = fecha
         self.materiales = materiales
         self.cantidades = cantidades
