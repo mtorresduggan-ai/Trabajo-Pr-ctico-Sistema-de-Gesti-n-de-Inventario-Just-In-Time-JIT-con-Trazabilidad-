@@ -13,24 +13,6 @@ class Administrador(Empleado):
             raise ValueError("Solo se pueden aceptar solicitudes en estado Pendiente")
         solicitud.estado = "Aprobada"
 
-    def aceptar_remesa(self, remesa, deposito):
-        Empleado.validar_materiales(remesa.materiales)
-        Empleado.validar_cantidades(remesa.cantidades)
-        self.validar_fechas_vencimiento(remesa.fechas_vencimiento)
-        self.validar_listas(remesa.materiales, remesa.cantidades, remesa.fechas_vencimiento)
-
-        if remesa.fecha_llegada is None:
-            raise ValueError("La remesa todavia no llegó")
-        Empleado.validar_fecha(remesa.fecha_llegada)
-
-        for material, cantidad, fecha in zip(remesa.materiales, remesa.cantidades, remesa.fechas_vencimiento):
-
-            if material not in deposito.stock:
-                deposito.stock[material] = Estante()
-
-            estante = deposito.stock[material]
-            estante.agregar_caja(fecha, cantidad)
-
 
     def aceptar_pedido_salida(self, pedido, deposito):
 
@@ -41,30 +23,13 @@ class Administrador(Empleado):
             if material not in deposito.stock:
                 raise ValueError(f"No hay stock de {material.nombre}")
 
-
             stock_total = deposito.stock_total(material)
 
             if stock_total < cantidad:
                 raise ValueError(f"No hay suficiente stock de {material.nombre}")
 
-        for material, cantidad in zip(pedido.materiales, pedido.cantidades):
-
-            if material not in deposito.stock:
-                raise ValueError(f"No hay stock de {material.nombre}")
-
-            estante= deposito.stock[material]
-
-            if estante.stock_total()<cantidad:
-                raise ValueError(f"No hay suficiente stock de {material.nombre}")
-
-        for material, cantidad in zip(pedido.materiales, pedido.cantidades):
-            estante = deposito.stock[material]
-            estante.sacar_cajas(cantidad)
-
-        pedido.estado = "Despachado"
-
-
-    def transferir_stock(self, deposito_origen, deposito_destino, materiales, cantidades):
+        
+    def aceptar_transferencia(self, deposito_origen, deposito_destino, materiales, cantidades):
         self.validar_listas_2(materiales, cantidades)
 
         if deposito_destino==deposito_origen:
@@ -78,19 +43,7 @@ class Administrador(Empleado):
             if stock_disponible < cantidad:
                 raise ValueError(f"Transferencia cancelada: Stock insuficiente de {material.nombre} en origen. ")
             
-        for material, cantidad in zip(materiales, cantidades):
-            estante_origen = deposito_origen.stock[material]
-            estante_destino = deposito_destino.stock.get(material)
-
-            if estante_destino is None:
-                estante_destino= Estante()
-                deposito_destino.stock[material]= estante_destino
-            
-            cajas_a_mover = estante_origen.sacar_cajas(cantidad)
-        
-            for caja in cajas_a_mover:
-                estante_destino.agregar_caja(caja.fecha_vencimiento, caja.cantidad)
-
+    #el admin podria cambiar estado de todo
 
     def baja_empleado(self, empleado):
         if empleado not in Empleado.todos:
