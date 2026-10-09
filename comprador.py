@@ -1,7 +1,6 @@
 from empleado import Empleado
 from solicitud_proveedor import Solicitud_proveedor
 from proveedor import Proveedor
-from movimiento import Movimiento
 
 class Comprador(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):

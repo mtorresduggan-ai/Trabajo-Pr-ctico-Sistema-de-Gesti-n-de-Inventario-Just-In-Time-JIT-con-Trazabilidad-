@@ -6,24 +6,24 @@ class Supervisor_deposito(Empleado):
         super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
 
     def recibir_remesa(self, remesa, deposito):
-            Empleado.validar_materiales(remesa.materiales)
-            Empleado.validar_cantidades(remesa.cantidades)
-            self.validar_fechas_vencimiento(remesa.fechas_vencimiento)
-            self.validar_listas(remesa.materiales, remesa.cantidades, remesa.fechas_vencimiento)
-    
-            if remesa.fecha_llegada is None:
-                raise ValueError("La remesa todavia no llegó")
-            Empleado.validar_fecha(remesa.fecha_llegada)
-    
-            for material, cantidad, fecha in zip(remesa.materiales, remesa.cantidades, remesa.fechas_vencimiento):
-    
-                if material not in deposito.stock:
-                    deposito.stock[material] = Estante()
-    
-                estante = deposito.stock[material]
-                estante.agregar_caja(fecha, cantidad)
+        Empleado.validar_materiales(remesa.materiales)
+        Empleado.validar_cantidades(remesa.cantidades)
+        self.validar_fechas_vencimiento(remesa.fechas_vencimiento)
+        self.validar_listas(remesa.materiales, remesa.cantidades, remesa.fechas_vencimiento)
 
-        #solicitud_proveedor.estado = "Entregado"
+        if remesa.fecha_llegada is None:
+            raise ValueError("La remesa todavia no llegó")
+        
+        Empleado.validar_fecha(remesa.fecha_llegada)
+
+        for material, cantidad, fecha in zip(remesa.materiales, remesa.cantidades, remesa.fechas_vencimiento):
+            if material not in deposito.stock:
+                deposito.stock[material] = Estante()
+
+            estante = deposito.stock[material]
+            estante.agregar_caja(fecha, cantidad)
+
+        remesa.solicitud.estado = "Recibida"
 
     def sacar_pedido(self, pedido, deposito):
          

@@ -2,7 +2,7 @@ from empleado import Empleado
 from datetime import date
 from proveedor import Proveedor
 from cliente import Cliente
-from estante import Estante
+from pedido import Pedido_salida
 
 class Administrador(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
@@ -11,11 +11,12 @@ class Administrador(Empleado):
     def aceptar_solicitud(self, solicitud):
         if solicitud.estado != "Pendiente": 
             raise ValueError("Solo se pueden aceptar solicitudes en estado Pendiente")
-        solicitud.estado = "Aprobada"
+        
+        solicitud.fecha = date.today()
+        solicitud.estado = "Solicitado al proveedor" 
 
 
     def aceptar_pedido_salida(self, pedido, deposito):
-
         if pedido.estado != "Pendiente":
             raise ValueError("Solo se pueden aceptar pedidos en estado Pendiente")
 
@@ -27,6 +28,10 @@ class Administrador(Empleado):
 
             if stock_total < cantidad:
                 raise ValueError(f"No hay suficiente stock de {material.nombre}")
+
+        pedido.fecha= date.today()
+        pedido.estado= 'En preparación'
+
 
         
     def aceptar_transferencia(self, deposito_origen, deposito_destino, materiales, cantidades):
