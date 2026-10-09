@@ -1,6 +1,7 @@
 from empleado import Empleado
 from estante import Estante
 from tarea import Tarea
+from datetime import date
 
 class Supervisor_deposito(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
@@ -83,6 +84,9 @@ class Supervisor_deposito(Empleado):
         elif tarea.tipo == "transferencia":
             self.transferir_stock(*tarea.datos)
 
+        elif tarea.tipo == "retirar_vencidos":
+            self.retirar_vencidos(tarea.objeto)
+
         else:
             raise ValueError("Tipo de tarea desconocido")
 
@@ -99,3 +103,33 @@ class Supervisor_deposito(Empleado):
             tarea = tarea.siguiente
 
         return False
+
+    def revisar_vencimientos(self, deposito, tareas_supervisor):
+        fecha_actual = date.today()
+        hay_vencidas = False
+
+        for estante in deposito.stock.values():
+            if estante.hay_cajas_vencidas(fecha_actual):
+                hay_vencidas = True
+                break
+
+        if hay_vencidas:
+            tarea = tareas_supervisor.frente
+            existe = False
+
+            while tarea is not None:
+                if (tarea.tipo == "retirar_vencidos" and tarea.objeto == deposito):
+                    existe = True
+                    break
+
+                tarea = tarea.siguiente
+
+            if not existe:
+                tareas_supervisor.agregar(Tarea("retirar_vencidos", deposito))
+
+    
+    def retirar_vencidos(self, deposito):
+        fecha_actual = date.today()
+
+        for estante in deposito.stock.values():
+            estante.retirar_cajas_vencidas(fecha_actual)
