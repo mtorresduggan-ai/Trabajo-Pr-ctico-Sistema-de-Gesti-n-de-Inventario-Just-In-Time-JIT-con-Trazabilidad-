@@ -1,4 +1,5 @@
 class Tarea:
-    def __init__(self, tarea, siguiente=None):
-        self.tarea = tarea
-        self.siguiente = siguiente
+    def init(self, tipo, objeto):
+        self.tipo = tipo
+        self.objeto = objeto
+        self.siguiente = None

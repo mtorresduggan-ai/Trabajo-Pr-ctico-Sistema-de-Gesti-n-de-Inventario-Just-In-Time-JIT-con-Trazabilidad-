@@ -2,21 +2,23 @@ from empleado import Empleado
 from pedido import Pedido_salida
 from cliente import Cliente
 from movimiento import Movimiento
+from tarea import Tarea
 
 class Vendedor(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
         super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
 
-    def crear_pedido_salida(self, fecha, materiales, cantidades, cliente):
+    def crear_pedido_salida(self, fecha, materiales, cantidades, cliente, tareas_pendientes_admin):
         Empleado.validar_fecha(fecha)
         Empleado.validar_cantidades(cantidades)
         Empleado.validar_materiales(materiales)
         self.validar_cliente(cliente)
         self.validar_listas(materiales, cantidades)
 
-        id_movimiento = len(Movimiento.todos) + 1
-
-        pedido = Pedido_salida(id_movimiento, fecha, materiales, cantidades, cliente, "Pendiente", self)
+        pedido = Pedido_salida(fecha, materiales, cantidades, cliente, "Pendiente", self)
+        
+        tareas_pendientes_admin.agregar(Tarea('pedido', pedido))
+        
         return pedido
 
     def consultar_pedido_todos(self):

@@ -1,12 +1,13 @@
 from empleado import Empleado
 from solicitud_proveedor import Solicitud_proveedor
 from proveedor import Proveedor
+from tarea import Tarea
 
 class Comprador(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
         super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
 
-    def crear_solicitud(self, fecha, materiales, cantidades, proveedor):
+    def crear_solicitud(self, fecha, materiales, cantidades, proveedor, tareas_pendientes_admin):
         Empleado.validar_fecha(fecha)
         Empleado.validar_cantidades(cantidades)
         Empleado.validar_materiales(materiales)
@@ -14,6 +15,9 @@ class Comprador(Empleado):
         self.validar_listas(materiales, cantidades)
 
         solicitud = Solicitud_proveedor(proveedor, fecha, materiales, cantidades, "Pendiente", self)
+
+        tareas_pendientes_admin.agregar(Tarea('solicitud', solicitud))
+        
         return solicitud
 
     def consultar_solicitudes(self):
@@ -27,9 +31,12 @@ class Comprador(Empleado):
 
     def cancelar_solicitud(self, id_movimiento):
         solicitud = self.consultar_solicitud(id_movimiento)
+        
         if solicitud.estado in ("Entregado", "Cancelado"):
             raise ValueError(f"No se puede cancelar una solicitud en estado '{solicitud.estado}'")
+        
         solicitud.estado = "Cancelado"
+
         return solicitud
 
     def modificar_solicitud(self, id_movimiento, materiales=None, cantidades=None, fecha=None, proveedor=None, estado=None):

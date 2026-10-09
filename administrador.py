@@ -2,7 +2,8 @@ from empleado import Empleado
 from datetime import date
 from proveedor import Proveedor
 from cliente import Cliente
-from pedido import Pedido_salida
+from tarea import Tarea
+
 
 class Administrador(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
@@ -13,7 +14,7 @@ class Administrador(Empleado):
             raise ValueError("Solo se pueden aceptar solicitudes en estado Pendiente")
         
         solicitud.fecha = date.today()
-        solicitud.estado = "Solicitado al proveedor" 
+        solicitud.estado = "Solicitado" 
 
 
     def aceptar_pedido_salida(self, pedido, deposito):
@@ -32,9 +33,8 @@ class Administrador(Empleado):
         pedido.fecha= date.today()
         pedido.estado= 'En preparación'
 
-
         
-    def aceptar_transferencia(self, deposito_origen, deposito_destino, materiales, cantidades):
+    def crear_transferencia(self, deposito_origen, deposito_destino, materiales, cantidades, tareas_pendientes_supervisor):
         self.validar_listas_2(materiales, cantidades)
 
         if deposito_destino==deposito_origen:
@@ -47,8 +47,30 @@ class Administrador(Empleado):
             stock_disponible = deposito_origen.stock_total(material)
             if stock_disponible < cantidad:
                 raise ValueError(f"Transferencia cancelada: Stock insuficiente de {material.nombre} en origen. ")
-            
-    #el admin podria cambiar estado de todo
+
+        tareas_pendientes_supervisor.agregar(Tarea('transferencia', None, (deposito_origen, deposito_destino, materiales, cantidades)))
+
+    #clase transferencia?
+
+    def ejecutar_siguiente_tarea(self, tareas_pendientes_admin, deposito, tareas_pendientes_supervisor):
+        tarea= tareas_pendientes_admin.ver_primera()
+
+        if tarea is None:
+            raise ValueError("No hay tareas pendientes")
+
+        if tarea.tipo == "solicitud":
+            self.aceptar_solicitud(tarea.objeto)
+
+        elif tarea.tipo == "pedido":
+            self.aceptar_pedido_salida(tarea.objeto, deposito)
+
+            tareas_pendientes_supervisor.agregar(Tarea("pedido", tarea.objeto, deposito))
+
+        else:
+            raise ValueError('Tipo de tarea desconocido')
+
+        tareas_pendientes_admin.sacar()
+
 
     def baja_empleado(self, empleado):
         if empleado not in Empleado.todos:

@@ -1,9 +1,9 @@
-from datetime import timedelta
+from tarea import Tarea
 
 class Remesa:
     todos = []
 
-    def __init__(self, materiales, proveedor, solicitud, cantidades, fechas_vencimiento, fecha_llegada, **datos):
+    def __init__(self, materiales, proveedor, solicitud, cantidades, fechas_vencimiento, deposito, tareas_pendientes_supervisor, fecha_llegada, **datos):
 
         self.id_remesa = len(Remesa.todos)+1
         self.materiales = materiales
@@ -15,6 +15,8 @@ class Remesa:
         self.datos = datos
 
         self.evaluar_proveedor()
+
+        tareas_pendientes_supervisor.agregar(Tarea("remesa", self, deposito))
 
         Remesa.todos.append(self)
 
