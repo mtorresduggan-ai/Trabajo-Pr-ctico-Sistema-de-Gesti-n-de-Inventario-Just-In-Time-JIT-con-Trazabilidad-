@@ -63,6 +63,20 @@ class Comprador(Empleado):
 
         return solicitud
 
+    def ejecutar_siguiente_tarea(self, tareas_pendientes_comprador, fecha, proveedor, tareas_pendientes_admin):
+
+        tarea = tareas_pendientes_comprador.ver_primera()
+
+        if tarea is None:
+            raise ValueError("No hay tareas pendientes")
+
+        if tarea.tipo == "reponer":
+            material = tarea.objeto
+
+            self.crear_solicitud(fecha, [material], [material.punto_reposicion], proveedor, tareas_pendientes_admin)
+
+        tareas_pendientes_comprador.sacar()
+
     @staticmethod
     def validar_proveedor(proveedor):
         if proveedor not in Proveedor.todos:

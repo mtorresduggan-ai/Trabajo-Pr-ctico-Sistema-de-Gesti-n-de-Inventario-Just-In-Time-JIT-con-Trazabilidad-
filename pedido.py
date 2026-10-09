@@ -12,6 +12,8 @@ class Pedido_salida(Movimiento):
         self.cliente = cliente
         self.estado = estado
         self.vendedor = vendedor
+        self.fecha_aceptacion= None
+        self.fecha_envio= None
 
         Pedido_salida.todos.append(self)
 

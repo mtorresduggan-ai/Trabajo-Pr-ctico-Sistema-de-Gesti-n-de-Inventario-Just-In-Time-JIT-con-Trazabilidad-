@@ -12,6 +12,7 @@ class Solicitud_proveedor(Movimiento):
         self.proveedor = proveedor
         self.estado = estado
         self.comprador = comprador
+        self.fecha_envio = None
 
         Solicitud_proveedor.todos.append(self)
 

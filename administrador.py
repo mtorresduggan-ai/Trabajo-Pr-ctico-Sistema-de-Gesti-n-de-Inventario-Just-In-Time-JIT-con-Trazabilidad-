@@ -13,8 +13,8 @@ class Administrador(Empleado):
         if solicitud.estado != "Pendiente": 
             raise ValueError("Solo se pueden aceptar solicitudes en estado Pendiente")
         
-        solicitud.fecha = date.today()
-        solicitud.estado = "Solicitado" 
+        solicitud.fecha_envio = date.today()
+        solicitud.estado = "Solicitado"
 
 
     def aceptar_pedido_salida(self, pedido, deposito):
@@ -30,7 +30,7 @@ class Administrador(Empleado):
             if stock_total < cantidad:
                 raise ValueError(f"No hay suficiente stock de {material.nombre}")
 
-        pedido.fecha= date.today()
+        pedido.fecha_aceptacion= date.today()
         pedido.estado= 'En preparación'
 
         
@@ -81,6 +81,7 @@ class Administrador(Empleado):
 
         empleado.fecha_baja = date.today()
 
+
     def modificar_empleado(self, empleado, nombre=None, telefono=None, email=None, usuario=None, clave=None):
         if empleado not in Empleado.todos:
             raise ValueError("El empleado no está registrado")
@@ -98,6 +99,7 @@ class Administrador(Empleado):
         if clave is not None:
             empleado.set_clave(clave) 
 
+
     def baja_proveedor(self, proveedor):
         if proveedor not in Proveedor.todos:
             raise ValueError("Este proveedor no está registrado")
@@ -107,6 +109,7 @@ class Administrador(Empleado):
 
         proveedor.fecha_baja = date.today()    
 
+
     def baja_cliente(self, cliente):
         if cliente not in Cliente.todos:
             raise ValueError("El cliente no está registrado")
@@ -115,6 +118,7 @@ class Administrador(Empleado):
             raise ValueError("Este cliente ya está dado de baja")
 
         cliente.fecha_baja = date.today()
+
 
     def generar_reporte_empleados(self):
         reporte = "Reporte de empleados:\n"

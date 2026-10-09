@@ -1,9 +1,11 @@
 from empleado import Empleado
 from estante import Estante
+from tarea import Tarea
 
 class Supervisor_deposito(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
         super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
+
 
     def recibir_remesa(self, remesa, deposito):
         Empleado.validar_materiales(remesa.materiales)
@@ -25,7 +27,8 @@ class Supervisor_deposito(Empleado):
 
         remesa.solicitud.estado = "Recibida"
 
-    def sacar_pedido(self, pedido, deposito):
+
+    def sacar_pedido(self, pedido, deposito, tareas_pendientes_comprador):
          
         for material, cantidad in zip(pedido.materiales, pedido.cantidades):
             if material not in deposito.stock:
@@ -42,6 +45,14 @@ class Supervisor_deposito(Empleado):
 
         pedido.estado = "Despachado"
 
+        for material in pedido.materiales:
+            stock = deposito.stock_total(material)
+
+            if stock <= material.punto_reposicion:
+                if not tareas_pendientes_comprador.existe_tarea_reposicion(material):
+                    tareas_pendientes_comprador.agregar(Tarea("reponer", material))
+
+
     def transferir_stock(self, deposito_origen, deposito_destino, materiales, cantidades):
         for material, cantidad in zip(materiales, cantidades):
             estante_origen = deposito_origen.stock[material]
@@ -55,3 +66,36 @@ class Supervisor_deposito(Empleado):
     
         for caja in cajas_a_mover:
             estante_destino.agregar_caja(caja.fecha_vencimiento, caja.cantidad)
+
+
+    def ejecutar_siguiente_tarea(self, tareas_pendeintes_supervisor, tareas_pendientes_comprador):
+        tarea = tareas_pendeintes_supervisor.ver_primera()
+
+        if tarea is None:
+            raise ValueError("No hay tareas pendientes")
+
+        if tarea.tipo == "pedido":
+            self.sacar_pedido(tarea.objeto, tarea.datos, tareas_pendientes_comprador)
+
+        elif tarea.tipo == "remesa":
+            self.recibir_remesa(tarea.objeto, tarea.datos)
+
+        elif tarea.tipo == "transferencia":
+            self.transferir_stock(*tarea.datos)
+
+        else:
+            raise ValueError("Tipo de tarea desconocido")
+
+        tareas_pendeintes_supervisor.sacar()
+
+
+    def existe_tarea_reposicion(self, material):
+        tarea = self.frente
+
+        while tarea is not None:
+            if tarea.tipo == "reponer" and tarea.objeto == material:
+                return True
+
+            tarea = tarea.siguiente
+
+        return False
