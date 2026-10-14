@@ -28,26 +28,27 @@ def test_punto_reposicion_negativo():
 
 def test_set_punto_reposicion():
     material = Material("Aluminio", "Al", "kg", 100)
-
     material.set_punto_reposicion(150)
-
     assert material.punto_reposicion == 150
 
 
 def test_necesita_reposicion_true():
     material = Material("Aluminio", "Al", "kg", 100)
-
-    assert material.necesita_reposicion(80) == True
+    assert material.necesita_reposicion(80)
 
 
 def test_necesita_reposicion_false():
     material = Material("Aluminio", "Al", "kg", 100)
-
     assert material.necesita_reposicion(150) == False
 
 
 def test_stock_negativo():
     material = Material("Aluminio", "Al", "kg", 100)
-
     with pytest.raises(ValueError):
         material.necesita_reposicion(-20)
+
+
+def test_stock_tipo_incorrecto():
+    material = Material("Aluminio", "Al", "kg", 100)
+    with pytest.raises(TypeError):
+        material.necesita_reposicion("50")
