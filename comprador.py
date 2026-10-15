@@ -23,7 +23,7 @@ class Comprador(Empleado):
 
         return solicitud
 
-    def consultar_solicitudes(self):
+    def consultar_solicitudes_todas(self):
         return list(
             filter(lambda s: s.get_comprador() == self, Solicitud_proveedor.todos))
 
