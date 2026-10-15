@@ -2,11 +2,23 @@ from tarea import Tarea
 
 class Tareas_pendientes():
     def _init_(self):
-        self.frente = None
-        self.final = None
+        self._frente = None
+        self._final = None
+
+    
+    def get_frente(self):
+        return self._frente
+    def get_final(self):
+        return self._final
+
+    def set_frente(self, nueva_frente):
+        self._frente = nueva_frente
+    def set_final(self, nuevo_final):
+        self._final = nuevo_final
+
 
     def es_vacia(self):
-        return self.frente is None
+        return self._frente is None
 
     def agregar(self, tarea):
         if not isinstance(tarea, Tarea): 
@@ -14,25 +26,25 @@ class Tareas_pendientes():
         
         nuevo = Tarea(tarea)
 
-        if self.frente is None:
-            self.frente = nuevo
-            self.final = nuevo
+        if self._frente is None:
+            self._frente = nuevo
+            self._final = nuevo
         else:
-            self.final.siguiente = nuevo
-            self.final = nuevo
+            self._final.set_siguiente = nuevo
+            self._final = nuevo
 
     def sacar(self):
         if self.es_vacia():
             raise ValueError("No hay tareas pendientes")
 
         tarea = self.frente
-        self.frente = self.frente.siguiente
-        tarea.siguiente = None
+        self._frente = self._frente.get_siguiente
+        tarea.set_siguiente(None)
 
-        if self.frente is None:
-            self.final = None
+        if self._frente is None:
+            self._final = None
 
         return tarea
 
     def ver_primera(self):
-        return self.frente
+        return self._frente
