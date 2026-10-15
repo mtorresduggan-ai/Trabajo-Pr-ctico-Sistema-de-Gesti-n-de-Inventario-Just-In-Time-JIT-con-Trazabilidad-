@@ -8,27 +8,56 @@ class Material:
         self.validar_punto_reposicion(punto_reposicion)
         
         
-        self.id_material = len(Material.todos)+1
-        self.nombre = nombre
-        self.composicion = composicion
-        self.unidad_medida = unidad_medida
-        self.punto_reposicion = punto_reposicion
+        self._id_material = len(Material.todos)+1
+        self._nombre = nombre
+        self._composicion = composicion
+        self._unidad_medida = unidad_medida
+        self._punto_reposicion = punto_reposicion
 
         Material.todos.append(self)
 
+
+    def get_id_material(self):
+        return self._id_material
+
+    def get_nombre(self):
+        return self._nombre
+
+    def get_composicion(self):
+        return self._composicion
+
+    def get_unidad_medida(self):
+        return self._unidad_medida
+
+    def get_punto_reposicion(self):
+        return self._punto_reposicion
+
+    def set_nombre(self, nuevo_nombre):
+        self.validar_nombre(nuevo_nombre)
+        self._nombre = nuevo_nombre
+
+    def set_composicion(self, nueva_composicion):
+        self.validar_composicion(nueva_composicion)
+        self._composicion = nueva_composicion
+
+    def set_unidad_medida(self, nueva_unidad_medida):
+        self.validar_unidad_medida(nueva_unidad_medida)
+        self._unidad_medida = nueva_unidad_medida
+
+
     def set_punto_reposicion(self, nuevo_punto):
         self.validar_punto_reposicion(nuevo_punto) 
-        self.punto_reposicion = nuevo_punto
+        self._punto_reposicion = nuevo_punto
     
     def necesita_reposicion(self, stock_actual):
         if not isinstance(stock_actual, (int, float)):
             raise TypeError("El stock actual debe ser un número")
         if stock_actual < 0:
             raise ValueError("El stock actual no puede ser negativo")
-        return stock_actual <= self.punto_reposicion
+        return stock_actual <= self._punto_reposicion
     
     def __str__(self):
-        return 'Material: ' + self.nombre + ', Composicion: ' + self.composicion + ', Unidad de medida: ' + self.unidad_medida
+        return 'Material: ' + self._nombre + ', Composicion: ' + self._composicion + ', Unidad de medida: ' + self._unidad_medida
 
     @classmethod
     def informar(cls):

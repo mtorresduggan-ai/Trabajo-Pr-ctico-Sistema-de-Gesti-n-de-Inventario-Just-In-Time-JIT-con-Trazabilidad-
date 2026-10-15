@@ -11,22 +11,37 @@ class Empleado(Individuo):
         
         super().__init__(nombre, telefono, dni, email, fecha_alta, fecha_baja=None)
 
-        self.usuario = usuario
-        self.clave = clave       
+        self._usuario = usuario
+        self._clave = clave       
 
         Empleado.todos.append(self)
 
+    def get_usuario(self):
+        return self._usuario
+
+    def get_clave(self):
+        return self._clave
+
+    def set_usuario(self, nuevo_usuario):
+        self.validar_usuario(nuevo_usuario)
+
+        if nuevo_usuario == self._usuario:
+            raise ValueError(
+                "El nuevo usuario debe ser distinto al usuario anterior")
+
+        self._usuario = nuevo_usuario
+
     def actualizar_usuario(self,usuario) :
         self.validar_usuario(usuario)
-        if usuario == self.usuario:
+        if usuario == self._usuario:
             raise ValueError("El nuevo usuario debe ser distinto al usuario anterior")
-        self.usuario = usuario
+        self.set_usuario = usuario
 
     def set_clave(self, nueva_clave):
         self.validar_clave(nueva_clave)
-        if nueva_clave == self.clave: 
+        if nueva_clave == self._clave: 
             raise ValueError("La nueva clave debe ser distinta a la clave anterior")
-        self.clave = nueva_clave
+        self._clave = nueva_clave
 
     @staticmethod
     def validar_usuario(usuario):

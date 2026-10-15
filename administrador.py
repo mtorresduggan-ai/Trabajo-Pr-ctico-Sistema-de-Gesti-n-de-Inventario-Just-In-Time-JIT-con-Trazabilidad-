@@ -76,10 +76,10 @@ class Administrador(Empleado):
         if empleado not in Empleado.todos:
             raise ValueError("El empleado no está registrado")
 
-        if empleado.fecha_baja is not None:
+        if empleado.get_fecha_baja is not None:
             raise ValueError("El empleado ya está dado de baja")
 
-        empleado.fecha_baja = date.today()
+        empleado.set_fecha_baja = date.today()
 
 
     def modificar_empleado(self, empleado, nombre=None, telefono=None, email=None, usuario=None, clave=None):
@@ -87,13 +87,13 @@ class Administrador(Empleado):
             raise ValueError("El empleado no está registrado")
         if nombre is not None:
             empleado.validar_nombre(nombre)
-            empleado.nombre = nombre
+            empleado.set_nombre = nombre
         if telefono is not None:
             empleado.validar_telefono(telefono)
-            empleado.telefono = telefono
+            empleado.set_telefono = telefono
         if email is not None:
             empleado.validar_email(email)
-            empleado.email = email
+            empleado.set_email = email
         if usuario is not None:
             empleado.actualizar_usuario(usuario)
         if clave is not None:
@@ -104,32 +104,32 @@ class Administrador(Empleado):
         if proveedor not in Proveedor.todos:
             raise ValueError("Este proveedor no está registrado")
 
-        if proveedor.fecha_baja is not None:
+        if proveedor.get_fecha_baja is not None:
             raise ValueError("El proveedor ya está dado de baja")
 
-        proveedor.fecha_baja = date.today()    
+        proveedor.set_fecha_baja = date.today()    
 
 
     def baja_cliente(self, cliente):
         if cliente not in Cliente.todos:
             raise ValueError("El cliente no está registrado")
 
-        if cliente.fecha_baja is not None:
+        if cliente.get_fecha_baja is not None:
             raise ValueError("Este cliente ya está dado de baja")
 
-        cliente.fecha_baja = date.today()
+        cliente.set_fecha_baja = date.today()
 
 
     def generar_reporte_empleados(self):
         reporte = "Reporte de empleados:\n"
 
         for empleado in Empleado.todos:
-            if empleado.fecha_baja is None:
+            if empleado.get_fecha_baja is None:
                 estado = "Activo"
             else:
-                estado = f"Baja: {empleado.fecha_baja}"
+                estado = f"Baja: {empleado.get_fecha_baja}"
 
-            reporte += (f"Nombre: {empleado.nombre}\nDNI: {empleado.dni}\nTelefono: {empleado.telefono}\nEmail: {empleado.email}\nUsuario: {empleado.usuario}\nEstado: {estado}\n")
+            reporte += (f"Nombre: {empleado.get_nombre}\nDNI: {empleado.get_dni}\nTelefono: {empleado.get_telefono}\nEmail: {empleado.get_email}\nUsuario: {empleado.get_usuario}\nEstado: {estado}\n")
 
         return reporte
 
@@ -138,13 +138,13 @@ class Administrador(Empleado):
         reporte = "Reporte de proveedores:\n"
 
         for proveedor in Proveedor.todos:
-            if proveedor.fecha_baja is None:
+            if proveedor.get_fecha_baja is None:
                 estado = "Activo"
             else:
-                estado = f"Baja: {proveedor.fecha_baja}"
+                estado = f"Baja: {proveedor.get_fecha_baja}"
 
             reporte += (
-                f"Nombre: {proveedor.nombre}\nDNI: {proveedor.dni}\nTelefono: {proveedor.telefono}\nEmail: {proveedor.email}\nPlazo estimado: {proveedor.plazo_estimado} dias\nPuntaje: {proveedor.puntaje}\nEstado: {estado}\n")
+                f"Nombre: {proveedor.get_nombre}\nDNI: {proveedor.get_dni}\nTelefono: {proveedor.get_telefono}\nEmail: {proveedor.get_email}\nPlazo estimado: {proveedor.get_plazo_estimado} dias\nPuntaje: {proveedor.get_puntaje}\nEstado: {estado}\n")
 
         return reporte
 
@@ -153,12 +153,12 @@ class Administrador(Empleado):
         reporte = "Reporte de clientes:\n"
 
         for cliente in Cliente.todos:
-            if cliente.fecha_baja is None:
+            if cliente.get_fecha_baja is None:
                 estado = "Activo"
             else:
-                estado = f"Baja: {cliente.fecha_baja}"
+                estado = f"Baja: {cliente.get_fecha_baja}"
 
-            reporte += (f"Nombre: {cliente.nombre}\nDNI: {cliente.dni}\nTelefono: {cliente.telefono}\nEmail: {cliente.email}\nEstado: {estado}\n")
+            reporte += (f"Nombre: {cliente.get_nombre}\nDNI: {cliente.get_dni}\nTelefono: {cliente.get_telefono}\nEmail: {cliente.get_email}\nEstado: {estado}\n")
 
         return reporte
 
@@ -175,10 +175,10 @@ class Administrador(Empleado):
                 reposicion = "No"
 
             reporte += (
-                f"Material: {material.nombre}\nCantidad total: {cantidad_total} {material.unidad_medida}\nPunto de reposicion: {material.punto_reposicion}\nNecesita reposicion: {reposicion}\n")
+                f"Material: {material.get_nombre}\nCantidad total: {cantidad_total} {material.get_unidad_medida}\nPunto de reposicion: {material.get_punto_reposicion}\nNecesita reposicion: {reposicion}\n")
 
             for dato in datos:
-                reporte += (f"Cantidad: {dato['cantidad']} {material.unidad_medida} - Vence: {dato['fecha_vencimiento']}\n")
+                reporte += (f"Cantidad: {dato['cantidad']} {material.get_unidad_medida} - Vence: {dato['fecha_vencimiento']}\n")
 
             reporte += "\n"
 

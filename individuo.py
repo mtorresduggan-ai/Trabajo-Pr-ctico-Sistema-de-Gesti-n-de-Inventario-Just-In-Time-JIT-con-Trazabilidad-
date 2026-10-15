@@ -12,29 +12,59 @@ class Individuo:
         self.validar_fecha(fecha_alta)
         self.validar_email(email)
 
-        self.nombre = nombre
-        self.telefono= telefono
-        self.dni = dni
-        self.fecha_alta = fecha_alta
-        self.fecha_baja = fecha_baja
-        self.email = email
-        self.id = len(Individuo.todos)+1
+        self._nombre = nombre
+        self._telefono= telefono
+        self._dni = dni
+        self._fecha_alta = fecha_alta
+        self._fecha_baja = fecha_baja
+        self._email = email
+        self._id = len(Individuo.todos)+1
 
         Individuo.todos.append(self)
 
-    def actualizar_datos(self, nombre=None, telefono=None, email=None, fecha_baja=None):
-        if nombre is not None:
-            self.validar_nombre(nombre)
-            self.nombre = nombre
-        if telefono is not None:
-            self.validar_telefono(telefono)
-            self.telefono = telefono
-        if email is not None:
-            self.validar_email(email)
-            self.email = email
-        if fecha_baja is not None:
-            self.validar_fecha(fecha_baja)
-            self.fecha_baja = fecha_baja
+    def get_nombre(self):
+        return self._nombre
+    def get_telefono(self):
+        return self._telefono
+    def get_dni(self):
+        return self._dni
+    def get_fecha_alta(self):
+        return self._fecha_alta
+    def get_fecha_baja(self):
+        return self._fecha_baja
+    def get_email(self):
+        return self._email
+    def get_id(self):
+        return self._id
+
+
+    def set_nombre(self, nombre):
+        self.validar_nombre(nombre)
+        self._nombre = nombre
+
+    def set_telefono(self, telefono):
+        self.validar_telefono(telefono)
+        self._telefono = telefono
+
+    def set_email(self, email):
+        self.validar_email(email)
+        self._email = email
+
+    def set_fecha_baja(self, fecha_baja):
+        self.validar_fecha(fecha_baja)
+        self._fecha_baja = fecha_baja
+
+    
+def actualizar_datos(self, nombre=None, telefono=None, email=None, fecha_baja=None):
+    if nombre is not None:
+        self.set_nombre(nombre)
+    if telefono is not None:
+        self.set_telefono(telefono)
+    if email is not None:
+        self.set_email(email)
+    if fecha_baja is not None:
+        self.set_fecha_baja(fecha_baja)
+
 
     @staticmethod
     def validar_fecha(fecha):

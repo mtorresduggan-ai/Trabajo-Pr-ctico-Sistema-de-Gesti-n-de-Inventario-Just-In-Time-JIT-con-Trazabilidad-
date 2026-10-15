@@ -9,12 +9,12 @@ class Cliente(Individuo):
         Cliente.todos.append(self)
 
     def __str__(self):
-        baja = str(self.fecha_baja) if self.fecha_baja is not None else "Activo"
+        baja = str(self.get_fecha_baja) if self.get_fecha_baja is not None else "Activo"
         return (
-            'ID: ' + str(self.id) +
-            ' Nombre: ' + self.nombre +
-            ' DNI: ' + str(self.dni) +
-            ' Telefono: ' + self.telefono +
-            ' Email: ' + self.email +
-            ' Fecha de alta: ' + str(self.fecha_alta) +
+            'ID: ' + str(self.get_id) +
+            ' Nombre: ' + self.get_nombre +
+            ' DNI: ' + str(self.get_dni) +
+            ' Telefono: ' + self.get_telefono +
+            ' Email: ' + self.get_email +
+            ' Fecha de alta: ' + str(self.get_fecha_alta) +
             ' Baja: ' + baja)
