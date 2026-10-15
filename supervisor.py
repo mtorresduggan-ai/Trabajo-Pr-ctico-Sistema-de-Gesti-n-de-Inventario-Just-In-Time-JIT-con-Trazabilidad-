@@ -20,6 +20,7 @@ class Supervisor_deposito(Empleado):
         Empleado.validar_fecha(remesa.fecha_llegada)
 
         for material, cantidad, fecha in zip(remesa.materiales, remesa.cantidades, remesa.fechas_vencimiento):
+            deposito.agregar_material(material)
             if material not in deposito.stock:
                 deposito.stock[material] = Estante()
 
