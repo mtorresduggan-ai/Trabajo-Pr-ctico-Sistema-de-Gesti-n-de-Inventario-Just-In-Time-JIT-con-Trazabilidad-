@@ -60,3 +60,22 @@ def test_crear_remesa():
     assert remesa.fechas_vencimiento == fechas_vencimiento
     assert remesa in Remesa.todos
     tareas.agregar.assert_called_once()
+
+
+def test_remesas_tienen_ids_distintos():
+    Remesa.todos.clear()
+
+    solicitud = Mock()
+    solicitud.fecha = date(2026, 10, 1)
+
+    proveedor = Mock()
+    proveedor.plazo_estimado = 5
+
+    tareas = Mock()
+    deposito = Mock()
+
+    remesa1 = Remesa(["Aluminio"], proveedor, solicitud, [20],[date(2027, 10, 1)], deposito, tareas,date(2026, 10, 5))
+    remesa2 = Remesa(["Acero"], proveedor, solicitud, [10],[date(2027, 12, 1)], deposito, tareas,date(2026, 10, 5))
+
+    assert remesa1.id_remesa != remesa2.id_remesa
+    assert remesa2.id_remesa == remesa1.id_remesa + 1
