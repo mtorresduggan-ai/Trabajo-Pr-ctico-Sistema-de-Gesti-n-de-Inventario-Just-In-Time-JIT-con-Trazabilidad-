@@ -10,28 +10,28 @@ class Administrador(Empleado):
         super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
 
     def aceptar_solicitud(self, solicitud):
-        if solicitud.estado != "Pendiente": 
+        if solicitud.get_estado != "Pendiente": 
             raise ValueError("Solo se pueden aceptar solicitudes en estado Pendiente")
         
-        solicitud.fecha_envio = date.today()
-        solicitud.estado = "Solicitado"
+        solicitud.set_fecha_envio = date.today()
+        solicitud.set_estado = "Solicitado"
 
 
     def aceptar_pedido_salida(self, pedido, deposito):
-        if pedido.estado != "Pendiente":
+        if pedido.get_estado != "Pendiente":
             raise ValueError("Solo se pueden aceptar pedidos en estado Pendiente")
 
-        for material, cantidad in zip(pedido.materiales, pedido.cantidades):
-            if material not in deposito.stock:
-                raise ValueError(f"No hay stock de {material.nombre}")
+        for material, cantidad in zip(pedido.get_materiales, pedido.get_cantidades):
+            if material not in deposito.get_stock:
+                raise ValueError(f"No hay stock de {material.get_nombre}")
 
             stock_total = deposito.stock_total(material)
 
             if stock_total < cantidad:
-                raise ValueError(f"No hay suficiente stock de {material.nombre}")
+                raise ValueError(f"No hay suficiente stock de {material.get_nombre}")
 
-        pedido.fecha_aceptacion= date.today()
-        pedido.estado= 'En preparación'
+        pedido.set_fecha_aceptacion(date.today())
+        pedido.set_estado('En preparación')
 
         
     def crear_transferencia(self, deposito_origen, deposito_destino, materiales, cantidades, tareas_pendientes_supervisor):
@@ -41,8 +41,8 @@ class Administrador(Empleado):
             raise ValueError('El deposito origen y deposito destino no puede ser el mismo')
 
         for material, cantidad in zip(materiales, cantidades):
-            if material not in deposito_origen.stock:
-                raise ValueError(f"No hay stock de {material.nombre} en el depósito de origen")
+            if material not in deposito_origen.get_stock:
+                raise ValueError(f"No hay stock de {material.get_nombre} en el depósito de origen")
 
             stock_disponible = deposito_origen.stock_total(material)
             if stock_disponible < cantidad:
@@ -53,24 +53,23 @@ class Administrador(Empleado):
     #clase transferencia?
 
     def ejecutar_siguiente_tarea(self, tareas_pendientes_admin, deposito, tareas_pendientes_supervisor):
-        tarea= tareas_pendientes_admin.ver_primera()
+        tarea = tareas_pendientes_admin.ver_primera()
 
         if tarea is None:
             raise ValueError("No hay tareas pendientes")
 
-        if tarea.tipo == "solicitud":
-            self.aceptar_solicitud(tarea.objeto)
+        if tarea.get_tipo() == "solicitud":
+            self.aceptar_solicitud(tarea.get_objeto())
 
-        elif tarea.tipo == "pedido":
-            self.aceptar_pedido_salida(tarea.objeto, deposito)
+        elif tarea.get_tipo() == "pedido":
+            self.aceptar_pedido_salida(tarea.get_objeto(), deposito)
 
-            tareas_pendientes_supervisor.agregar(Tarea("pedido", tarea.objeto, deposito))
+            tareas_pendientes_supervisor.agregar(Tarea("pedido", tarea.get_objeto(), deposito))
 
         else:
             raise ValueError('Tipo de tarea desconocido')
 
         tareas_pendientes_admin.sacar()
-
 
     def baja_empleado(self, empleado):
         if empleado not in Empleado.todos:
@@ -161,29 +160,6 @@ class Administrador(Empleado):
             reporte += (f"Nombre: {cliente.get_nombre}\nDNI: {cliente.get_dni}\nTelefono: {cliente.get_telefono}\nEmail: {cliente.get_email}\nEstado: {estado}\n")
 
         return reporte
-
-
-    def generar_reporte_stock(self, deposito):
-        reporte = "Reporte de stock:\n"
-
-        for material, datos in deposito.stock.items():
-            cantidad_total = sum(dato["cantidad"] for dato in datos)
-
-            if material.necesita_reposicion(cantidad_total):
-                reposicion = "Si"
-            else:
-                reposicion = "No"
-
-            reporte += (
-                f"Material: {material.get_nombre}\nCantidad total: {cantidad_total} {material.get_unidad_medida}\nPunto de reposicion: {material.get_punto_reposicion}\nNecesita reposicion: {reposicion}\n")
-
-            for dato in datos:
-                reporte += (f"Cantidad: {dato['cantidad']} {material.get_unidad_medida} - Vence: {dato['fecha_vencimiento']}\n")
-
-            reporte += "\n"
-
-        return reporte
-    
 
     @staticmethod
     def validar_fechas_vencimiento(fechas):
