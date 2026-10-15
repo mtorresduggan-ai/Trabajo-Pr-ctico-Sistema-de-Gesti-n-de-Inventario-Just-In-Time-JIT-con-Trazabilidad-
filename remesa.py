@@ -60,21 +60,6 @@ class Remesa:
             else:
                 self._proveedor.modificar_puntaje(-0.5)
 
-
-    def agregar_material(self, material, cantidad, fecha_vencimiento):
-        self._materiales.append(material)
-        self._cantidades.append(cantidad)
-        self._fechas_vencimiento.append(fecha_vencimiento)
-
-    def quitar_material(self, material):
-        if material not in self._materiales:
-            raise ValueError("El material no se encuentra en la remesa")
-
-        posicion = self._materiales.index(material)
-        self._materiales.pop(posicion)
-        self._cantidades.pop(posicion)
-        self._fechas_vencimiento.pop(posicion)
-
     def __str__(self):
         return (
             'ID Remesa: ' + str(self.get_id_remesa()) +

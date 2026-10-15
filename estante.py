@@ -75,34 +75,34 @@ class Estante:
         return total  
 
     
-def hay_cajas_vencidas(self, fecha_actual):
-    caja = self._primera
+    def hay_cajas_vencidas(self, fecha_actual):
+        caja = self._primera
 
-    while caja is not None:
-        if caja.get_fecha_vencimiento < fecha_actual:
-            return True
+        while caja is not None:
+            if caja.get_fecha_vencimiento < fecha_actual:
+                return True
 
-        caja = caja.get_prox
-
-    return False
-
-
-def retirar_cajas_vencidas(self, fecha_actual):
-    anterior = None
-    caja = self._primera
-
-    while caja is not None:
-        if caja.get_fecha_vencimiento < fecha_actual:
-            if anterior is None:
-                self._primera = caja.get_prox
-            else:
-                anterior.get_prox = caja.get_prox
-
-            caja.prox = None
-            caja = self._primera if anterior is None else anterior.get_prox
-        else:
-            anterior = caja
             caja = caja.get_prox
+
+        return False
+
+
+    def retirar_cajas_vencidas(self, fecha_actual):
+        anterior = None
+        caja = self._primera
+
+        while caja is not None:
+            if caja.get_fecha_vencimiento < fecha_actual:
+                if anterior is None:
+                    self._primera = caja.get_prox
+                else:
+                    anterior.get_prox = caja.get_prox
+
+                caja.prox = None
+                caja = self._primera if anterior is None else anterior.get_prox
+            else:
+                anterior = caja
+                caja = caja.get_prox
 
     @staticmethod
     def validar_fecha(fecha):
