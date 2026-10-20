@@ -1,6 +1,7 @@
 from menu_comprador import MenuComprador
 from menu_supervisor import MenuSupervisor
 from menu_vendedor import MenuVendedor
+from menu_administrador import MenuAdministrador
 from deposito import Deposito
 from material import Material
 from proveedor import Proveedor
