@@ -46,36 +46,22 @@ class Comprador(Empleado):
         solicitud.set_estado("Cancelado")
         return solicitud
 
-    def modificar_solicitud(
-        self, id_movimiento, materiales=None, cantidades=None,
-        fecha=None, proveedor=None, estado=None
-    ):
+    def modificar_solicitud(self, id_movimiento, materiales=None, cantidades=None, fecha=None, proveedor=None, estado=None):
         solicitud = self.consultar_solicitud(id_movimiento)
 
         if solicitud.get_estado() in ("Recibido", "Cancelado"):
-            raise ValueError(
-                f"No se puede modificar una solicitud en estado "
-                f"'{solicitud.get_estado()}'")
+            raise ValueError(f"No se puede modificar una solicitud en estado "f"'{solicitud.get_estado()}'")
 
-        if materiales is not None:
-            Empleado.validar_materiales(materiales)
-            solicitud.set_materiales(materiales)
+        parametros = {"materiales": (materiales, Empleado.validar_materiales, solicitud.set_materiales),
+            "cantidades": (cantidades, Empleado.validar_cantidades, solicitud.set_cantidades),
+            "fecha": (fecha, Empleado.validar_fecha, solicitud.set_fecha),
+            "proveedor": (proveedor, self.validar_proveedor, solicitud.set_proveedor),
+            "estado": (estado, Solicitud_proveedor.validar_estado, solicitud.set_estado),}
 
-        if cantidades is not None:
-            Empleado.validar_cantidades(cantidades)
-            solicitud.set_cantidades(cantidades)
-
-        if fecha is not None:
-            Empleado.validar_fecha(fecha)
-            solicitud.set_fecha(fecha)
-
-        if proveedor is not None:
-            self.validar_proveedor(proveedor)
-            solicitud.set_proveedor(proveedor)
-
-        if estado is not None:
-            Solicitud_proveedor.validar_estado(estado)
-            solicitud.set_estado(estado)
+        for valor, validar, set_valor in parametros.values():
+            if valor is not None:
+                validar(valor)
+                set_valor(valor)
 
         return solicitud
 

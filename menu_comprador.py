@@ -1,23 +1,22 @@
 from comprador import Comprador
 from datetime import date
-from material import Material
-from proveedor import Proveedor
+from menu import Menu
 
-class MenuComprador:
+
+class MenuComprador(Menu):
     def __init__(self, comprador, tareas_pendientes_comprador, tareas_pendientes_admin):
+        super().__init__(tareas_pendientes_admin)
         self.comprador = comprador
         self.tareas_pendientes_comprador = tareas_pendientes_comprador
-        self.tareas_pendientes_admin = tareas_pendientes_admin
 
     def menu_comprador(self):
-        opciones= {'1': self.Comprador.mostrar_tareas,
-                  '2': lambda: self.Comprador.ejecutar_siguiente_tarea(),
-                  '3': lambda: self.Comprador.crear_solicitud(date.today(),*self.input_materiales_cantidades(),self.input_proveedor(),self.tareas_pendientes_admin),
-                  '4': lambda: self.Comprador.cancelar_solicitud(int(input("ID de solicitud a cancelar: "))),
-                  '5': self.Comprador.consultar_solicitudes_todas,
-                  '6': lambda: self.Comprador.consultar_solicitud(int(input("ID de solicitud: ")))
-                  #, "7": MODIFICAR SOLICUTUD (arreglarlo en comprador tmb)
-                  }
+        opciones= {'1': self.comprador.mostrar_tareas,
+                  '2': lambda: self.comprador.ejecutar_siguiente_tarea(self.tareas_pendientes_comprador,date.today(),self.input_proveedor(),self.tareas_pendientes_admin),
+                  '3': lambda: self.comprador.crear_solicitud(date.today(),*self.input_materiales_cantidades(),self.input_proveedor(),self.tareas_pendientes_admin),
+                  '4': lambda: self.comprador.cancelar_solicitud(int(input("ID de solicitud a cancelar: "))),
+                  '5': self.comprador.consultar_solicitudes_todas,
+                  '6': lambda: self.comprador.consultar_solicitud(int(input("ID de solicitud: "))),
+                  '7': self.input_modificar_solicitud}
 
         while True:
             print("\n--- MENÚ COMPRADOR ---")
@@ -45,29 +44,31 @@ class MenuComprador:
                     if resultado is not None:
                         print(resultado)
                 except (ValueError, TypeError) as error:
-                    print(error)
+                    print(f"Error: {error}")
 
-    
-    def input_materiales_cantidades(self):
-        materiales = []
-        cantidades = []
-        continuar = "si"
+    def input_modificar_solicitud(self):
+        id_movimiento = int(input("ID de la solicitud a modificar: "))
+        print("\n Dejá en blanco (presioná Enter) en los campos que NO quieras modificar:")
+        
+        actualizar_mat = input("¿Deseas modificar materiales y cantidades? (si/no): ").strip().lower()
+        if actualizar_mat == 'si':
+            materiales, cantidades = self.input_materiales_cantidades()
+        else:
+            materiales, cantidades = None, None
 
-        while continuar == "si":
-            for i, material in enumerate(Material.todos, start=1):
-                print(f"{i}. {material}")
+        fecha_str = input("Nueva fecha (YYYY-MM-DD): ").strip()
+        fecha = date.fromisoformat(fecha_str) if fecha_str else None
 
-            opcion = int(input("Ingrese el número del material: "))
-            materiales.append(Material.todos[opcion - 1])
-            cantidades.append(int(input("Ingrese la cantidad: ")))
+        actualizar_prov = input("¿Deseas modificar el proveedor? (si/no): ").strip().lower()
+        proveedor = self.input_proveedor() if actualizar_prov == 'si' else None
 
-            continuar = input("¿Desea agregar otro material? (si/no): ").lower()
+        estado_str = input("Nuevo estado: ").strip()
+        estado = estado_str if estado_str else None
 
-        return materiales, cantidades
-
-    def input_proveedor(self):
-        for i, proveedor in enumerate(Proveedor.todos, start=1):
-            print(f"{i}. {proveedor}")
-
-        opcion = int(input("Ingrese el número del proveedor: "))
-        return Proveedor.todos[opcion - 1]
+        return self.Comprador.modificar_solicitud(
+            id_movimiento=id_movimiento,
+            materiales=materiales,
+            cantidades=cantidades,
+            fecha=fecha,
+            proveedor=proveedor,
+            estado=estado)

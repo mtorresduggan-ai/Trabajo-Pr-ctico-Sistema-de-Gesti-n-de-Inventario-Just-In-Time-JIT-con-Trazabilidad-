@@ -43,21 +43,17 @@ class Vendedor(Empleado):
         
         if pedido.get_estado() in ("Entregado", "Cancelado"):
             raise ValueError(f"No se puede modificar un pedido en estado '{pedido.get_estado()}'")
-        if materiales is not None:
-            Empleado.validar_materiales(materiales)
-            pedido.set_materiales(materiales)
-        if cantidades is not None:
-            Empleado.validar_cantidades(cantidades)
-            pedido.set_cantidades(cantidades)
-        if fecha is not None:
-            Empleado.validar_fecha(fecha)
-            pedido.set_fecha(fecha)
-        if cliente is not None:
-            self.validar_cliente(cliente)
-            pedido.set_cliente(cliente)
-        if estado is not None:
-            Pedido_salida.validar_estado(estado)
-            pedido.set_estado(estado)
+        
+        campos = {"materiales": (materiales, Empleado.validar_materiales, pedido.set_materiales),
+            "cantidades": (cantidades, Empleado.validar_cantidades, pedido.set_cantidades),
+            "fecha": (fecha, Empleado.validar_fecha, pedido.set_fecha),
+            "cliente": (cliente, self.validar_cliente, pedido.set_cliente),
+            "estado": (estado, Pedido_salida.validar_estado, pedido.set_estado),}
+
+        for valor, validar, set_valor in campos.values():
+            if valor is not None:
+                validar(valor)
+                set_valor(valor)
 
         return pedido
 

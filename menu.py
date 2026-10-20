@@ -1,6 +1,10 @@
 from menu_comprador import MenuComprador
 from menu_supervisor import MenuSupervisor
+from menu_vendedor import MenuVendedor
 from deposito import Deposito
+from material import Material
+from proveedor import Proveedor
+from cliente import Cliente
 
 class Menu:
     def __init__(self, comprador, vendedor, administrador, supervisor, tareas_pendientes_comprador, tareas_pendientes_supervisor, tareas_pendientes_admin):
@@ -35,3 +39,34 @@ class Menu:
                 accion()
             else:
                 print("Opción inválida.")
+
+    def input_materiales_cantidades(self):
+        materiales = []
+        cantidades = []
+        continuar = "si"
+
+        while continuar == "si":
+            for i, material in enumerate(Material.todos, start=1):
+                print(f"{i}. {material}")
+
+            opcion = int(input("Ingrese el número del material: "))
+            materiales.append(Material.todos[opcion - 1])
+            cantidades.append(int(input("Ingrese la cantidad: ")))
+
+            continuar = input("¿Desea agregar otro material? (si/no): ").strip().lower()
+
+        return materiales, cantidades
+
+    def input_proveedor(self):
+        for i, proveedor in enumerate(Proveedor.todos, start=1):
+            print(f"{i}. {proveedor}")
+
+        opcion = int(input("Ingrese el número del proveedor: "))
+        return Proveedor.todos[opcion - 1]
+
+    def input_cliente(self):
+        for i, cliente in enumerate(Cliente.todos, start=1):
+            print(f"{i}. {cliente}")
+
+        opcion = int(input("Ingrese el número del cliente: "))
+        return Cliente.todos[opcion - 1]
