@@ -31,11 +31,13 @@ class Administrador(Empleado):
                 raise ValueError(f"No hay suficiente stock de {material.get_nombre()}")
 
         pedido.set_fecha_aceptacion(date.today())
-        pedido.set_estado('En preparación')
+        pedido.set_estado('En preparacion')
 
         
     def crear_transferencia(self, deposito_origen, deposito_destino, materiales, cantidades, tareas_pendientes_supervisor):
-        self.validar_listas_2(materiales, cantidades)
+        Empleado.validar_materiales(materiales)
+        Empleado.validar_cantidades(cantidades)
+        self.validar_listas(materiales, cantidades)
 
         if deposito_destino==deposito_origen:
             raise ValueError('El deposito origen y deposito destino no puede ser el mismo')
@@ -85,13 +87,10 @@ class Administrador(Empleado):
         if empleado not in Empleado.todos:
             raise ValueError("El empleado no está registrado")
         if nombre is not None:
-            empleado.validar_nombre(nombre)
             empleado.set_nombre(nombre)
         if telefono is not None:
-            empleado.validar_telefono(telefono)
             empleado.set_telefono(telefono)
         if email is not None:
-            empleado.validar_email(email)
             empleado.set_email(email)
         if usuario is not None:
             empleado.actualizar_usuario(usuario)
@@ -162,20 +161,7 @@ class Administrador(Empleado):
         return reporte
 
     @staticmethod
-    def validar_fechas_vencimiento(fechas):
-        if not isinstance(fechas, list):
-            raise TypeError("Las fechas de vencimiento deben estar en una lista")
-
-        if not all(isinstance(fecha, date) for fecha in fechas):
-            raise TypeError("Todas las fechas de vencimiento deben ser fechas")
-
-    @staticmethod
-    def validar_listas(materiales, cantidades, fechas_vencimiento):
-        if len(materiales) != len(cantidades) or len(materiales) != len(fechas_vencimiento):
-            raise ValueError("Debe haber una cantidad y una fecha de vencimiento por cada material")
-
-    @staticmethod
-    def validar_listas_2(materiales, cantidades):
+    def validar_listas(materiales, cantidades):
         if not isinstance(materiales, list) or not isinstance(cantidades, list):
             raise TypeError("Materiales y cantidades deben ser listas")
         if len(materiales) != len(cantidades):

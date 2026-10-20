@@ -66,7 +66,7 @@ class Supervisor(Empleado):
 
         for material, cantidad in zip(materiales, cantidades):
             if material not in stock_origen:
-                raise ValueError(f"No hay stock de {material.get_nombre()}""en el depósito de origen")
+                raise ValueError(f"No hay stock de {material.get_nombre()} en el depósito de origen")
 
             estante_origen = stock_origen[material]
             estante_destino = stock_destino.get(material)
@@ -97,9 +97,11 @@ class Supervisor(Empleado):
 
         if tipo not in acciones:
             raise ValueError("Tipo de tarea desconocido")
+        acciones[tipo]()
+        tareas_pendientes_supervisor.sacar()
 
-    def mostrar_tareas_pendientes(self):
-        cantidades = self.tareas_pendientes_supervisor.contar_tareas()
+    def mostrar_tareas_pendientes(self, tareas_pendientes_supervisor):
+        cantidades = tareas_pendientes_supervisor.contar_tareas()
 
         for tipo, cantidad in cantidades.items():
             print(tipo, ":", cantidad)
@@ -136,8 +138,8 @@ class Supervisor(Empleado):
     def generar_reporte_stock(self, deposito):
         reporte = "Reporte de stock:\n"
 
-        for material, datos in deposito.stock.items():
-            cantidad_total = sum(dato["cantidad"] for dato in datos)
+        for material, estante in deposito.get_stock().items():
+            cantidad_total = estante.stock_total()
 
             if material.necesita_reposicion(cantidad_total):
                 reposicion = "Si"
@@ -145,11 +147,26 @@ class Supervisor(Empleado):
                 reposicion = "No"
 
             reporte += (
-                f"Material: {material.get_nombre}\nCantidad total: {cantidad_total} {material.get_unidad_medida}\nPunto de reposicion: {material.get_punto_reposicion}\nNecesita reposicion: {reposicion}\n")
+                f"Material: {material.get_nombre()}\nCantidad total: {cantidad_total} {material.get_unidad_medida()}\nPunto de reposicion: {material.get_punto_reposicion()}\nNecesita reposicion: {reposicion}\n")
 
-            for dato in datos:
-                reporte += (f"Cantidad: {dato['cantidad']} {material.get_unidad_medida} - Vence: {dato['fecha_vencimiento']}\n")
+            caja = estante.get_primera()
 
+            while caja is not None:
+                reporte += (f"Cantidad: {caja.get_cantidad()} {material.get_unidad_medida()} - Vence: {caja.get_fecha_vencimiento()}\n")
+                caja = caja.get_prox()
             reporte += "\n"
 
         return reporte
+
+    @staticmethod
+    def validar_fechas_vencimiento(fechas):
+        if not isinstance(fechas, list):
+            raise TypeError("Las fechas de vencimiento deben estar en una lista")
+
+        if not all(isinstance(fecha, date) for fecha in fechas):
+            raise TypeError("Cada fecha de vencimiento debe ser una fecha")
+
+    @staticmethod
+    def validar_listas(materiales, cantidades, fechas):
+        if len(materiales) != len(cantidades) or len(materiales) != len(fechas):
+            raise ValueError("Debe haber una cantidad y una fecha de vencimiento por cada material")

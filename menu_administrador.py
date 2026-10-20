@@ -5,18 +5,15 @@ from deposito import Deposito
 
 class MenuAdministrador(Menu):
     def __init__(self, administrador, tareas_pendientes_admin, tareas_pendientes_supervisor):
-        super().__init__(comprador=None,
-            vendedor=None,
-            administrador=administrador,
-            supervisor=None,
+        super().__init__(
             tareas_pendientes_comprador=None,
+            tareas_pendientes_vendedor=None,
             tareas_pendientes_supervisor=tareas_pendientes_supervisor,
             tareas_pendientes_admin=tareas_pendientes_admin)
         self.administrador = administrador
-        self.tareas_pendientes_supervisor = tareas_pendientes_supervisor
 
     def menu_administrador(self):
-        opciones = {'1': lambda: self.administrador.mostrar_tareas(self.tareas_pendientes_admin),
+        opciones = {'1': lambda: self.tareas_pendientes_admin.mostrar_cantidades(),
             '2': lambda: self.administrador.ejecutar_siguiente_tarea(self.tareas_pendientes_admin,
                 self.input_deposito("Seleccione el depósito sobre el que impactará la tarea:"), self.tareas_pendientes_supervisor),
             '3': self.input_crear_transferencia,

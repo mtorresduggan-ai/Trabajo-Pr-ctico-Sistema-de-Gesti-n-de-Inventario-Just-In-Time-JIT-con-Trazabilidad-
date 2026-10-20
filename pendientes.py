@@ -1,6 +1,6 @@
 from tarea import Tarea
 
-class Tareas_pendientes():
+class Tareas_pendientes:
     def __init__(self):
         self._frente = None
         self._final = None
