@@ -6,6 +6,11 @@ from deposito import Deposito
 from material import Material
 from proveedor import Proveedor
 from cliente import Cliente
+from empleado import Empleado
+from comprador import Comprador
+from vendedor import Vendedor
+from administrador import Administrador
+from supervisor import Supervisor 
 
 class Menu:
     def __init__(self, comprador, vendedor, administrador, supervisor, tareas_pendientes_comprador, tareas_pendientes_supervisor, tareas_pendientes_admin):
@@ -19,27 +24,19 @@ class Menu:
         self.tareas_pendientes_admin = tareas_pendientes_admin
 
     def mostrar_menu(self):
-        opciones = {"1": lambda: MenuComprador(self.Comprador,Deposito.seleccionar_deposito(), self.tareas_pendientes_comprador).menu_comprador(),
-            "2": lambda: MenuVendedor(self.Vendedor, Deposito.seleccionar_deposito()).menu_vendedor(),
-            "3": lambda: MenuAdministrador(self.Administrador, self.tareas_pendientes_admin).menu_administrador(),
-            "4": lambda: MenuSupervisor(self.Supervisor, Deposito.seleccionar_deposito(),self.tareas_pendientes_supervisor,self.tareas_pendientes_comprador).menu_supervisor()}
+        try:
+            empleado_logueado = Menu.login()
+        except ValueError as error:
+            print(f"Error: {error}")
+            return
 
-        while True:
-            print("\n--- MENÚ ---")
-            print("1. Comprador")
-            print("2. Vendedor")
-            print("3. Administrador")
-            print("4. Supervisor")
-            print("0. Salir")
+        mapa_menus = {
+            Comprador: lambda: MenuComprador(empleado_logueado, self.tareas_pendientes_comprador, self.tareas_pendientes_admin).menu_comprador(),
+            Vendedor: lambda: MenuVendedor(empleado_logueado, self.tareas_pendientes_vendedor, self.tareas_pendientes_admin).menu_vendedor(),
+            Administrador: lambda: MenuAdministrador(empleado_logueado, self.tareas_pendientes_admin, self.tareas_pendientes_supervisor).menu_administrador(),
+            Supervisor: lambda: MenuSupervisor(empleado_logueado, self.tareas_pendientes_supervisor, self.tareas_pendientes_comprador).menu_supervisor()}
 
-            opcion = input("Elegí una opción: ")
-
-            accion = opciones.get(opcion)
-
-            if accion is not None:
-                accion()
-            else:
-                print("Opción inválida.")
+        mapa_menus[type(empleado_logueado)]()
 
     def input_materiales_cantidades(self):
         materiales = []
@@ -71,3 +68,20 @@ class Menu:
 
         opcion = int(input("Ingrese el número del cliente: "))
         return Cliente.todos[opcion - 1]
+
+    @staticmethod
+    def login():
+        print("---INICIO DE SESIÓN---")
+
+        usuario_ingresado = input("Usuario: ").strip()
+        clave_ingresada = input("Clave: ").strip()
+
+        for empleado in Empleado.todos:
+            if (empleado.get_fecha_baja() is None and 
+                empleado.get_usuario() == usuario_ingresado and 
+                empleado.get_clave() == clave_ingresada):
+                
+                print(f"\n¡Bienvenido/a {empleado.get_nombre()}!")
+                return empleado  
+
+        raise ValueError("Usuario o contraseña incorrectos")
