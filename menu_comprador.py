@@ -1,16 +1,18 @@
-from comprador import Comprador
 from datetime import date
 from menu import Menu
 
 
 class MenuComprador(Menu):
     def __init__(self, comprador, tareas_pendientes_comprador, tareas_pendientes_admin):
-        super().__init__(tareas_pendientes_admin)
+        super().__init__(tareas_pendientes_comprador=tareas_pendientes_comprador,
+            tareas_pendientes_vendedor=None,
+            tareas_pendientes_supervisor=None,
+            tareas_pendientes_admin=tareas_pendientes_admin)
         self.comprador = comprador
         self.tareas_pendientes_comprador = tareas_pendientes_comprador
 
     def menu_comprador(self):
-        opciones= {'1': self.comprador.mostrar_tareas,
+        opciones= {'1': lambda: self.tareas_pendientes_comprador.mostrar_cantidades(),
                   '2': lambda: self.comprador.ejecutar_siguiente_tarea(self.tareas_pendientes_comprador,date.today(),self.input_proveedor(),self.tareas_pendientes_admin),
                   '3': lambda: self.comprador.crear_solicitud(date.today(),*self.input_materiales_cantidades(),self.input_proveedor(),self.tareas_pendientes_admin),
                   '4': lambda: self.comprador.cancelar_solicitud(int(input("ID de solicitud a cancelar: "))),
@@ -65,7 +67,7 @@ class MenuComprador(Menu):
         estado_str = input("Nuevo estado: ").strip()
         estado = estado_str if estado_str else None
 
-        return self.Comprador.modificar_solicitud(
+        return self.comprador.modificar_solicitud(
             id_movimiento=id_movimiento,
             materiales=materiales,
             cantidades=cantidades,

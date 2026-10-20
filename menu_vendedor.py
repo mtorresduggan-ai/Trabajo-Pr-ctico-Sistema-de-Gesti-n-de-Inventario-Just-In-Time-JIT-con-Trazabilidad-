@@ -4,28 +4,27 @@ from menu import Menu
 
 class MenuVendedor(Menu):
     def __init__(self, vendedor, tareas_pendientes_vendedor, tareas_pendientes_admin):
-        super().__init__(tareas_pendientes_admin)  # Inicializa el atributo heradedo tareas_pendientes_admin
+        super().__init__(tareas_pendientes_comprador=None,
+        tareas_pendientes_vendedor=tareas_pendientes_vendedor,
+        tareas_pendientes_supervisor=None,
+        tareas_pendientes_admin=tareas_pendientes_admin)
         self.vendedor = vendedor
-        self.tareas_pendientes_vendedor = tareas_pendientes_vendedor
 
     def menu_vendedor(self):
-        opciones = {'1': lambda: self.vendedor.mostrar_tareas(self.tareas_pendientes_vendedor),
-            '2': lambda: self.vendedor.ejecutar_siguiente_tarea(self.tareas_pendientes_vendedor),
-            '3': lambda: self.vendedor.crear_pedido_salida(date.today(), *self.input_materiales_cantidades(), self.input_cliente(), self.tareas_pendientes_admin),
-            '4': lambda: self.vendedor.cancelar_pedido(int(input("ID del pedido a cancelar: "))),
-            '5': self.vendedor.consultar_pedido_todos,
-            '6': lambda: self.vendedor.consultar_pedido(int(input("ID del pedido: "))),
-            '7': self.input_modificar_pedido}
+        opciones = {
+            '1': lambda: self.vendedor.crear_pedido_salida(date.today(), *self.input_materiales_cantidades(), self.input_cliente(), self.tareas_pendientes_admin),
+            '2': lambda: self.vendedor.cancelar_pedido(int(input("ID del pedido a cancelar: "))),
+            '3': self.vendedor.consultar_pedido_todos,
+            '4': lambda: self.vendedor.consultar_pedido(int(input("ID del pedido: "))),
+            '5': self.input_modificar_pedido}
 
         while True:
             print("\n--- MENÚ VENDEDOR ---")
-            print("1. Mostrar tareas pendientes")
-            print("2. Ejecutar siguiente tarea")
-            print("3. Crear pedido de salida")
-            print("4. Cancelar pedido")
-            print("5. Consultar todos los pedidos")
-            print("6. Consultar pedido por ID")
-            print("7. Modificar pedido")
+            print("1. Crear pedido de salida")
+            print("2. Cancelar pedido")
+            print("3. Consultar todos los pedidos")
+            print("4. Consultar pedido por ID")
+            print("5. Modificar pedido")
             print("0. Salir")
 
             opcion = input("Elegí una opción: ")

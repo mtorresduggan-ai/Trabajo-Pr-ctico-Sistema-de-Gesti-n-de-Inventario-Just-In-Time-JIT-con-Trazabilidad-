@@ -1,4 +1,3 @@
-from deposito import Deposito
 from material import Material
 from proveedor import Proveedor
 from cliente import Cliente
@@ -9,11 +8,12 @@ from administrador import Administrador
 from supervisor import Supervisor 
 
 class Menu:
-    def __init__(self, tareas_pendientes_comprador, tareas_pendientes_vendedor, tareas_pendientes_supervisor, tareas_pendientes_admin):
+    def __init__(self, tareas_pendientes_comprador, tareas_pendientes_vendedor, tareas_pendientes_supervisor, tareas_pendientes_admin, deposito = None):
         self.tareas_pendientes_comprador = tareas_pendientes_comprador
         self.tareas_pendientes_vendedor = tareas_pendientes_vendedor
         self.tareas_pendientes_supervisor = tareas_pendientes_supervisor
         self.tareas_pendientes_admin = tareas_pendientes_admin
+        self.deposito = deposito
 
     def mostrar_menu(self):
         from menu_comprador import MenuComprador
@@ -23,14 +23,14 @@ class Menu:
         try:
             empleado_logueado = Menu.login()
         except ValueError as error:
-            print(f"Error: {error}")
+            print(f"Error: {error}" )
             return
 
         mapa_menus = {
             Comprador: lambda: MenuComprador(empleado_logueado, self.tareas_pendientes_comprador, self.tareas_pendientes_admin).menu_comprador(),
             Vendedor: lambda: MenuVendedor(empleado_logueado, self.tareas_pendientes_vendedor, self.tareas_pendientes_admin).menu_vendedor(),
             Administrador: lambda: MenuAdministrador(empleado_logueado, self.tareas_pendientes_admin, self.tareas_pendientes_supervisor).menu_administrador(),
-            Supervisor: lambda: MenuSupervisor(empleado_logueado, self.tareas_pendientes_supervisor, self.tareas_pendientes_comprador).menu_supervisor()}
+            Supervisor: lambda: MenuSupervisor(empleado_logueado, self.tareas_pendientes_supervisor, self.tareas_pendientes_comprador, self.deposito).menu_supervisor()}
 
         mapa_menus[type(empleado_logueado)]()
 
