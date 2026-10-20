@@ -13,13 +13,9 @@ from administrador import Administrador
 from supervisor import Supervisor 
 
 class Menu:
-    def __init__(self, comprador, vendedor, administrador, supervisor, tareas_pendientes_comprador, tareas_pendientes_supervisor, tareas_pendientes_admin):
-
-        self.Comprador = comprador
-        self.Vendedor = vendedor
-        self.Administrador = administrador
-        self.Supervisor = supervisor
+    def __init__(self, tareas_pendientes_comprador, tareas_pendientes_vendedor, tareas_pendientes_supervisor, tareas_pendientes_admin):
         self.tareas_pendientes_comprador = tareas_pendientes_comprador
+        self.tareas_pendientes_vendedor = tareas_pendientes_vendedor
         self.tareas_pendientes_supervisor = tareas_pendientes_supervisor
         self.tareas_pendientes_admin = tareas_pendientes_admin
 
