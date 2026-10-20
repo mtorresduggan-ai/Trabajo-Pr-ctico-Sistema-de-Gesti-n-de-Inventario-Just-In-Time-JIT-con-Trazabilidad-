@@ -27,6 +27,7 @@ class Comprador(Empleado):
         return list(
             filter(lambda s: s.get_comprador() == self, Solicitud_proveedor.todos))
 
+
     def consultar_solicitud(self, id_movimiento):
         solicitudes = list(filter(lambda s: (s.get_comprador() == self and s.get_id_movimiento() == id_movimiento), Solicitud_proveedor.todos))
 

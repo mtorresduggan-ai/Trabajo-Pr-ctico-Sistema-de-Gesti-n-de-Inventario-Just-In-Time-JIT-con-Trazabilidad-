@@ -1,42 +1,37 @@
 from menu_comprador import MenuComprador
+from menu_supervisor import MenuSupervisor
+from deposito import Deposito
 
 class Menu:
     def __init__(self, comprador, vendedor, administrador, supervisor, tareas_pendientes_comprador, tareas_pendientes_supervisor, tareas_pendientes_admin):
 
-        self.comprador = MenuComprador(comprador, tareas_pendientes_comprador, tareas_pendientes_admin)
-        self.vendedor = vendedor
-        self.administrador = administrador
-        self.supervisor = supervisor
-        self.tareas_comprador = tareas_pendientes_comprador
-        self.tareas_supervisor = tareas_pendientes_supervisor
+        self.Comprador = comprador
+        self.Vendedor = vendedor
+        self.Administrador = administrador
+        self.Supervisor = supervisor
+        self.tareas_pendientes_comprador = tareas_pendientes_comprador
+        self.tareas_pendientes_supervisor = tareas_pendientes_supervisor
+        self.tareas_pendientes_admin = tareas_pendientes_admin
 
     def mostrar_menu(self):
-        opcion = ""
+        opciones = {"1": lambda: MenuComprador(self.Comprador,Deposito.seleccionar_deposito(), self.tareas_pendientes_comprador).menu_comprador(),
+            "2": lambda: MenuVendedor(self.Vendedor, Deposito.seleccionar_deposito()).menu_vendedor(),
+            "3": lambda: MenuAdministrador(self.Administrador, self.tareas_pendientes_admin).menu_administrador(),
+            "4": lambda: MenuSupervisor(self.Supervisor, Deposito.seleccionar_deposito(),self.tareas_pendientes_supervisor,self.tareas_pendientes_comprador).menu_supervisor()}
 
-        while opcion != "5":
-            print("\n--- SISTEMA DE GESTIÓN DE DEPÓSITOS EMPLEADOS ---")
+        while True:
+            print("\n--- MENÚ ---")
             print("1. Comprador")
             print("2. Vendedor")
             print("3. Administrador")
-            print("4. Supervisor de depósito")
-            print("5. Salir")
+            print("4. Supervisor")
+            print("0. Salir")
 
-            opcion = input("Seleccione una opción: ")
+            opcion = input("Elegí una opción: ")
 
-            if opcion == "1":
-                self.menu_comprador()
+            accion = opciones.get(opcion)
 
-            elif opcion == "2":
-                self.menu_vendedor()
-
-            elif opcion == "3":
-                self.menu_administrador()
-
-            elif opcion == "4":
-                self.menu_supervisor()
-
-            elif opcion == "5":
-                print("Fin del programa.")
-
+            if accion is not None:
+                accion()
             else:
                 print("Opción inválida.")

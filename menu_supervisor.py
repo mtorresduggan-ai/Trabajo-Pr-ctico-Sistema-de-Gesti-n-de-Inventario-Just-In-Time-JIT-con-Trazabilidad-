@@ -1,37 +1,37 @@
-
-from deposito import Deposito
+from supervisor import Supervisor
 
 class MenuSupervisor:
     def __init__(self, supervisor, tareas_pendientes_supervisor, tareas_pendientes_comprador, deposito):
-        self.supervisor = supervisor
-        self.tareas_supervisor = tareas_pendientes_supervisor
-        self.tareas_comprador = tareas_pendientes_comprador
-        self.depositos = deposito
+        self.Supervisor = supervisor
+        self.tareas_pendientes_supervisor = tareas_pendientes_supervisor
+        self.tareas_pendientes_comprador = tareas_pendientes_comprador
+        self.deposito = deposito
 
-    def mostrar(self):
-        opcion = ""
+    def menu_supervisor(self):
+        opciones = {"1": self.Supervisor.mostrar_tareas,
+            "2": lambda: self.Supervisor.ejecutar_siguiente_tarea(self.tareas_pendientes_supervisor, self.tareas_pendientes_comprador),
+            "3": lambda: self.Supervisor.retirar_vencidos(self.deposito),
+            "4": lambda: self.Supervisor.generar_reporte(self.deposito)}
 
-        while opcion != "4":
-            print("\n--- MENÚ SUPERVISOR DE DEPÓSITO ---")
-            print("1. Ejecutar siguiente tarea pendiente")
-            print("2. Revisar vencimientos")
-            print("3. Consultar stock")
-            print("4. Volver")
+        while True:
+            print("\n--- MENÚ SUPERVISOR ---")
+            print("1. Mostrar tareas pendientes y cantidades")
+            print("2. Ejecutar siguiente tarea")
+            print("3. Revisar vencidos")
+            print("4. Generar reporte")
+            print("0. Salir")
 
-            opcion = input("Seleccione una opción: ")
+            opcion = input("Elegí una opción: ")
 
-            try:
-                if opcion == "1":
-                    self.ejecutar_tarea()
+            if opcion == "0":
+                break
 
-                elif opcion == "2":
-                    self.revisar_vencimientos()
+            accion = opciones.get(opcion)
 
-                elif opcion == "3":
-                    self.consultar_stock()
+            if accion is None:
+                print("Opción inválida.")
+            else:
+                accion()
 
-                elif opcion != "4":
-                    print("Opción inválida.")
 
-            except (ValueError, TypeError) as error:
-                print("Error:", error)
+   

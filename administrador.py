@@ -48,9 +48,9 @@ class Administrador(Empleado):
             if stock_disponible < cantidad:
                 raise ValueError(f"Transferencia cancelada: Stock insuficiente de {material.nombre} en origen. ")
 
-        tareas_pendientes_supervisor.agregar(Tarea('transferencia', None, (deposito_origen, deposito_destino, materiales, cantidades)))
+        datos = (deposito_origen, deposito_destino, materiales, cantidades)
+        tareas_pendientes_supervisor.agregar(Tarea('transferencia', None, datos))
 
-    #clase transferencia?
 
     def ejecutar_siguiente_tarea(self, tareas_pendientes_admin, deposito, tareas_pendientes_supervisor):
         tarea = tareas_pendientes_admin.ver_primera()

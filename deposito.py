@@ -1,3 +1,4 @@
+
 class Deposito:
     todos=[]
 
@@ -41,3 +42,18 @@ class Deposito:
                 total += actual.get_cantidad
                 actual = actual.get_prox
         return total
+
+    @classmethod
+    def seleccionar_deposito(cls):
+        while True:
+            nombre = input("Ingresá el nombre de tu depósito: ")
+
+            deposito = next(
+                filter(lambda d: d.get_nombre() == nombre, cls.todos),
+                None
+            )
+
+            if deposito is not None:
+                return deposito
+
+            print("El depósito ingresado no existe. Intentá nuevamente.")

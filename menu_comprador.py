@@ -1,6 +1,7 @@
 from comprador import Comprador
 from datetime import date
 from material import Material
+from proveedor import Proveedor
 
 class MenuComprador:
     def __init__(self, comprador, tareas_pendientes_comprador, tareas_pendientes_admin):
@@ -8,61 +9,65 @@ class MenuComprador:
         self.tareas_pendientes_comprador = tareas_pendientes_comprador
         self.tareas_pendientes_admin = tareas_pendientes_admin
 
-    def mostrar(self):
-        opcion = ""
+    def menu_comprador(self):
+        opciones= {'1': self.Comprador.mostrar_tareas,
+                  '2': lambda: self.Comprador.ejecutar_siguiente_tarea(),
+                  '3': lambda: self.Comprador.crear_solicitud(date.today(),*self.input_materiales_cantidades(),self.input_proveedor(),self.tareas_pendientes_admin),
+                  '4': lambda: self.Comprador.cancelar_solicitud(int(input("ID de solicitud a cancelar: "))),
+                  '5': self.Comprador.consultar_solicitudes_todas,
+                  '6': lambda: self.Comprador.consultar_solicitud(int(input("ID de solicitud: ")))
+                  #, "7": MODIFICAR SOLICUTUD (arreglarlo en comprador tmb)
+                  }
 
-        while opcion != "7":
+        while True:
             print("\n--- MENÚ COMPRADOR ---")
-            print("1. Crear solicitud")
-            print("2. Consultar solicitud")
-            print("3. Consultar solicitudes todas")
-            print("4. Modificar solicitud")
-            print("5. Cancelar solicitud")
-            print("6.Ejecutar siguiente tarea pendiente")
-            print("7. Volver")
+            print("1. Mostrar tareas pendientes")
+            print("2. Ejecutar siguiente tarea")
+            print("3. Crear solicitud")
+            print("4. Cancelar solicitud")
+            print("5. Consultar todas las solicitudes")
+            print("6. Consultar solicitud por ID")
+            print("7. Modificar solicitud")
+            print("0. Salir")
 
-            opcion = input("Seleccione una opción: ")
+            opcion = input("Elegí una opción: ")
 
-            if opcion == "1":
-                fecha=date.today()
-                materiales, cantidades= self.input_materiales_cantidades()
-                proveedor= input("Ingresa el proveedor")
-                tareas_pendientes_admin= tareas_pendientes_admin
-                #ojo!
-                
+            if opcion == "0":
+                break
 
-                self.Comprador.crear_solicitud(fecha, materiales, cantidades, proveedor, tareas_pendientes_admin)
+            accion = opciones.get(opcion)
 
-            elif opcion == "2":
-                self.Comprador.consultar_solicitudes_todas()
-
-            elif opcion == "3":
-                self.Comprador.consultar_solicitudes_todas()
-
-            elif opcion == "4":
-                self.comprador.modificar_solicitud()
-
-            elif opcion == "5":
-                self.Comprador.cancelar_solicitud()
-
-            elif opcion == "6":
-                self.Comprador.ejecutar_siguiente_tarea()
-
-            elif opcion != "7":
+            if accion is None:
                 print("Opción inválida.")
+            else:
+                try:
+                    resultado = accion()
+                    if resultado is not None:
+                        print(resultado)
+                except (ValueError, TypeError) as error:
+                    print(error)
 
-    def input_materiales_cantidades():
-        materiales=[]
-        cantidades=[]
-        
+    
+    def input_materiales_cantidades(self):
+        materiales = []
+        cantidades = []
+        continuar = "si"
+
         while continuar == "si":
+            for i, material in enumerate(Material.todos, start=1):
+                print(f"{i}. {material}")
 
-            material = int(input("Ingrese un material: "))
-            cantidad = int(input("Ingrese la cantidad: "))
-
-            materiales.append(material)
-            cantidades.append(cantidad)
+            opcion = int(input("Ingrese el número del material: "))
+            materiales.append(Material.todos[opcion - 1])
+            cantidades.append(int(input("Ingrese la cantidad: ")))
 
             continuar = input("¿Desea agregar otro material? (si/no): ").lower()
 
         return materiales, cantidades
+
+    def input_proveedor(self):
+        for i, proveedor in enumerate(Proveedor.todos, start=1):
+            print(f"{i}. {proveedor}")
+
+        opcion = int(input("Ingrese el número del proveedor: "))
+        return Proveedor.todos[opcion - 1]

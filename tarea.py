@@ -1,7 +1,8 @@
 class Tarea:
-    def __init__(self, tipo, objeto):
+    def __init__(self, tipo, objeto, datos=None):
         self._tipo = tipo
         self._objeto = objeto
+        self.datos = datos
         self._siguiente = None
 
     def get_tipo(self):
@@ -12,6 +13,9 @@ class Tarea:
 
     def get_siguiente(self):
         return self._siguiente
+
+    def get_datos(self):
+        return self._datos
 
     def set_tipo(self, nuevo_tipo):
         self._tipo = nuevo_tipo

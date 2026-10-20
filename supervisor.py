@@ -3,7 +3,7 @@ from estante import Estante
 from tarea import Tarea
 from datetime import date
 
-class Supervisor_deposito(Empleado):
+class Supervisor(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
         super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
 
@@ -40,16 +40,12 @@ class Supervisor_deposito(Empleado):
 
         for material, cantidad in zip(materiales, cantidades):
             if material not in stock:
-                raise ValueError(
-                    f"No hay stock de {material.get_nombre()}"
-                )
+                raise ValueError(f"No hay stock de {material.get_nombre()}")
 
             estante = stock[material]
 
             if estante.stock_total() < cantidad:
-                raise ValueError(
-                    f"No hay suficiente stock de {material.get_nombre()}"
-                )
+                raise ValueError(f"No hay suficiente stock de {material.get_nombre()}")
 
         for material, cantidad in zip(materiales, cantidades):
             estante = stock[material]
@@ -61,25 +57,16 @@ class Supervisor_deposito(Empleado):
             cantidad_stock = deposito.stock_total(material)
 
             if cantidad_stock <= material.get_punto_reposicion():
-                if not tareas_pendientes_comprador.existe_tarea_reposicion(
-                    material
-                ):
-                    tareas_pendientes_comprador.agregar(
-                        Tarea("reponer", material)
-                    )
+                if not tareas_pendientes_comprador.existe_tarea_reposicion(material):
+                    tareas_pendientes_comprador.agregar(Tarea("reponer", material))
 
-    def transferir_stock(
-        self, deposito_origen, deposito_destino, materiales, cantidades
-    ):
+    def transferir_stock(self, deposito_origen, deposito_destino, materiales, cantidades):
         stock_origen = deposito_origen.get_stock()
         stock_destino = deposito_destino.get_stock()
 
         for material, cantidad in zip(materiales, cantidades):
             if material not in stock_origen:
-                raise ValueError(
-                    f"No hay stock de {material.get_nombre()} "
-                    "en el depósito de origen"
-                )
+                raise ValueError(f"No hay stock de {material.get_nombre()}""en el depósito de origen")
 
             estante_origen = stock_origen[material]
             estante_destino = stock_destino.get(material)
@@ -91,16 +78,9 @@ class Supervisor_deposito(Empleado):
             cajas_a_mover = estante_origen.sacar_cajas(cantidad)
 
             for caja in cajas_a_mover:
-                estante_destino.agregar_caja(
-                    caja.get_fecha_vencimiento(),
-                    caja.get_cantidad()
-                )
+                estante_destino.agregar_caja(caja.get_fecha_vencimiento(), caja.get_cantidad())
 
-    def ejecutar_siguiente_tarea(
-        self,
-        tareas_pendientes_supervisor,
-        tareas_pendientes_comprador
-    ):
+    def ejecutar_siguiente_tarea(self, tareas_pendientes_supervisor, tareas_pendientes_comprador):
         tarea = tareas_pendientes_supervisor.ver_primera()
 
         if tarea is None:
@@ -110,25 +90,20 @@ class Supervisor_deposito(Empleado):
         objeto = tarea.get_objeto()
         datos = tarea.get_datos()
 
-        if tipo == "pedido":
-            self.sacar_pedido(
-                objeto, datos, tareas_pendientes_comprador
-            )
+        acciones = {"pedido": lambda: self.sacar_pedido(objeto, datos, tareas_pendientes_comprador),
+            "remesa": lambda: self.recibir_remesa(objeto, datos),
+            "transferencia": lambda: self.transferir_stock(*datos),
+            "retirar_vencidos": lambda: self.retirar_vencidos(objeto)}
 
-        elif tipo == "remesa":
-            self.recibir_remesa(objeto, datos)
-
-        elif tipo == "transferencia":
-            self.transferir_stock(*datos)
-
-        elif tipo == "retirar_vencidos":
-            self.retirar_vencidos(objeto)
-
-        else:
+        if tipo not in acciones:
             raise ValueError("Tipo de tarea desconocido")
 
-        tareas_pendientes_supervisor.sacar()
+    def mostrar_tareas_pendientes(self):
+        cantidades = self.tareas_pendientes_supervisor.contar_tareas()
 
+        for tipo, cantidad in cantidades.items():
+            print(tipo, ":", cantidad)
+        
     def revisar_vencimientos(self, deposito, tareas_supervisor):
         fecha_actual = date.today()
         hay_vencidas = False
