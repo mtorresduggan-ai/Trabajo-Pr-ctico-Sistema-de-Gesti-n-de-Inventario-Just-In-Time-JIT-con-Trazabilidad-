@@ -18,7 +18,7 @@ class Pedido_salida(Movimiento):
         Pedido_salida.todos.append(self)
 
     def get_cliente(self):
-        return self._client
+        return self._cliente
     def get_estado(self):
         return self._estado
     def get_vendedor(self):
@@ -41,7 +41,7 @@ class Pedido_salida(Movimiento):
         self._fecha_envio = nueva_fecha
 
     def __str__(self):
-        return 'ID Pedido: ' + str(self.get_id_movimiento) + ' Cliente: ' + self.get_cliente().get_nombre() + ' Fecha de emision: ' + str(self._fecha) + ' Estado: ' + self._estado
+        return 'ID Pedido: ' + str(self.get_id_movimiento()) + ' Cliente: ' + self.get_cliente().get_nombre() + ' Fecha de emision: ' + str(self._fecha) + ' Estado: ' + self._estado
 
     @classmethod
     def informar_todos(cls):
@@ -49,6 +49,6 @@ class Pedido_salida(Movimiento):
 
     @staticmethod
     def validar_estado(estado):
-        estados_validos = ['Pendiente', 'En preparacion', 'Despachado', 'Entregado' 'Cancelado']
+        estados_validos = ['Pendiente', 'En preparacion', 'Despachado', 'Entregado', 'Cancelado']
         if estado not in estados_validos:
             raise ValueError(f"Estado no valido. Solo se permiten: {estados_validos}")

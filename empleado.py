@@ -35,7 +35,7 @@ class Empleado(Individuo):
         self.validar_usuario(usuario)
         if usuario == self._usuario:
             raise ValueError("El nuevo usuario debe ser distinto al usuario anterior")
-        self.set_usuario = usuario
+        self.set_usuario(usuario)
 
     def set_clave(self, nueva_clave):
         self.validar_clave(nueva_clave)

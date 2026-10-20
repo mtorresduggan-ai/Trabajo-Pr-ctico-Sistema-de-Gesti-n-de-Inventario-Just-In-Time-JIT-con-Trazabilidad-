@@ -5,14 +5,14 @@ class Remesa:
 
     def __init__(self, materiales, proveedor, solicitud, cantidades, fechas_vencimiento, deposito, tareas_pendientes_supervisor, fecha_llegada, **datos):
 
-        self.id_remesa = len(Remesa.todos)+1
-        self.materiales = materiales
-        self.proveedor = proveedor
-        self.solicitud = solicitud
-        self.cantidades = cantidades
-        self.fechas_vencimiento = fechas_vencimiento
-        self.fecha_llegada = fecha_llegada
-        self.datos = datos
+        self._id_remesa = len(Remesa.todos)+1
+        self._materiales = materiales
+        self._proveedor = proveedor
+        self._solicitud = solicitud
+        self._cantidades = cantidades
+        self._fechas_vencimiento = fechas_vencimiento
+        self._fecha_llegada = fecha_llegada
+        self._datos = datos
 
         self.evaluar_proveedor()
 

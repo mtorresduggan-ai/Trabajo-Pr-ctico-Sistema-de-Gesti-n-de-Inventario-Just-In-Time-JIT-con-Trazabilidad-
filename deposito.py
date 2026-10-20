@@ -21,13 +21,13 @@ class Deposito:
         texto = ""
 
         for material, estante in self._stock.items():
-            actual = estante.get_primera
+            actual = estante.get_primera()
 
             while actual is not None:
-                texto += (f"{material.get_nombre}: {actual.get_cantidad} "
-                        f"{material.get_unidad_medida}"
-                        f" - vence {actual.get_fecha_vencimiento}\n")
-                actual = actual.get_siguiente
+                texto += (f"{material.get_nombre()}: {actual.get_cantidad()} "
+                        f"{material.get_unidad_medida()}"
+                        f" - vence {actual.get_fecha_vencimiento()}\n")
+                actual = actual.get_prox()
 
         return texto
 
@@ -36,11 +36,11 @@ class Deposito:
         estante = self._stock.get(material)
 
         if estante is not None:
-            actual = estante.get_primera
+            actual = estante.get_primera()
 
             while actual is not None:
-                total += actual.get_cantidad
-                actual = actual.get_prox
+                total += actual.get_cantidad()
+                actual = actual.get_prox()
         return total
 
     @classmethod

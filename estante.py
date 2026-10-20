@@ -19,23 +19,23 @@ class Estante:
         anterior= None
         actual= self._primera
 
-        while actual is not None and actual.get_fecha_vencimiento < fecha_vencimiento:
+        while actual is not None and actual.get_fecha_vencimiento() < fecha_vencimiento:
             anterior= actual
-            actual= actual.get_prox
+            actual= actual.get_prox()
 
-        if actual is not None and actual.set_fecha_vencimiento==fecha_vencimiento:
-            actual.get_cantidad += cantidad
+        if actual is not None and actual.get_fecha_vencimiento()==fecha_vencimiento:
+            actual.set_cantidad(actual.get_cantidad() + cantidad)
             return
 
         caja= Caja(fecha_vencimiento, cantidad)
 
         if anterior is None:
-            caja.set_prox= self._primera
+            caja.set_prox(self._primera)
             self._primera= caja
 
         else:
-            caja.set_prox= actual
-            anterior.set_prox= caja
+            caja.set_prox(actual)
+            anterior.set_prox(caja)
 
 
     def sacar_cajas(self, cantidad):
@@ -51,14 +51,14 @@ class Estante:
         while faltante > 0:
             caja = self._primera
 
-            if caja.get_cantidad <= faltante:
-                cajas_a_mover.append(Caja(caja.get_fecha_vencimiento, caja.get_cantidad))
-                faltante -= caja.get_cantidad
-                self.primera = caja.get_prox
+            if caja.get_cantidad() <= faltante:
+                cajas_a_mover.append(Caja(caja.get_fecha_vencimiento(), caja.get_cantidad()))
+                faltante -= caja.get_cantidad()
+                self._primera = caja.get_prox()
 
             else:
-                cajas_a_mover.append(Caja(caja.get_cantidadfecha_vencimiento, faltante))
-                caja.get_cantidad -= faltante
+                cajas_a_mover.append(Caja(caja.get_fecha_vencimiento(), faltante))
+                caja.set_cantidad(caja.get_cantidad() - faltante)
                 faltante = 0  
 
         return cajas_a_mover
@@ -69,8 +69,8 @@ class Estante:
         actual = self._primera
 
         while actual is not None:
-            total += actual.get_cantidad
-            actual = actual.get_prox
+            total += actual.get_cantidad()
+            actual = actual.get_prox()
 
         return total  
 
@@ -79,10 +79,10 @@ class Estante:
         caja = self._primera
 
         while caja is not None:
-            if caja.get_fecha_vencimiento < fecha_actual:
+            if caja.get_fecha_vencimiento() < fecha_actual:
                 return True
 
-            caja = caja.get_prox
+            caja = caja.get_prox()
 
         return False
 
@@ -92,17 +92,17 @@ class Estante:
         caja = self._primera
 
         while caja is not None:
-            if caja.get_fecha_vencimiento < fecha_actual:
+            if caja.get_fecha_vencimiento() < fecha_actual:
                 if anterior is None:
-                    self._primera = caja.get_prox
+                    self._primera = caja.get_prox()
                 else:
-                    anterior.get_prox = caja.get_prox
+                    anterior.set_prox(caja.get_prox())
 
-                caja.prox = None
-                caja = self._primera if anterior is None else anterior.get_prox
+                caja.set_prox(None)
+                caja = self._primera if anterior is None else anterior.get_prox()
             else:
                 anterior = caja
-                caja = caja.get_prox
+                caja = caja.get_prox()
 
     @staticmethod
     def validar_fecha(fecha):

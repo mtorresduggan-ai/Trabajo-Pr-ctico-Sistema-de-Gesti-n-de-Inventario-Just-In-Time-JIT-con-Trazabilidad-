@@ -2,7 +2,7 @@ class Tarea:
     def __init__(self, tipo, objeto, datos=None):
         self._tipo = tipo
         self._objeto = objeto
-        self.datos = datos
+        self._datos = datos
         self._siguiente = None
 
     def get_tipo(self):

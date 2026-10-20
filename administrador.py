@@ -10,25 +10,25 @@ class Administrador(Empleado):
         super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
 
     def aceptar_solicitud(self, solicitud):
-        if solicitud.get_estado != "Pendiente": 
+        if solicitud.get_estado() != "Pendiente": 
             raise ValueError("Solo se pueden aceptar solicitudes en estado Pendiente")
         
-        solicitud.set_fecha_envio = date.today()
-        solicitud.set_estado = "Solicitado"
+        solicitud.set_fecha_envio(date.today())
+        solicitud.set_estado("Solicitado")
 
 
     def aceptar_pedido_salida(self, pedido, deposito):
-        if pedido.get_estado != "Pendiente":
+        if pedido.get_estado() != "Pendiente":
             raise ValueError("Solo se pueden aceptar pedidos en estado Pendiente")
 
-        for material, cantidad in zip(pedido.get_materiales, pedido.get_cantidades):
-            if material not in deposito.get_stock:
-                raise ValueError(f"No hay stock de {material.get_nombre}")
+        for material, cantidad in zip(pedido.get_materiales(), pedido.get_cantidades()):
+            if material not in deposito.get_stock():
+                raise ValueError(f"No hay stock de {material.get_nombre()}")
 
             stock_total = deposito.stock_total(material)
 
             if stock_total < cantidad:
-                raise ValueError(f"No hay suficiente stock de {material.get_nombre}")
+                raise ValueError(f"No hay suficiente stock de {material.get_nombre()}")
 
         pedido.set_fecha_aceptacion(date.today())
         pedido.set_estado('En preparación')
@@ -41,12 +41,12 @@ class Administrador(Empleado):
             raise ValueError('El deposito origen y deposito destino no puede ser el mismo')
 
         for material, cantidad in zip(materiales, cantidades):
-            if material not in deposito_origen.get_stock:
-                raise ValueError(f"No hay stock de {material.get_nombre} en el depósito de origen")
+            if material not in deposito_origen.get_stock():
+                raise ValueError(f"No hay stock de {material.get_nombre()} en el depósito de origen")
 
             stock_disponible = deposito_origen.stock_total(material)
             if stock_disponible < cantidad:
-                raise ValueError(f"Transferencia cancelada: Stock insuficiente de {material.nombre} en origen. ")
+                raise ValueError(f"Transferencia cancelada: Stock insuficiente de {material.get_nombre()} en origen. ")
 
         datos = (deposito_origen, deposito_destino, materiales, cantidades)
         tareas_pendientes_supervisor.agregar(Tarea('transferencia', None, datos))
@@ -75,10 +75,10 @@ class Administrador(Empleado):
         if empleado not in Empleado.todos:
             raise ValueError("El empleado no está registrado")
 
-        if empleado.get_fecha_baja is not None:
+        if empleado.get_fecha_baja() is not None:
             raise ValueError("El empleado ya está dado de baja")
 
-        empleado.set_fecha_baja = date.today()
+        empleado.set_fecha_baja(date.today())
 
 
     def modificar_empleado(self, empleado, nombre=None, telefono=None, email=None, usuario=None, clave=None):
@@ -86,13 +86,13 @@ class Administrador(Empleado):
             raise ValueError("El empleado no está registrado")
         if nombre is not None:
             empleado.validar_nombre(nombre)
-            empleado.set_nombre = nombre
+            empleado.set_nombre(nombre)
         if telefono is not None:
             empleado.validar_telefono(telefono)
-            empleado.set_telefono = telefono
+            empleado.set_telefono(telefono)
         if email is not None:
             empleado.validar_email(email)
-            empleado.set_email = email
+            empleado.set_email(email)
         if usuario is not None:
             empleado.actualizar_usuario(usuario)
         if clave is not None:
@@ -103,32 +103,32 @@ class Administrador(Empleado):
         if proveedor not in Proveedor.todos:
             raise ValueError("Este proveedor no está registrado")
 
-        if proveedor.get_fecha_baja is not None:
+        if proveedor.get_fecha_baja() is not None:
             raise ValueError("El proveedor ya está dado de baja")
 
-        proveedor.set_fecha_baja = date.today()    
+        proveedor.set_fecha_baja(date.today())    
 
 
     def baja_cliente(self, cliente):
         if cliente not in Cliente.todos:
             raise ValueError("El cliente no está registrado")
 
-        if cliente.get_fecha_baja is not None:
+        if cliente.get_fecha_baja() is not None:
             raise ValueError("Este cliente ya está dado de baja")
 
-        cliente.set_fecha_baja = date.today()
+        cliente.set_fecha_baja(date.today())
 
 
     def generar_reporte_empleados(self):
         reporte = "Reporte de empleados:\n"
 
         for empleado in Empleado.todos:
-            if empleado.get_fecha_baja is None:
+            if empleado.get_fecha_baja() is None:
                 estado = "Activo"
             else:
-                estado = f"Baja: {empleado.get_fecha_baja}"
+                estado = f"Baja: {empleado.get_fecha_baja()}"
 
-            reporte += (f"Nombre: {empleado.get_nombre}\nDNI: {empleado.get_dni}\nTelefono: {empleado.get_telefono}\nEmail: {empleado.get_email}\nUsuario: {empleado.get_usuario}\nEstado: {estado}\n")
+            reporte += (f"Nombre: {empleado.get_nombre()}\nDNI: {empleado.get_dni()}\nTelefono: {empleado.get_telefono()}\nEmail: {empleado.get_email()}\nUsuario: {empleado.get_usuario()}\nEstado: {estado}\n")
 
         return reporte
 
@@ -137,13 +137,13 @@ class Administrador(Empleado):
         reporte = "Reporte de proveedores:\n"
 
         for proveedor in Proveedor.todos:
-            if proveedor.get_fecha_baja is None:
+            if proveedor.get_fecha_baja() is None:
                 estado = "Activo"
             else:
-                estado = f"Baja: {proveedor.get_fecha_baja}"
+                estado = f"Baja: {proveedor.get_fecha_baja()}"
 
             reporte += (
-                f"Nombre: {proveedor.get_nombre}\nDNI: {proveedor.get_dni}\nTelefono: {proveedor.get_telefono}\nEmail: {proveedor.get_email}\nPlazo estimado: {proveedor.get_plazo_estimado} dias\nPuntaje: {proveedor.get_puntaje}\nEstado: {estado}\n")
+                f"Nombre: {proveedor.get_nombre()}\nDNI: {proveedor.get_dni()}\nTelefono: {proveedor.get_telefono()}\nEmail: {proveedor.get_email()}\nPlazo estimado: {proveedor.get_plazo_estimado()} dias\nPuntaje: {proveedor.get_puntaje()}\nEstado: {estado}\n")
 
         return reporte
 
@@ -152,12 +152,12 @@ class Administrador(Empleado):
         reporte = "Reporte de clientes:\n"
 
         for cliente in Cliente.todos:
-            if cliente.get_fecha_baja is None:
+            if cliente.get_fecha_baja() is None:
                 estado = "Activo"
             else:
-                estado = f"Baja: {cliente.get_fecha_baja}"
+                estado = f"Baja: {cliente.get_fecha_baja()}"
 
-            reporte += (f"Nombre: {cliente.get_nombre}\nDNI: {cliente.get_dni}\nTelefono: {cliente.get_telefono}\nEmail: {cliente.get_email}\nEstado: {estado}\n")
+            reporte += (f"Nombre: {cliente.get_nombre()}\nDNI: {cliente.get_dni()}\nTelefono: {cliente.get_telefono()}\nEmail: {cliente.get_email()}\nEstado: {estado}\n")
 
         return reporte
 

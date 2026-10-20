@@ -24,7 +24,7 @@ class Proveedor(Individuo):
         self._plazo_estimado = nuevo_plazo
 
     def __str__(self):
-        return 'Nombre: ' + self.get_nombre + '  Telefono: ' + self.get_telefono
+        return 'Nombre: ' + self.get_nombre() + '  Telefono: ' + self.get_telefono()
 
     @classmethod
     def informar(cls):

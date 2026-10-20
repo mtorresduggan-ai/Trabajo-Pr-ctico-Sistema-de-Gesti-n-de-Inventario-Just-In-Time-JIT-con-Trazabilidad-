@@ -1,7 +1,6 @@
 from empleado import Empleado
 from pedido import Pedido_salida
 from cliente import Cliente
-from movimiento import Movimiento
 from tarea import Tarea
 
 class Vendedor(Empleado):
@@ -22,10 +21,10 @@ class Vendedor(Empleado):
         return pedido
 
     def consultar_pedido_todos(self):
-        return list(filter(lambda p: p.vendedor == self, Pedido_salida.todos))
+        return list(filter(lambda p: p.get_vendedor() == self, Pedido_salida.todos))
 
     def consultar_pedido(self, id_movimiento):
-        pedidos = list(filter(lambda p: p.vendedor == self and p.id_movimiento == id_movimiento, Pedido_salida.todos))
+        pedidos = list(filter(lambda p: p.get_vendedor() == self and p.get_id_movimiento() == id_movimiento, Pedido_salida.todos))
 
         if not pedidos:
             raise ValueError("No existe ese pedido")
@@ -34,31 +33,31 @@ class Vendedor(Empleado):
 
     def cancelar_pedido(self, id_movimiento):
         pedido = self.consultar_pedido(id_movimiento)
-        if pedido.estado in ("Entregado", "Cancelado"):
-            raise ValueError(f"No se puede cancelar un pedido en estado '{pedido.estado}'")
-        pedido.estado = "Cancelado"
+        if pedido.get_estado() in ("Entregado", "Cancelado"):
+            raise ValueError(f"No se puede cancelar un pedido en estado '{pedido.get_estado()}'")
+        pedido.set_estado("Cancelado")
         return pedido
 
     def modificar_pedido(self, id_movimiento, materiales=None, cantidades=None, fecha=None, cliente=None, estado=None):
         pedido = self.consultar_pedido(id_movimiento)
         
-        if pedido.estado in ("Entregado", "Cancelado"):
-            raise ValueError(f"No se puede modificar un pedido en estado '{pedido.estado}'")
+        if pedido.get_estado() in ("Entregado", "Cancelado"):
+            raise ValueError(f"No se puede modificar un pedido en estado '{pedido.get_estado()}'")
         if materiales is not None:
             Empleado.validar_materiales(materiales)
-            pedido.materiales = materiales
+            pedido.set_materiales(materiales)
         if cantidades is not None:
             Empleado.validar_cantidades(cantidades)
-            pedido.cantidades = cantidades
+            pedido.set_cantidades(cantidades)
         if fecha is not None:
             Empleado.validar_fecha(fecha)
-            pedido.fecha = fecha
+            pedido.set_fecha(fecha)
         if cliente is not None:
             self.validar_cliente(cliente)
-            pedido.cliente = cliente
+            pedido.set_cliente(cliente)
         if estado is not None:
             Pedido_salida.validar_estado(estado)
-            pedido.estado = estado
+            pedido.set_estado(estado)
 
         return pedido
 

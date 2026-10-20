@@ -38,8 +38,8 @@ class Tareas_pendientes():
         if self.es_vacia():
             raise ValueError("No hay tareas pendientes")
 
-        tarea = self.frente
-        self._frente = self._frente.get_siguiente
+        tarea = self._frente
+        self._frente = self._frente.get_siguiente()
         tarea.set_siguiente(None)
 
         if self._frente is None:
@@ -69,3 +69,15 @@ class Tareas_pendientes():
 
     def mostrar_cantidades(self):
         print(self.contar_tareas())
+
+    
+    def existe_tarea_reposicion(self, material):
+        actual = self._frente
+
+        while actual is not None:
+            if actual.get_tipo() == "reponer" and actual.get_objeto() == material:
+                return True
+
+            actual = actual.get_siguiente()
+
+        return False

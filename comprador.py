@@ -38,7 +38,7 @@ class Comprador(Empleado):
     def cancelar_solicitud(self, id_movimiento):
         solicitud = self.consultar_solicitud(id_movimiento)
 
-        if solicitud.get_estado() in ("Entregado", "Cancelado"):
+        if solicitud.get_estado() in ("Recibido", "Cancelado"):
             raise ValueError(
                 f"No se puede cancelar una solicitud en estado "
                 f"'{solicitud.get_estado()}'")
@@ -52,7 +52,7 @@ class Comprador(Empleado):
     ):
         solicitud = self.consultar_solicitud(id_movimiento)
 
-        if solicitud.get_estado() in ("Entregado", "Cancelado"):
+        if solicitud.get_estado() in ("Recibido", "Cancelado"):
             raise ValueError(
                 f"No se puede modificar una solicitud en estado "
                 f"'{solicitud.get_estado()}'")
@@ -79,7 +79,7 @@ class Comprador(Empleado):
 
         return solicitud
 
-    def ejecutar_siguiente_tarea(self, tareas_pendientes_comprador, fecha, proveedor,tareas_pendientes_admin):
+    def ejecutar_siguiente_tarea(self, tareas_pendientes_comprador, fecha, proveedor, tareas_pendientes_admin):
         tarea = tareas_pendientes_comprador.ver_primera()
 
         if tarea is None:
@@ -95,6 +95,9 @@ class Comprador(Empleado):
                 proveedor,
                 tareas_pendientes_admin
             )
+        
+        else:
+            raise ValueError('Tipo de tarea desconocido')
 
         tareas_pendientes_comprador.sacar()
 

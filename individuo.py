@@ -55,15 +55,15 @@ class Individuo:
         self._fecha_baja = fecha_baja
 
     
-def actualizar_datos(self, nombre=None, telefono=None, email=None, fecha_baja=None):
-    if nombre is not None:
-        self.set_nombre(nombre)
-    if telefono is not None:
-        self.set_telefono(telefono)
-    if email is not None:
-        self.set_email(email)
-    if fecha_baja is not None:
-        self.set_fecha_baja(fecha_baja)
+    def actualizar_datos(self, nombre=None, telefono=None, email=None, fecha_baja=None):
+        if nombre is not None:
+            self.set_nombre(nombre)
+        if telefono is not None:
+            self.set_telefono(telefono)
+        if email is not None:
+            self.set_email(email)
+        if fecha_baja is not None:
+            self.set_fecha_baja(fecha_baja)
 
 
     @staticmethod
