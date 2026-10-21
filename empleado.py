@@ -4,17 +4,18 @@ from material import Material
 class Empleado(Individuo):
     todos= []
 
-    def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
-        
+    def __init__(self, nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja=None, id_manual=None):
         self.validar_usuario(usuario)
         self.validar_clave(clave)
-        
-        super().__init__(nombre, telefono, dni, email, fecha_alta, fecha_baja=None)
 
+        super().__init__(nombre, telefono, dni, email, fecha_alta,fecha_baja, id_manual)
         self._usuario = usuario
-        self._clave = clave       
+        self._clave = clave
 
         Empleado.todos.append(self)
+
+    def a_fila(self):
+        return super().a_fila() + [self.get_usuario(),self.get_clave()]
 
     def get_usuario(self):
         return self._usuario

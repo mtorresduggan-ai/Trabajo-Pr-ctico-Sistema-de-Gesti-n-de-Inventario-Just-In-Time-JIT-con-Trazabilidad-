@@ -4,8 +4,8 @@ from cliente import Cliente
 from tarea import Tarea
 
 class Vendedor(Empleado):
-    def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
-        super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
+    def __init__(self, nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja=None, id_manual=None):
+        super().__init__(nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja, id_manual)
 
     def crear_pedido_salida(self, fecha, materiales, cantidades, cliente, tareas_pendientes_admin):
         Empleado.validar_fecha(fecha)

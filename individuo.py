@@ -3,7 +3,7 @@ from datetime import date
 class Individuo:
     todos= []
 
-    def __init__(self, nombre, telefono, dni, email, fecha_alta, fecha_baja=None):
+    def __init__(self, nombre, telefono, dni, email, fecha_alta, fecha_baja=None, id_manual=None):
         
         self.validar_nombre(nombre)
         self.validar_telefono(telefono)
@@ -18,9 +18,19 @@ class Individuo:
         self._fecha_alta = fecha_alta
         self._fecha_baja = fecha_baja
         self._email = email
-        self._id = len(Individuo.todos)+1
+        if id_manual is not None:
+            self._id = int(id_manual)
+        else:
+            ids = [individuo.get_id() for individuo in Individuo.todos]
+            if ids:
+                self._id = max(ids) + 1
+            else:
+                self._id = 1
 
         Individuo.todos.append(self)
+
+    def a_fila(self):
+        return [self.get_id(),self.get_nombre(),self.get_telefono(),self.get_dni(),self.get_email(),self.get_fecha_alta().isoformat(),self.get_fecha_baja().isoformat() if self.get_fecha_baja() is not None else ""]
 
     def get_nombre(self):
         return self._nombre

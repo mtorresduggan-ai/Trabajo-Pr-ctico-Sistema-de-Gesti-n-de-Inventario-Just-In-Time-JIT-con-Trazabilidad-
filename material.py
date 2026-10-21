@@ -1,14 +1,21 @@
 class Material:
     todos = []
 
-    def __init__(self, nombre, composicion, unidad_medida, punto_reposicion):
+    def __init__(self, nombre, composicion, unidad_medida, punto_reposicion, id_manual=None):
         self.validar_nombre(nombre)
         self.validar_composicion(composicion)
         self.validar_unidad_medida(unidad_medida)
         self.validar_punto_reposicion(punto_reposicion)
-        
-        
-        self._id_material = len(Material.todos)+1
+
+        if id_manual is not None:
+            self._id_material = int(id_manual)
+        else:
+            ids = [material.get_id_material() for material in Material.todos]
+            if ids:
+                self._id_material = max(ids) + 1
+            else:
+                self._id_material = 1
+
         self._nombre = nombre
         self._composicion = composicion
         self._unidad_medida = unidad_medida
@@ -16,6 +23,8 @@ class Material:
 
         Material.todos.append(self)
 
+    def a_fila(self):
+        return [self._id_material,self._nombre,self._composicion,self._unidad_medida,self._punto_reposicion]
 
     def get_id_material(self):
         return self._id_material
@@ -44,18 +53,17 @@ class Material:
         self.validar_unidad_medida(nueva_unidad_medida)
         self._unidad_medida = nueva_unidad_medida
 
-
     def set_punto_reposicion(self, nuevo_punto):
-        self.validar_punto_reposicion(nuevo_punto) 
+        self.validar_punto_reposicion(nuevo_punto)
         self._punto_reposicion = nuevo_punto
-    
+
     def necesita_reposicion(self, stock_actual):
         if not isinstance(stock_actual, (int, float)):
             raise TypeError("El stock actual debe ser un número")
         if stock_actual < 0:
             raise ValueError("El stock actual no puede ser negativo")
         return stock_actual <= self._punto_reposicion
-    
+
     def __str__(self):
         return 'Material: ' + self._nombre + ', Composicion: ' + self._composicion + ', Unidad de medida: ' + self._unidad_medida
 

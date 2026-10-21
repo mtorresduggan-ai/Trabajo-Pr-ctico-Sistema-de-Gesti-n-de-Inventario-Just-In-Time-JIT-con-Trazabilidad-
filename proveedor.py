@@ -3,15 +3,21 @@ from individuo import Individuo
 class Proveedor(Individuo):
     todos = []
 
-    def __init__(self, nombre, plazo_estimado, telefono, dni, email, fecha_alta, fecha_baja=None):
-        
+    def __init__(self, nombre, plazo_estimado, telefono, dni, email,fecha_alta, fecha_baja=None, id_manual=None, puntaje_manual=None):
         self.validar_plazo(plazo_estimado)
 
-        super().__init__(nombre, telefono, dni, email, fecha_alta, fecha_baja)
+        super().__init__(nombre, telefono, dni, email, fecha_alta, fecha_baja, id_manual)
         self._plazo_estimado = plazo_estimado
-        self._puntaje = 5
+
+        if puntaje_manual is not None:
+            self._puntaje = float(puntaje_manual)
+        else:
+            self._puntaje = 5
 
         Proveedor.todos.append(self)
+
+    def a_fila(self):
+        return super().a_fila() + [self.get_plazo_estimado(),self.get_puntaje()]
 
     def get_plazo_estimado(self):
         return self._plazo_estimado

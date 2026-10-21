@@ -7,8 +7,9 @@ from tarea import Tarea
 
 class Comprador(Empleado):
 
-    def __init__(self, nombre, telefono, dni, fecha_alta, email, usuario, clave):
-        super().__init__(nombre, telefono, dni, fecha_alta, email, usuario, clave)
+    def __init__(self, nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja=None, id_manual=None):
+        super().__init__(nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja, id_manual)
+    
 
     def crear_solicitud(self, fecha, materiales, cantidades, proveedor, tareas_pendientes_admin):
         Empleado.validar_fecha(fecha)
