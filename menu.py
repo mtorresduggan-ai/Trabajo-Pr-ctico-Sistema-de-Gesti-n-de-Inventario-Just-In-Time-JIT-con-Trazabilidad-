@@ -6,8 +6,11 @@ from comprador import Comprador
 from vendedor import Vendedor
 from administrador import Administrador
 from supervisor import Supervisor 
+from excepciones import VolverAtras
 
 class Menu:
+    pila = []
+
     def __init__(self, tareas_pendientes_comprador, tareas_pendientes_vendedor, tareas_pendientes_supervisor, tareas_pendientes_admin, deposito = None):
         self.tareas_pendientes_comprador = tareas_pendientes_comprador
         self.tareas_pendientes_vendedor = tareas_pendientes_vendedor
@@ -16,23 +19,70 @@ class Menu:
         self.deposito = deposito
 
     def mostrar_menu(self):
+        Menu.pila.append(self.pantalla_general)
+        while Menu.pila:
+            Menu.pila[-1]()  # ejecuta la pantalla del tope
+
+    
+
+    def pantalla_general(self):
+        print("\n--- MENÚ GENERAL ---")
+        print("1. Iniciar sesión")
+        print("0. Salir")
+        opcion = input("Elegí una opción: ").strip()
+
+        if opcion == "0":
+            Menu.volver()
+        elif opcion == "1":
+            try:
+                empleado = Menu.login()
+            except ValueError as error:
+                print(f"Error: {error}")
+                return
+            self.apilar_menu_de(empleado)
+        else:
+            print("Opción inválida.")
+
+    def apilar_menu_de(self, empleado):
         from menu_comprador import MenuComprador
         from menu_supervisor import MenuSupervisor
         from menu_vendedor import MenuVendedor
         from menu_administrador import MenuAdministrador
-        try:
-            empleado_logueado = Menu.login()
-        except ValueError as error:
-            print(f"Error: {error}" )
+
+        creadores = {
+            Comprador: lambda: MenuComprador(empleado, self.tareas_pendientes_comprador, self.tareas_pendientes_admin).menu_comprador,
+            Vendedor: lambda: MenuVendedor(empleado, self.tareas_pendientes_vendedor, self.tareas_pendientes_admin).menu_vendedor,
+            Administrador: lambda: MenuAdministrador(empleado, self.tareas_pendientes_admin, self.tareas_pendientes_supervisor).menu_administrador,
+            Supervisor: lambda: MenuSupervisor(empleado, self.tareas_pendientes_supervisor, self.tareas_pendientes_comprador, self.deposito).menu_supervisor,
+        }
+        Menu.pila.append(creadores[type(empleado)]())
+
+    def pantalla(self, titulo, textos, opciones):
+        print(f"\n--- {titulo} ---")
+        for texto in textos:
+            print(texto)
+        print("0. Volver")
+
+        opcion = input("Elegí una opción: ").strip()
+
+        if opcion == "0":
+            Menu.volver()
             return
 
-        mapa_menus = {
-            Comprador: lambda: MenuComprador(empleado_logueado, self.tareas_pendientes_comprador, self.tareas_pendientes_admin).menu_comprador(),
-            Vendedor: lambda: MenuVendedor(empleado_logueado, self.tareas_pendientes_vendedor, self.tareas_pendientes_admin).menu_vendedor(),
-            Administrador: lambda: MenuAdministrador(empleado_logueado, self.tareas_pendientes_admin, self.tareas_pendientes_supervisor).menu_administrador(),
-            Supervisor: lambda: MenuSupervisor(empleado_logueado, self.tareas_pendientes_supervisor, self.tareas_pendientes_comprador, self.deposito).menu_supervisor()}
+        accion = opciones.get(opcion)
+        if accion is None:
+            print("Opción inválida.")
+            return
 
-        mapa_menus[type(empleado_logueado)]()
+        try:
+            resultado = accion()
+            if resultado is not None:
+                print(resultado)
+        except VolverAtras:
+            print("Operación cancelada. Volviendo al menú...")
+        except (ValueError, TypeError, IndexError) as error:
+            print(f"Error: {error}")
+
 
     def input_materiales_cantidades(self):
         materiales = []
@@ -43,11 +93,12 @@ class Menu:
             for i, material in enumerate(Material.todos, start=1):
                 print(f"{i}. {material}")
 
-            opcion = int(input("Ingrese el número del material: "))
-            materiales.append(Material.todos[opcion - 1])
-            cantidades.append(int(input("Ingrese la cantidad: ")))
+            opcion = self.pedir_int("Ingrese el número del material (o 'volver'): ")
 
-            continuar = input("¿Desea agregar otro material? (si/no): ").strip().lower()
+            materiales.append(Material.todos[opcion - 1])
+            cantidades.append(self.pedir_int("Ingrese la cantidad: "))
+            
+            continuar = self.pedir("¿Desea agregar otro material? (si/no): ").lower()
 
         return materiales, cantidades
 
@@ -55,14 +106,14 @@ class Menu:
         for i, proveedor in enumerate(Proveedor.todos, start=1):
             print(f"{i}. {proveedor}")
 
-        opcion = int(input("Ingrese el número del proveedor: "))
+        opcion = self.pedir_int("Ingrese el número del proveedor (o 'volver'): ")
         return Proveedor.todos[opcion - 1]
 
     def input_cliente(self):
         for i, cliente in enumerate(Cliente.todos, start=1):
             print(f"{i}. {cliente}")
 
-        opcion = int(input("Ingrese el número del cliente: "))
+        opcion = self.pedir_int("Ingrese el número del cliente (o 'volver'): ")
         return Cliente.todos[opcion - 1]
 
     @staticmethod
@@ -81,3 +132,19 @@ class Menu:
                 return empleado  
 
         raise ValueError("Usuario o contraseña incorrectos")
+
+    @staticmethod
+    def volver():
+        if Menu.pila:
+            Menu.pila.pop()
+
+    @staticmethod
+    def pedir(mensaje):
+        valor = input(mensaje).strip()
+        if valor.lower() == "volver":
+            raise VolverAtras()
+        return valor
+
+    @staticmethod
+    def pedir_int(mensaje):
+        return int(Menu.pedir(mensaje))

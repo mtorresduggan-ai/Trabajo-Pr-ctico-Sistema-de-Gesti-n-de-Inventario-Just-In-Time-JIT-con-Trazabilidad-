@@ -1,0 +1,2 @@
+class VolverAtras(Exception):
+    pass
