@@ -31,7 +31,7 @@ class Sistema:
         return date(anio, mes, dia)
 
 
-    def guardar_materiales(self):
+    def guardar_materiales(self, materiales):
         filas = []
 
         for material in Material.todos:
