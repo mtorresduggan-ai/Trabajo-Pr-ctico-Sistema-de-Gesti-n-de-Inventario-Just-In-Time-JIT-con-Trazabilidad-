@@ -10,20 +10,20 @@ class MenuVendedor(Menu):
         tareas_pendientes_admin=tareas_pendientes_admin)
         self.vendedor = vendedor
 
-        def menu_vendedor(self):
-            opciones = {
-                '1': lambda: self.vendedor.crear_pedido_salida(date.today(), *self.input_materiales_cantidades(), self.input_cliente(), self.tareas_pendientes_admin),
-                '2': lambda: self.vendedor.cancelar_pedido(self.pedir_int("ID del pedido a cancelar: ")),
-                '3': self.vendedor.consultar_pedido_todos,
-                '4': lambda: self.vendedor.consultar_pedido(self.pedir_int("ID del pedido: ")),
-                '5': self.input_modificar_pedido}
+    def menu_vendedor(self):
+        opciones = {
+            '1': lambda: self.vendedor.crear_pedido_salida(date.today(), *self.input_materiales_cantidades(), self.input_cliente(), self.tareas_pendientes_admin),
+            '2': lambda: self.vendedor.cancelar_pedido(self.pedir_int("ID del pedido a cancelar: ")),
+            '3': self.vendedor.consultar_pedido_todos,
+            '4': lambda: self.vendedor.consultar_pedido(self.pedir_int("ID del pedido: ")),
+            '5': self.input_modificar_pedido}
 
-            self.pantalla("MENÚ VENDEDOR", [
-                "1. Crear pedido de salida",
-                "2. Cancelar pedido",
-                "3. Consultar todos los pedidos",
-                "4. Consultar pedido por ID",
-                "5. Modificar pedido"], opciones)
+        self.pantalla("MENÚ VENDEDOR", [
+            "1. Crear pedido de salida",
+            "2. Cancelar pedido",
+            "3. Consultar todos los pedidos",
+            "4. Consultar pedido por ID",
+            "5. Modificar pedido"], opciones)
 
     def input_modificar_pedido(self):
         id_movimiento = self.pedir_int("ID del pedido a modificar: ")

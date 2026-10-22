@@ -1,3 +1,4 @@
+######################## HAY QUE HACER LAS VALIDACIONES ########################################
 from menu import Menu
 from empleado import Empleado
 from deposito import Deposito
@@ -12,33 +13,33 @@ class MenuAdministrador(Menu):
             tareas_pendientes_admin=tareas_pendientes_admin)
         self.administrador = administrador
 
-        def menu_administrador(self):
-            opciones = {
-                '1': lambda: self.tareas_pendientes_admin.mostrar_cantidades(),
-                '2': lambda: self.administrador.ejecutar_siguiente_tarea(
-                    self.tareas_pendientes_admin,
-                    self.input_deposito("Seleccione el depósito sobre el que impactará la tarea:"),
-                    self.tareas_pendientes_supervisor),
-                '3': self.input_crear_transferencia,
-                '4': lambda: self.administrador.baja_empleado(self.input_empleado()),
-                '5': self.input_modificar_empleado,
-                '6': lambda: self.administrador.baja_proveedor(self.input_proveedor()),
-                '7': lambda: self.administrador.baja_cliente(self.input_cliente()),
-                '8': self.administrador.generar_reporte_empleados,
-                '9': self.administrador.generar_reporte_proveedores,
-                '10': self.administrador.generar_reporte_clientes}
+    def menu_administrador(self):
+        opciones = {
+            '1': lambda: self.tareas_pendientes_admin.mostrar_cantidades(), 
+            '2': lambda: self.administrador.ejecutar_siguiente_tarea(
+                self.tareas_pendientes_admin,
+                self.input_deposito("Seleccione el depósito sobre el que impactará la tarea:"),
+                self.tareas_pendientes_supervisor),
+            '3': self.input_crear_transferencia,
+            '4': lambda: self.administrador.baja_empleado(self.input_empleado()),
+            '5': self.input_modificar_empleado,
+            '6': lambda: self.administrador.baja_proveedor(self.input_proveedor()),
+            '7': lambda: self.administrador.baja_cliente(self.input_cliente()),
+            '8': self.administrador.generar_reporte_empleados,
+            '9': self.administrador.generar_reporte_proveedores,
+            '10': self.administrador.generar_reporte_clientes}
 
-            self.pantalla("MENÚ ADMINISTRADOR", [
-                "1. Mostrar tareas pendientes",
-                "2. Ejecutar siguiente tarea (Aceptar solicitud/pedido)",
-                "3. Crear transferencia de materiales",
-                "4. Dar de baja un empleado",
-                "5. Modificar datos de un empleado",
-                "6. Dar de baja un proveedor",
-                "7. Dar de baja un cliente",
-                "8. Reporte de empleados",
-                "9. Reporte de proveedores",
-                "10. Reporte de clientes"], opciones)
+        self.pantalla("MENÚ ADMINISTRADOR", [
+            "1. Mostrar tareas pendientes",
+            "2. Ejecutar siguiente tarea (Aceptar solicitud/pedido)",
+            "3. Crear transferencia de materiales",
+            "4. Dar de baja un empleado",
+            "5. Modificar datos de un empleado",
+            "6. Dar de baja un proveedor",
+            "7. Dar de baja un cliente",
+            "8. Reporte de empleados",
+            "9. Reporte de proveedores",
+            "10. Reporte de clientes"], opciones)
 
     def input_empleado(self):
         print("\nSeleccione un empleado:")
