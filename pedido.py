@@ -1,22 +1,28 @@
 from movimiento import Movimiento
 
 class Pedido_salida(Movimiento):
-    todos = []
+    contador=0
 
     def __init__(self, fecha, materiales, cantidades, cliente, estado, vendedor, id_manual=None, fecha_aceptacion_manual=None, fecha_envio_manual=None):
-        
         self.validar_estado(estado)
-        
-        super().__init__(fecha, materiales, cantidades, id_manual)
-       
+
+        super().__init__(fecha, materiales, cantidades)
+
+        if id_manual is not None:
+            self._id_movimiento = int(id_manual)
+            if self._id_movimiento > Pedido_salida.contador:
+                Pedido_salida.contador = self._id_movimiento
+        else:
+            Pedido_salida.contador += 1
+            self._id_movimiento = Pedido_salida.contador
+
         self._cliente = cliente
         self._estado = estado
         self._vendedor = vendedor
-        self._fecha_aceptacion= fecha_aceptacion_manual
-        self._fecha_envio= fecha_envio_manual
+        self._fecha_aceptacion = fecha_aceptacion_manual
+        self._fecha_envio = fecha_envio_manual
 
-        Pedido_salida.todos.append(self)
-    
+
     def a_fila(self):
         fecha_aceptacion = ""
         fecha_envio = ""
@@ -39,6 +45,8 @@ class Pedido_salida(Movimiento):
         return self._fecha_aceptacion
     def get_fecha_envio(self):
         return self._fecha_envio
+    def get_id_movimiento(self):
+        return self._id_movimiento
 
     def set_cliente(self, nuevo_cliente):
         self._cliente = nuevo_cliente
@@ -54,10 +62,6 @@ class Pedido_salida(Movimiento):
 
     def __str__(self):
         return 'ID Pedido: ' + str(self.get_id_movimiento()) + ' Cliente: ' + self.get_cliente().get_nombre() + ' Fecha de emision: ' + str(self._fecha) + ' Estado: ' + self._estado
-
-    @classmethod
-    def informar_todos(cls):
-        return cls.todos
 
     @staticmethod
     def validar_estado(estado):

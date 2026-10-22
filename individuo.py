@@ -1,8 +1,7 @@
 from datetime import date
 
 class Individuo:
-    todos= []
-
+    contador = 0
     def __init__(self, nombre, telefono, dni, email, fecha_alta, fecha_baja=None, id_manual=None):
         
         self.validar_nombre(nombre)
@@ -20,14 +19,12 @@ class Individuo:
         self._email = email
         if id_manual is not None:
             self._id = int(id_manual)
+            if self._id > Individuo.contador:
+                Individuo.contador = self._id
         else:
-            ids = [individuo.get_id() for individuo in Individuo.todos]
-            if ids:
-                self._id = max(ids) + 1
-            else:
-                self._id = 1
+            Individuo.contador += 1
+            self._id = Individuo.contador
 
-        Individuo.todos.append(self)
 
     def a_fila(self):
         return [self.get_id(),self.get_nombre(),self.get_telefono(),self.get_dni(),self.get_email(),self.get_fecha_alta().isoformat(),self.get_fecha_baja().isoformat() if self.get_fecha_baja() is not None else ""]
