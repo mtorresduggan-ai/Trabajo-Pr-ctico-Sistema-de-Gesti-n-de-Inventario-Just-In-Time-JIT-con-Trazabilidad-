@@ -4,7 +4,7 @@ from movimiento import Movimiento
 class Solicitud_proveedor(Movimiento):
     contador=0
 
-    def __init__(self, proveedor, fecha, materiales, cantidades, estado, comprador, id_manual=None, fecha_envio_manual=None, precio_unitario=0):
+    def __init__(self, proveedor, fecha, materiales, cantidades, estado, comprador, id_manual=None, fecha_envio_manual=None, precios_unitarios=()):
         self.validar_estado(estado)
 
         super().__init__(fecha, materiales, cantidades)
@@ -12,7 +12,8 @@ class Solicitud_proveedor(Movimiento):
         self._proveedor = proveedor
         self._estado = estado
         self._comprador = comprador
-        self._fecha_envio = fecha_envio_manual 
+        self._fecha_envio = fecha_envio_manual
+        self._precios_unitarios = precios_unitarios 
 
         if id_manual is not None:
             self._id_movimiento = int(id_manual)
@@ -40,6 +41,8 @@ class Solicitud_proveedor(Movimiento):
         return self._fecha_envio
     def get_id_movimiento(self):
         return self._id_movimiento
+    def get_precios_unitarios(self):
+        return self._precios_unitarios
     
     def set_proveedor(self, nuevo_proveedor):
         self._proveedor = nuevo_proveedor
@@ -50,7 +53,8 @@ class Solicitud_proveedor(Movimiento):
         self._comprador = nuevo_comprador
     def set_fecha_envio(self, nueva_fecha):
         self._fecha_envio = nueva_fecha
-
+    def set_precios_unitarios(self, nuevos_precios):
+        self._precios_unitarios = nuevos_precios
     
     def __str__(self):
         return (

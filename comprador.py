@@ -11,19 +11,26 @@ class Comprador(Empleado):
         super().__init__(nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja, id_manual)
     
 
-    def crear_solicitud(self, fecha, materiales, cantidades, proveedor, tareas_pendientes_admin):
+    def crear_solicitud(self, fecha, materiales, cantidades, proveedor, tareas_pendientes_admin, precios_unitarios):
         Empleado.validar_fecha(fecha)
         Empleado.validar_cantidades(cantidades)
         Empleado.validar_materiales(materiales)
         self.validar_proveedor(proveedor)
         self.validar_listas(materiales, cantidades)
 
-        solicitud = Solicitud_proveedor(proveedor, fecha, materiales, cantidades, "Pendiente", self)
+        if len(materiales) != len(precios_unitarios):
+            raise ValueError("Debe haber un precio por cada material")
+
+        for precio in precios_unitarios:
+            proveedor.validar_precio(precio)
+
+        solicitud = Solicitud_proveedor(proveedor, fecha, materiales, cantidades, "Pendiente", self, precios_unitarios=precios_unitarios)
 
         tareas_pendientes_admin.agregar(Tarea('solicitud', solicitud))
 
-        proveedor.agregar_material(solicitud.get_material(),solicitud.get_precio_unitario())
-
+        for material, precio in zip(materiales, precios_unitarios):
+            proveedor.agregar_material(material, precio)
+        
         return solicitud
 
     def consultar_solicitudes_todas(self):
@@ -82,7 +89,8 @@ class Comprador(Empleado):
                 [material],
                 [material.get_punto_reposicion()],
                 proveedor,
-                tareas_pendientes_admin
+                tareas_pendientes_admin,
+                [precio]
             )
         
         else:
