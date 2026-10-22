@@ -1,0 +1,4 @@
+pedido_id,material_id,cantidad
+2,1,50.0
+2,2,20.0
+3,2,1000.0

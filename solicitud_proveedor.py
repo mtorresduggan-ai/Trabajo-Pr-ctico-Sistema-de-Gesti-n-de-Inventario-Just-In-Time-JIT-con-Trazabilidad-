@@ -4,17 +4,25 @@ from movimiento import Movimiento
 class Solicitud_proveedor(Movimiento):
     todos = []
 
-    def __init__(self, proveedor, fecha, materiales, cantidades, estado, comprador):
+    def __init__(self, proveedor, fecha, materiales, cantidades, estado, comprador, id_manual=None, fecha_envio_manual=None):
         self.validar_estado(estado)
 
-        super().__init__(fecha, materiales, cantidades)
+        super().__init__(fecha, materiales, cantidades, id_manual)
 
         self._proveedor = proveedor
         self._estado = estado
         self._comprador = comprador
-        self._fecha_envio = None
+        self._fecha_envio = fecha_envio_manual 
 
         Solicitud_proveedor.todos.append(self)
+
+    def a_fila(self):
+        fecha_envio = ""
+
+        if self.get_fecha_envio() is not None:
+            fecha_envio = self.get_fecha_envio()
+
+        return [self.get_id_movimiento(), self.get_fecha(), self.get_proveedor().get_id(), self.get_estado(), self.get_comprador().get_id(), fecha_envio]
 
     def get_proveedor(self):
         return self._proveedor
@@ -53,6 +61,4 @@ class Solicitud_proveedor(Movimiento):
         estados_validos = ['Pendiente', 'Solicitado', 'Recibido', 'Cancelado']
 
         if estado not in estados_validos:
-            raise ValueError(
-                f"Estado no valido. Solo se permiten: {estados_validos}"
-            )
+            raise ValueError(f"Estado no valido. Solo se permiten: {estados_validos}")

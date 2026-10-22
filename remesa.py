@@ -3,9 +3,21 @@ from tarea import Tarea
 class Remesa:
     todos = []
 
-    def __init__(self, materiales, proveedor, solicitud, cantidades, fechas_vencimiento, deposito, tareas_pendientes_supervisor, fecha_llegada, **datos):
+    def __init__(self, materiales, proveedor, solicitud, cantidades, fechas_vencimiento, deposito, tareas_pendientes_supervisor, fecha_llegada, id_manual=None, cargando=False, **datos):
+        
+        if id_manual is not None:
+            self._id_remesa = int(id_manual)
+        else:
+            ids = []
 
-        self._id_remesa = len(Remesa.todos)+1
+            for remesa in Remesa.todos:
+                ids.append(remesa.get_id_remesa())
+
+            if len(ids) > 0:
+                self._id_remesa = max(ids) + 1
+            else:
+                self._id_remesa = 1
+
         self._materiales = materiales
         self._proveedor = proveedor
         self._solicitud = solicitud
@@ -14,11 +26,14 @@ class Remesa:
         self._fecha_llegada = fecha_llegada
         self._datos = datos
 
-        self.evaluar_proveedor()
-
-        tareas_pendientes_supervisor.agregar(Tarea("remesa", self, deposito))
+        if cargando == False:
+            self.evaluar_proveedor()
+            tareas_pendientes_supervisor.agregar(Tarea("remesa", self, deposito))
 
         Remesa.todos.append(self)
+    
+    def a_fila(self):
+        return [self.get_id_remesa(), self.get_proveedor().get_id(), self.get_solicitud().get_id_movimiento(), self.get_fecha_llegada()]
 
     def get_id_remesa(self):
         return self._id_remesa

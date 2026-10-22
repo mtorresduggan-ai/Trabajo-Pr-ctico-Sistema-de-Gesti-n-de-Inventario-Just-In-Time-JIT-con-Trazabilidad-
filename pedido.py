@@ -3,19 +3,31 @@ from movimiento import Movimiento
 class Pedido_salida(Movimiento):
     todos = []
 
-    def __init__(self, fecha, materiales, cantidades, cliente, estado, vendedor):
+    def __init__(self, fecha, materiales, cantidades, cliente, estado, vendedor, id_manual=None, fecha_aceptacion_manual=None, fecha_envio_manual=None):
         
         self.validar_estado(estado)
         
-        super().__init__(fecha, materiales, cantidades)
+        super().__init__(fecha, materiales, cantidades, id_manual)
        
         self._cliente = cliente
         self._estado = estado
         self._vendedor = vendedor
-        self._fecha_aceptacion= None
-        self._fecha_envio= None
+        self._fecha_aceptacion= fecha_aceptacion_manual
+        self._fecha_envio= fecha_envio_manual
 
         Pedido_salida.todos.append(self)
+    
+    def a_fila(self):
+        fecha_aceptacion = ""
+        fecha_envio = ""
+
+        if self.get_fecha_aceptacion() is not None:
+            fecha_aceptacion = self.get_fecha_aceptacion()
+
+        if self.get_fecha_envio() is not None:
+            fecha_envio = self.get_fecha_envio()
+
+        return [self.get_id_movimiento(), self.get_fecha(), self.get_cliente().get_id(), self.get_estado(), self.get_vendedor().get_id(), fecha_aceptacion, fecha_envio]
 
     def get_cliente(self):
         return self._cliente
