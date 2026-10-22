@@ -1,23 +1,10 @@
 class Movimiento:
-    todos = []
+    contador=0
 
-    def __init__(self, fecha, materiales, cantidades, id_manual=None):
+    def __init__(self, fecha, materiales, cantidades):
         self._fecha = fecha
         self._materiales = materiales
         self._cantidades = cantidades
-
-        if id_manual is not None:
-            self._id_movimiento = int(id_manual)
-        else:
-            ids = []
-            for movimiento in Movimiento.todos:
-                ids.append(movimiento.get_id_movimiento())
-            if len(ids) > 0:
-                self._id_movimiento = max(ids) + 1
-            else:
-                self._id_movimiento = 1
-
-        Movimiento.todos.append(self)
 
     def a_fila(self):
         return [self.get_id_movimiento(), self.get_fecha()]

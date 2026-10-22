@@ -9,7 +9,7 @@ class Deposito:
 
     def get_stock(self):
         return self._stock
-    def get_nombre(self):
+    def get_nombre(self): 
         return self._nombre
 
     def set_stock(self, nuevo_stock):

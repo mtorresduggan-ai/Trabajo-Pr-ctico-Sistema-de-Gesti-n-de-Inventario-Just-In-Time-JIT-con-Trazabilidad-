@@ -22,6 +22,8 @@ class Comprador(Empleado):
 
         tareas_pendientes_admin.agregar(Tarea('solicitud', solicitud))
 
+        proveedor.agregar_material(solicitud.get_material(),solicitud.get_precio_unitario())
+
         return solicitud
 
     def consultar_solicitudes_todas(self):

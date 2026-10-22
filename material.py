@@ -1,11 +1,12 @@
 class Material:
     todos = []
 
-    def __init__(self, nombre, composicion, unidad_medida, punto_reposicion, id_manual=None):
+    def __init__(self, nombre, composicion, unidad_medida, punto_reposicion, id_manual=None, precio_base=0):
         self.validar_nombre(nombre)
         self.validar_composicion(composicion)
         self.validar_unidad_medida(unidad_medida)
         self.validar_punto_reposicion(punto_reposicion)
+        self.validar_precio_base(precio_base)
 
         if id_manual is not None:
             self._id_material = int(id_manual)
@@ -20,11 +21,12 @@ class Material:
         self._composicion = composicion
         self._unidad_medida = unidad_medida
         self._punto_reposicion = punto_reposicion
+        self._precio_base = precio_base
 
         Material.todos.append(self)
 
     def a_fila(self):
-        return [self._id_material,self._nombre,self._composicion,self._unidad_medida,self._punto_reposicion]
+        return [self._id_material,self._nombre,self._composicion,self._unidad_medida,self._punto_reposicion, self._precio_base]
 
     def get_id_material(self):
         return self._id_material
@@ -41,6 +43,9 @@ class Material:
     def get_punto_reposicion(self):
         return self._punto_reposicion
 
+    def get_precio_base(self):
+        return self._precio_base
+
     def set_nombre(self, nuevo_nombre):
         self.validar_nombre(nuevo_nombre)
         self._nombre = nuevo_nombre
@@ -56,6 +61,10 @@ class Material:
     def set_punto_reposicion(self, nuevo_punto):
         self.validar_punto_reposicion(nuevo_punto)
         self._punto_reposicion = nuevo_punto
+
+    def set_precio_base(self, nuevo_precio):
+        self.validar_precio_base(nuevo_precio)
+        self._precio_base = nuevo_precio
 
     def necesita_reposicion(self, stock_actual):
         if not isinstance(stock_actual, (int, float)):
@@ -98,3 +107,10 @@ class Material:
             raise TypeError("El punto de reposición debe ser un número")
         if punto_reposicion < 0:
             raise ValueError("El punto de reposición no puede ser negativo")
+
+    @staticmethod
+    def validar_precio_base(precio_base):
+        if not isinstance(precio_base, (int, float)):
+            raise TypeError("El precio base debe ser un número")
+        if precio_base < 0:
+            raise ValueError("El precio base no puede ser negativo")

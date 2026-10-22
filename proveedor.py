@@ -5,6 +5,7 @@ class Proveedor(Individuo):
 
     def __init__(self, nombre, plazo_estimado, telefono, dni, email,fecha_alta, fecha_baja=None, id_manual=None, puntaje_manual=None):
         self.validar_plazo(plazo_estimado)
+        
 
         super().__init__(nombre, telefono, dni, email, fecha_alta, fecha_baja, id_manual)
         self._plazo_estimado = plazo_estimado
@@ -13,6 +14,8 @@ class Proveedor(Individuo):
             self._puntaje = float(puntaje_manual)
         else:
             self._puntaje = 5
+
+        self._precios_materiales = {}
 
         Proveedor.todos.append(self)
 
@@ -54,3 +57,24 @@ class Proveedor(Individuo):
             self._puntaje = 10
         else:
             self._puntaje = nuevo_puntaje
+    
+    def agregar_material(self, material, precio_unitario):
+        self.validar_precio(precio_unitario)
+        codigo = material.get_id_material()
+
+        if codigo not in self._precios_materiales:
+            self._precios_materiales[codigo] = precio_unitario
+
+        elif self._precios_materiales[codigo] != precio_unitario:
+            self._precios_materiales[codigo] = precio_unitario
+    
+    def obtener_precio(self, material):
+        codigo = material.get_id_material()
+        return self._precios_materiales[codigo]
+    
+    @staticmethod
+    def validar_precio(precio):
+        if not isinstance(precio, (int, float)):
+            raise TypeError("El precio debe ser un número")
+        if precio < 0:
+            raise ValueError("El precio no puede ser negativo")

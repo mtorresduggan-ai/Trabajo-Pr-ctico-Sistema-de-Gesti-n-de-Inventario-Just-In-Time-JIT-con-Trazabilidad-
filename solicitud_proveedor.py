@@ -2,19 +2,25 @@ from movimiento import Movimiento
 
 
 class Solicitud_proveedor(Movimiento):
-    todos = []
+    contador=0
 
-    def __init__(self, proveedor, fecha, materiales, cantidades, estado, comprador, id_manual=None, fecha_envio_manual=None):
+    def __init__(self, proveedor, fecha, materiales, cantidades, estado, comprador, id_manual=None, fecha_envio_manual=None, precio_unitario=0):
         self.validar_estado(estado)
 
-        super().__init__(fecha, materiales, cantidades, id_manual)
+        super().__init__(fecha, materiales, cantidades)
 
         self._proveedor = proveedor
         self._estado = estado
         self._comprador = comprador
         self._fecha_envio = fecha_envio_manual 
 
-        Solicitud_proveedor.todos.append(self)
+        if id_manual is not None:
+            self._id_movimiento = int(id_manual)
+            if self._id_movimiento > Solicitud_proveedor.contador:
+                Solicitud_proveedor.contador = self._id_movimiento
+        else:
+            Solicitud_proveedor.contador += 1
+            self._id_movimiento = Solicitud_proveedor.contador
 
     def a_fila(self):
         fecha_envio = ""
@@ -32,6 +38,8 @@ class Solicitud_proveedor(Movimiento):
         return self._comprador
     def get_fecha_envio(self):
         return self._fecha_envio
+    def get_id_movimiento(self):
+        return self._id_movimiento
     
     def set_proveedor(self, nuevo_proveedor):
         self._proveedor = nuevo_proveedor
@@ -49,12 +57,8 @@ class Solicitud_proveedor(Movimiento):
             'ID Solicitud: ' + str(self.get_id_movimiento())
             + ' Proveedor: ' + self.get_proveedor().get_nombre()
             + ' Fecha de emision: ' + str(self.get_fecha())
-            + ' Estado: ' + self.get_estado()
-        )
+            + ' Estado: ' + self.get_estado())
 
-    @classmethod
-    def informar_todos(cls):
-        return cls.todos.copy()
 
     @staticmethod
     def validar_estado(estado):
