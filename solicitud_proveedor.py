@@ -4,7 +4,7 @@ from movimiento import Movimiento
 class Solicitud_proveedor(Movimiento):
     todos = []
 
-    def __init__(self, proveedor, fecha, materiales, cantidades, estado, comprador, id_manual=None, fecha_envio_manual=None):
+    def __init__(self, proveedor, fecha, materiales, cantidades, estado, comprador, id_manual=None, fecha_envio_manual=None, precio_unitario=0):
         self.validar_estado(estado)
 
         super().__init__(fecha, materiales, cantidades, id_manual)
