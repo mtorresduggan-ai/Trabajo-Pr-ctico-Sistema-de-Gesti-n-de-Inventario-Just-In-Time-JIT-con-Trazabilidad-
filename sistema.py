@@ -59,7 +59,7 @@ class Sistema:
 
         for fila in filas:
             Proveedor(fila["nombre"], int(fila["plazo_estimado"]), fila["telefono"], int(fila["dni"]), fila["email"], self.convertir_fecha(fila["fecha_alta"]), fecha_baja=self.convertir_fecha(fila["fecha_baja"]), id_manual=fila["id"], puntaje_manual=fila["puntaje"])
-
+        return filas
 
     def guardar_clientes(self):
         filas = []

@@ -1,7 +1,7 @@
 from datetime import date
 
 class Caja:
-    def __init__(self, fecha_vencimiento, cantidad, prox=None):
+    def __init__(self, fecha_vencimiento, cantidad,  prox=None):
         self._validar_fecha_vencimiento(fecha_vencimiento)
         self._validar_cantidad(cantidad)
 

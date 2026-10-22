@@ -53,9 +53,9 @@ class Comprador(Empleado):
         if solicitud.get_estado() in ("Recibido", "Cancelado"):
             raise ValueError(f"No se puede modificar una solicitud en estado '{solicitud.get_estado()}'")
 
-        parametros = {"materiales": (materiales, Empleado.validar_materiales, solicitud.set_materiales),
-            "cantidades": (cantidades, Empleado.validar_cantidades, solicitud.set_cantidades),
-            "fecha": (fecha, Empleado.validar_fecha, solicitud.set_fecha),
+        parametros = {"materiales": (materiales, self.validar_materiales, solicitud.set_materiales),
+            "cantidades": (cantidades, self.validar_cantidades, solicitud.set_cantidades),
+            "fecha": (fecha, self.validar_fecha, solicitud.set_fecha),
             "proveedor": (proveedor, self.validar_proveedor, solicitud.set_proveedor),
             "estado": (estado, Solicitud_proveedor.validar_estado, solicitud.set_estado)}
 
