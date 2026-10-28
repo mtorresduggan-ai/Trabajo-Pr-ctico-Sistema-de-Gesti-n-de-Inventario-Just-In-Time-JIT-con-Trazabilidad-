@@ -14,7 +14,12 @@ class Vendedor(Empleado):
         self.validar_cliente(cliente)
         self.validar_listas(materiales, cantidades)
 
-        pedido = Pedido_salida(fecha, materiales, cantidades, cliente, "Pendiente", self)
+        precios_unitarios = []
+
+        for material in materiales:
+            precios_unitarios.append(material.get_precio_venta())
+
+        pedido = Pedido_salida(fecha, materiales, cantidades, precios_unitarios, cliente, "Pendiente", self)
         
         tareas_pendientes_admin.agregar(Tarea('pedido', pedido))
         

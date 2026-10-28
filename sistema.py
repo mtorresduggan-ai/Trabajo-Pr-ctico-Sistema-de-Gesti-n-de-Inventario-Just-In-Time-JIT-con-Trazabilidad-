@@ -31,19 +31,19 @@ class Sistema:
         return date(anio, mes, dia)
 
 
-    def guardar_materiales(self, materiales):
+    def guardar_materiales(self):
         filas = []
 
         for material in Material.todos:
             filas.append(material.a_fila())
 
-        GestorArchivos.escribir_csv("materiales.csv", ["id", "nombre", "composicion", "unidad_medida", "punto_reposicion"], filas)
+        GestorArchivos.escribir_csv("materiales.csv", ["id", "nombre", "composicion", "unidad_medida", "punto_reposicion", "precio_base", "precio_venta"], filas)
 
     def cargar_materiales(self):
         filas = GestorArchivos.leer_csv_dict("materiales.csv")
 
         for fila in filas:
-            Material(fila["nombre"], fila["composicion"], fila["unidad_medida"], float(fila["punto_reposicion"]), id_manual=fila["id"])
+            Material(fila["nombre"], fila["composicion"], fila["unidad_medida"], float(fila["punto_reposicion"]), id_manual=fila["id"], precio_base=float(fila["precio_base"]), precio_venta=float(fila["precio_venta"]))
 
 
     def guardar_proveedores(self):
@@ -173,12 +173,13 @@ class Sistema:
 
             materiales = solicitud.get_materiales()
             cantidades = solicitud.get_cantidades()
+            precios_unitarios = solicitud.get_precios_unitarios()
 
             for i in range(len(materiales)):
-                filas_items.append([solicitud.get_id_movimiento(), materiales[i].get_id_material(), cantidades[i]])
-
+                filas_items.append([solicitud.get_id_movimiento(), materiales[i].get_id_material(), cantidades[i], precios_unitarios[i]])
+                
         GestorArchivos.escribir_csv("solicitudes.csv", ["id", "fecha", "proveedor_id", "estado", "comprador_id", "fecha_envio"], filas)
-        GestorArchivos.escribir_csv("solicitudes_items.csv", ["solicitud_id", "material_id", "cantidad"], filas_items)
+        GestorArchivos.escribir_csv("solicitudes_items.csv", ["solicitud_id", "material_id", "cantidad", "precio_unitario"], filas_items)
 
     def cargar_solicitudes(self):
         filas = GestorArchivos.leer_csv_dict("solicitudes.csv")
@@ -198,6 +199,7 @@ class Sistema:
 
             materiales = []
             cantidades = []
+            precios_unitarios = []
 
             for item in filas_items:
                 if int(item["solicitud_id"]) == int(fila["id"]):
@@ -206,8 +208,9 @@ class Sistema:
                         if material.get_id_material() == int(item["material_id"]):
                             materiales.append(material)
                             cantidades.append(float(item["cantidad"]))
+                            precios_unitarios.append(float(item["precio_unitario"]))
 
-            Solicitud_proveedor(proveedor_encontrado, self.convertir_fecha(fila["fecha"]), materiales, cantidades, fila["estado"], comprador_encontrado, id_manual=fila["id"], fecha_envio_manual=self.convertir_fecha(fila["fecha_envio"]))
+            Solicitud_proveedor(proveedor_encontrado, self.convertir_fecha(fila["fecha"]), materiales, cantidades, fila["estado"], comprador_encontrado, id_manual=fila["id"], fecha_envio_manual=self.convertir_fecha(fila["fecha_envio"]), precios_unitarios=precios_unitarios)
 
 
     def guardar_pedidos(self):
@@ -219,12 +222,13 @@ class Sistema:
 
             materiales = pedido.get_materiales()
             cantidades = pedido.get_cantidades()
+            precios_unitarios = pedido.get_precios_unitarios()
 
             for i in range(len(materiales)):
-                filas_items.append([pedido.get_id_movimiento(), materiales[i].get_id_material(), cantidades[i]])
+                filas_items.append([pedido.get_id_movimiento(), materiales[i].get_id_material(), cantidades[i], precios_unitarios[i]])
 
         GestorArchivos.escribir_csv("pedidos.csv", ["id", "fecha", "cliente_id", "estado", "vendedor_id", "fecha_aceptacion", "fecha_envio"], filas)
-        GestorArchivos.escribir_csv("pedidos_items.csv", ["pedido_id", "material_id", "cantidad"], filas_items)
+        GestorArchivos.escribir_csv("pedidos_items.csv", ["pedido_id", "material_id", "cantidad", "precio_unitario"], filas_items)
 
     def cargar_pedidos(self):
         filas = GestorArchivos.leer_csv_dict("pedidos.csv")
@@ -244,6 +248,7 @@ class Sistema:
 
             materiales = []
             cantidades = []
+            precios_unitarios = []
 
             for item in filas_items:
                 if int(item["pedido_id"]) == int(fila["id"]):
@@ -252,8 +257,9 @@ class Sistema:
                         if material.get_id_material() == int(item["material_id"]):
                             materiales.append(material)
                             cantidades.append(float(item["cantidad"]))
+                            precios_unitarios.append(float(item["precio_unitario"]))
 
-            Pedido_salida(self.convertir_fecha(fila["fecha"]), materiales, cantidades, cliente_encontrado, fila["estado"], vendedor_encontrado, id_manual=fila["id"], fecha_aceptacion_manual=self.convertir_fecha(fila["fecha_aceptacion"]), fecha_envio_manual=self.convertir_fecha(fila["fecha_envio"]))
+            Pedido_salida(self.convertir_fecha(fila["fecha"]), materiales, cantidades, precios_unitarios, cliente_encontrado, fila["estado"], vendedor_encontrado, id_manual=fila["id"], fecha_aceptacion_manual=self.convertir_fecha(fila["fecha_aceptacion"]), fecha_envio_manual=self.convertir_fecha(fila["fecha_envio"]))
 
 
     def guardar_remesas(self):
@@ -305,10 +311,42 @@ class Sistema:
             Remesa(materiales, proveedor_encontrado, solicitud_encontrada, cantidades, fechas_vencimiento, None, None, self.convertir_fecha(fila["fecha_llegada"]), id_manual=fila["id"], cargando=True)
 
 
+    def guardar_precios_proveedores(self):
+        filas = []
+
+        for proveedor in Proveedor.todos:
+            precios = proveedor.get_precios_materiales()
+
+            for material_id, precio in precios.items():
+                filas.append([proveedor.get_id(), material_id, precio])
+
+        GestorArchivos.escribir_csv(
+            "proveedores_precios.csv",
+            ["proveedor_id", "material_id", "precio"],
+            filas)
+    
+    def cargar_precios_proveedores(self):
+        filas = GestorArchivos.leer_csv_dict("proveedores_precios.csv")
+
+        for fila in filas:
+            proveedor_encontrado = None
+            material_encontrado = None
+
+            for proveedor in Proveedor.todos:
+                if proveedor.get_id() == int(fila["proveedor_id"]):
+                    proveedor_encontrado = proveedor
+
+            for material in Material.todos:
+                if material.get_id_material() == int(fila["material_id"]):
+                    material_encontrado = material
+
+            proveedor_encontrado.agregar_material(material_encontrado, float(fila["precio"]))
+
 
     def cargar_estado_total(self):
         self.cargar_materiales()
         self.cargar_proveedores()
+        self.cargar_precios_proveedores()
         self.cargar_clientes()
         self.cargar_empleados()
         self.cargar_depositos()
@@ -321,6 +359,7 @@ class Sistema:
     def guardar_estado_total(self):
         self.guardar_materiales()
         self.guardar_proveedores()
+        self.guardar_precios_proveedores()
         self.guardar_clientes()
         self.guardar_empleados()
         self.guardar_depositos()

@@ -3,7 +3,7 @@ from movimiento import Movimiento
 class Pedido_salida(Movimiento):
     contador=0
 
-    def __init__(self, fecha, materiales, cantidades, cliente, estado, vendedor, id_manual=None, fecha_aceptacion_manual=None, fecha_envio_manual=None):
+    def __init__(self, fecha, materiales, cantidades, precios_unitarios, cliente, estado, vendedor, id_manual=None, fecha_aceptacion_manual=None, fecha_envio_manual=None):
         self.validar_estado(estado)
 
         super().__init__(fecha, materiales, cantidades)
@@ -21,6 +21,7 @@ class Pedido_salida(Movimiento):
         self._vendedor = vendedor
         self._fecha_aceptacion = fecha_aceptacion_manual
         self._fecha_envio = fecha_envio_manual
+        self._precios_unitarios = precios_unitarios
 
 
     def a_fila(self):
@@ -47,6 +48,8 @@ class Pedido_salida(Movimiento):
         return self._fecha_envio
     def get_id_movimiento(self):
         return self._id_movimiento
+    def get_precios_unitarios(self):
+        return self._precios_unitarios
 
     def set_cliente(self, nuevo_cliente):
         self._cliente = nuevo_cliente
@@ -59,6 +62,8 @@ class Pedido_salida(Movimiento):
         self._fecha_aceptacion = nueva_fecha
     def set_fecha_envio(self, nueva_fecha):
         self._fecha_envio = nueva_fecha
+    def set_precios_unitarios(self, nuevos_precios):
+        self._precios_unitarios = nuevos_precios
 
     def __str__(self):
         return 'ID Pedido: ' + str(self.get_id_movimiento()) + ' Cliente: ' + self.get_cliente().get_nombre() + ' Fecha de emision: ' + str(self._fecha) + ' Estado: ' + self._estado

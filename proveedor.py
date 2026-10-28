@@ -27,6 +27,9 @@ class Proveedor(Individuo):
 
     def get_puntaje(self):
         return self._puntaje
+
+    def get_precios_materiales(self):
+        return self._precios_materiales.copy()
     
     def set_plazo_estimado(self, nuevo_plazo):
         self.validar_plazo(nuevo_plazo)

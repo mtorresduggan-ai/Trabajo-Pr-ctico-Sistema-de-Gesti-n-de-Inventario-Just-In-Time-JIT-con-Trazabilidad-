@@ -11,7 +11,7 @@ class Comprador(Empleado):
         super().__init__(nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja, id_manual)
     
 
-    def crear_solicitud(self, fecha, materiales, cantidades, proveedor, tareas_pendientes_admin, precios_unitarios):
+    def crear_solicitud(self, fecha, materiales, cantidades, proveedor, tareas_pendientes_admin, precios_unitarios, precios):
         Empleado.validar_fecha(fecha)
         Empleado.validar_cantidades(cantidades)
         Empleado.validar_materiales(materiales)
@@ -30,6 +30,7 @@ class Comprador(Empleado):
 
         for material, precio in zip(materiales, precios_unitarios):
             proveedor.agregar_material(material, precio)
+            precios.agregar_precio(material, proveedor)
         
         return solicitud
 
@@ -75,7 +76,7 @@ class Comprador(Empleado):
 
         return solicitud
 
-    def ejecutar_siguiente_tarea(self, tareas_pendientes_comprador, fecha, proveedor, tareas_pendientes_admin):
+    def ejecutar_siguiente_tarea(self, tareas_pendientes_comprador, fecha, proveedor, tareas_pendientes_admin, precios):
         tarea = tareas_pendientes_comprador.ver_primera()
 
         if tarea is None:
@@ -84,13 +85,16 @@ class Comprador(Empleado):
         if tarea.get_tipo() == "reponer":
             material = tarea.get_objeto()
 
+            precio = proveedor.obtener_precio(material)
+
             self.crear_solicitud(
                 fecha,
                 [material],
                 [material.get_punto_reposicion()],
                 proveedor,
                 tareas_pendientes_admin,
-                [precio]
+                [precio],
+                precios
             )
         
         else:

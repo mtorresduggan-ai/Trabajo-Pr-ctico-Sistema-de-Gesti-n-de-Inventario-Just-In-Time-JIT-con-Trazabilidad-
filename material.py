@@ -1,7 +1,7 @@
 class Material:
     todos = []
 
-    def __init__(self, nombre, composicion, unidad_medida, punto_reposicion, id_manual=None, precio_base=0):
+    def __init__(self, nombre, composicion, unidad_medida, punto_reposicion, id_manual=None, precio_base=0, precio_venta=0):
         self.validar_nombre(nombre)
         self.validar_composicion(composicion)
         self.validar_unidad_medida(unidad_medida)
@@ -22,11 +22,12 @@ class Material:
         self._unidad_medida = unidad_medida
         self._punto_reposicion = punto_reposicion
         self._precio_base = precio_base
+        self._precio_venta = precio_venta
 
         Material.todos.append(self)
 
     def a_fila(self):
-        return [self._id_material,self._nombre,self._composicion,self._unidad_medida,self._punto_reposicion, self._precio_base]
+        return [self._id_material,self._nombre,self._composicion,self._unidad_medida,self._punto_reposicion, self._precio_base, self._precio_venta]
 
     def get_id_material(self):
         return self._id_material
@@ -45,6 +46,9 @@ class Material:
 
     def get_precio_base(self):
         return self._precio_base
+    
+    def get_precio_venta(self):
+        return self._precio_venta
 
     def set_nombre(self, nuevo_nombre):
         self.validar_nombre(nuevo_nombre)
@@ -65,6 +69,10 @@ class Material:
     def set_precio_base(self, nuevo_precio):
         self.validar_precio_base(nuevo_precio)
         self._precio_base = nuevo_precio
+    
+    def set_precio_venta(self, nuevo_precio):
+        self.validar_precio_base(nuevo_precio)
+        self._precio_venta = nuevo_precio
 
     def necesita_reposicion(self, stock_actual):
         if not isinstance(stock_actual, (int, float)):
