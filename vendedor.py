@@ -25,26 +25,30 @@ class Vendedor(Empleado):
         
         return pedido
 
-    def consultar_pedido_todos(self):
-        return list(filter(lambda p: p.get_vendedor() == self, Pedido_salida.todos))
 
-    def consultar_pedido(self, id_movimiento):
-        pedidos = list(filter(lambda p: p.get_vendedor() == self and p.get_id_movimiento() == id_movimiento, Pedido_salida.todos))
+    def consultar_pedido_todos(self, pedidos):
+        return [p for p in pedidos if p.get_vendedor() == self]
 
-        if not pedidos:
-            raise ValueError("No existe ese pedido")
 
-        return pedidos[0]
+    def consultar_pedido(self, id_pedido, pedidos):
+        for pedido in pedidos:
+            if (pedido.get_vendedor() == self and pedido.get_id_pedido() == id_pedido):
+                return pedido
+        raise ValueError("No existe ese pedido")
 
-    def cancelar_pedido(self, id_movimiento):
-        pedido = self.consultar_pedido(id_movimiento)
+
+    def cancelar_pedido(self, id_pedido, pedidos):
+        pedido = self.consultar_pedido(id_pedido, pedidos)
+
         if pedido.get_estado() in ("Entregado", "Cancelado"):
-            raise ValueError(f"No se puede cancelar un pedido en estado '{pedido.get_estado()}'")
+            raise ValueError(f"No se puede cancelar un pedido en estado "f"'{pedido.get_estado()}'")
+
         pedido.set_estado("Cancelado")
         return pedido
 
-    def modificar_pedido(self, id_movimiento, materiales=None, cantidades=None, fecha=None, cliente=None, estado=None):
-        pedido = self.consultar_pedido(id_movimiento)
+
+    def modificar_pedido(self, id_pedido, pedidos, materiales=None,cantidades=None, fecha=None, cliente=None, estado=None):
+        pedido = self.consultar_pedido(id_pedido, pedidos)
         
         if pedido.get_estado() in ("Entregado", "Cancelado"):
             raise ValueError(f"No se puede modificar un pedido en estado '{pedido.get_estado()}'")
@@ -63,8 +67,8 @@ class Vendedor(Empleado):
         return pedido
 
     @staticmethod
-    def validar_cliente(cliente):
-        if cliente not in Cliente.todos:
+    def validar_cliente(cliente, clientes):
+        if cliente not in clientes:
             raise ValueError("El cliente no esta registrado")
 
     @staticmethod

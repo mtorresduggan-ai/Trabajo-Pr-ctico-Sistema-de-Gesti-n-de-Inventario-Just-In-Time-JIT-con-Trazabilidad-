@@ -1,5 +1,5 @@
 class Material:
-    todos = []
+    contador = 0
 
     def __init__(self, nombre, composicion, unidad_medida, punto_reposicion, id_manual=None, precio_base=0, precio_venta=0):
         self.validar_nombre(nombre)
@@ -10,12 +10,11 @@ class Material:
 
         if id_manual is not None:
             self._id_material = int(id_manual)
+            if self._id_material > Material.contador:
+                Material.contador = self._id_material
         else:
-            ids = [material.get_id_material() for material in Material.todos]
-            if ids:
-                self._id_material = max(ids) + 1
-            else:
-                self._id_material = 1
+            Material.contador += 1
+            self._id_material = Material.contador
 
         self._nombre = nombre
         self._composicion = composicion
@@ -24,10 +23,8 @@ class Material:
         self._precio_base = precio_base
         self._precio_venta = precio_venta
 
-        Material.todos.append(self)
-
     def a_fila(self):
-        return [self._id_material,self._nombre,self._composicion,self._unidad_medida,self._punto_reposicion, self._precio_base, self._precio_venta]
+        return [self._id_material, self._nombre, self._composicion, self._unidad_medida, self._punto_reposicion, self._precio_base, self._precio_venta]
 
     def get_id_material(self):
         return self._id_material
@@ -83,10 +80,6 @@ class Material:
 
     def __str__(self):
         return 'Material: ' + self._nombre + ', Composicion: ' + self._composicion + ', Unidad de medida: ' + self._unidad_medida
-
-    @classmethod
-    def informar(cls):
-        return cls.todos
 
     @staticmethod
     def validar_nombre(nombre):

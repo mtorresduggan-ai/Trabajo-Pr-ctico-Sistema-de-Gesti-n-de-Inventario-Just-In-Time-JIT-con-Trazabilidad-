@@ -1,22 +1,17 @@
 from tarea import Tarea
 
 class Remesa:
-    todos = []
+    contador = 0
 
     def __init__(self, materiales, proveedor, solicitud, cantidades, fechas_vencimiento, deposito, tareas_pendientes_supervisor, fecha_llegada, id_manual=None, cargando=False, **datos):
-        
+
         if id_manual is not None:
             self._id_remesa = int(id_manual)
+            if self._id_remesa > Remesa.contador:
+                Remesa.contador = self._id_remesa
         else:
-            ids = []
-
-            for remesa in Remesa.todos:
-                ids.append(remesa.get_id_remesa())
-
-            if len(ids) > 0:
-                self._id_remesa = max(ids) + 1
-            else:
-                self._id_remesa = 1
+            Remesa.contador += 1
+            self._id_remesa = Remesa.contador
 
         self._materiales = materiales
         self._proveedor = proveedor
@@ -30,10 +25,12 @@ class Remesa:
             self.evaluar_proveedor()
             tareas_pendientes_supervisor.agregar(Tarea("remesa", self, deposito))
 
-        Remesa.todos.append(self)
     
     def a_fila(self):
-        return [self.get_id_remesa(), self.get_proveedor().get_id(), self.get_solicitud().get_id_movimiento(), self.get_fecha_llegada()]
+        return [self.get_id_remesa(),
+            self.get_proveedor().get_id(),
+            self.get_solicitud().get_id_solicitud(),
+            self.get_fecha_llegada()]
 
     def get_id_remesa(self):
         return self._id_remesa
@@ -76,15 +73,9 @@ class Remesa:
                 self._proveedor.modificar_puntaje(-0.5)
 
     def __str__(self):
-        return (
-            'ID Remesa: ' + str(self.get_id_remesa()) +
+        return ('ID Remesa: ' + str(self.get_id_remesa()) +
             ' Proveedor: ' + self.get_proveedor().get_nombre() +
             ' Materiales: ' + str(self.get_materiales()) +
             ' Cantidades: ' + str(self.get_cantidades()) +
-            ' Fecha de llegada: ' + str(self.get_fecha_llegada())
-        )
-
-    @classmethod
-    def informar(cls):
-        return cls.todos
+            ' Fecha de llegada: ' + str(self.get_fecha_llegada()))
 

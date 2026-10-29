@@ -1,11 +1,7 @@
-
 class Deposito:
-    todos=[]
-
     def __init__(self, nombre):
         self._stock = dict()
         self._nombre = nombre
-        Deposito.todos.append(self)
 
     def get_stock(self):
         return self._stock
@@ -43,17 +39,13 @@ class Deposito:
                 actual = actual.get_prox()
         return total
 
-    @classmethod
-    def seleccionar_deposito(cls):
+    @staticmethod
+    def seleccionar_deposito(depositos):
         while True:
             nombre = input("Ingresá el nombre de tu depósito: ")
 
-            deposito = next(
-                filter(lambda d: d.get_nombre() == nombre, cls.todos),
-                None
-            )
-
-            if deposito is not None:
-                return deposito
+            for deposito in depositos:
+                if deposito.get_nombre() == nombre:
+                    return deposito
 
             print("El depósito ingresado no existe. Intentá nuevamente.")

@@ -1,11 +1,11 @@
 from individuo import Individuo
 
-class Proveedor(Individuo):
-    todos = []
+from individuo import Individuo
 
-    def __init__(self, nombre, plazo_estimado, telefono, dni, email,fecha_alta, fecha_baja=None, id_manual=None, puntaje_manual=None):
+class Proveedor(Individuo):
+
+    def __init__(self, nombre, plazo_estimado, telefono, dni, email, fecha_alta, fecha_baja=None, id_manual=None, puntaje_manual=None):
         self.validar_plazo(plazo_estimado)
-        
 
         super().__init__(nombre, telefono, dni, email, fecha_alta, fecha_baja, id_manual)
         self._plazo_estimado = plazo_estimado
@@ -16,8 +16,6 @@ class Proveedor(Individuo):
             self._puntaje = 5
 
         self._precios_materiales = {}
-
-        Proveedor.todos.append(self)
 
     def a_fila(self):
         return super().a_fila() + [self.get_plazo_estimado(),self.get_puntaje()]
@@ -38,9 +36,6 @@ class Proveedor(Individuo):
     def __str__(self):
         return 'Nombre: ' + self.get_nombre() + '  Telefono: ' + self.get_telefono()
 
-    @classmethod
-    def informar(cls):
-        return cls.todos
 
     @staticmethod
     def validar_plazo(plazo):

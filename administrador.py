@@ -74,8 +74,9 @@ class Administrador(Empleado):
 
         tareas_pendientes_admin.sacar()
 
-    def baja_empleado(self, empleado):
-        if empleado not in Empleado.todos:
+
+    def baja_empleado(self, empleado, empleados):
+        if empleado not in empleados:
             raise ValueError("El empleado no está registrado")
 
         if empleado.get_fecha_baja() is not None:
@@ -84,9 +85,10 @@ class Administrador(Empleado):
         empleado.set_fecha_baja(date.today())
 
 
-    def modificar_empleado(self, empleado, nombre=None, telefono=None, email=None, usuario=None, clave=None):
-        if empleado not in Empleado.todos:
+    def modificar_empleado(self, empleado, empleados, nombre=None,telefono=None, email=None, usuario=None, clave=None):
+        if empleado not in empleados:
             raise ValueError("El empleado no está registrado")
+
         if nombre is not None:
             empleado.set_nombre(nombre)
         if telefono is not None:
@@ -96,21 +98,21 @@ class Administrador(Empleado):
         if usuario is not None:
             empleado.actualizar_usuario(usuario)
         if clave is not None:
-            empleado.set_clave(clave) 
+            empleado.set_clave(clave)
 
 
-    def baja_proveedor(self, proveedor):
-        if proveedor not in Proveedor.todos:
+    def baja_proveedor(self, proveedor, proveedores):
+        if proveedor not in proveedores:
             raise ValueError("Este proveedor no está registrado")
 
         if proveedor.get_fecha_baja() is not None:
             raise ValueError("El proveedor ya está dado de baja")
 
-        proveedor.set_fecha_baja(date.today())    
+        proveedor.set_fecha_baja(date.today())
 
 
-    def baja_cliente(self, cliente):
-        if cliente not in Cliente.todos:
+    def baja_cliente(self, cliente, clientes):
+        if cliente not in clientes:
             raise ValueError("El cliente no está registrado")
 
         if cliente.get_fecha_baja() is not None:
@@ -119,47 +121,59 @@ class Administrador(Empleado):
         cliente.set_fecha_baja(date.today())
 
 
-    def generar_reporte_empleados(self):
+    def generar_reporte_empleados(self, empleados):
         reporte = "Reporte de empleados:\n"
 
-        for empleado in Empleado.todos:
+        for empleado in empleados:
             if empleado.get_fecha_baja() is None:
                 estado = "Activo"
             else:
                 estado = f"Baja: {empleado.get_fecha_baja()}"
 
-            reporte += (f"Nombre: {empleado.get_nombre()}\nDNI: {empleado.get_dni()}\nTelefono: {empleado.get_telefono()}\nEmail: {empleado.get_email()}\nUsuario: {empleado.get_usuario()}\nEstado: {estado}\n")
-
+            reporte += (f"Nombre: {empleado.get_nombre()}\n"
+                f"DNI: {empleado.get_dni()}\n"
+                f"Telefono: {empleado.get_telefono()}\n"
+                f"Email: {empleado.get_email()}\n"
+                f"Usuario: {empleado.get_usuario()}\n"
+                f"Estado: {estado}\n")
         return reporte
 
 
-    def generar_reporte_proveedores(self):
+    def generar_reporte_proveedores(self, proveedores):
         reporte = "Reporte de proveedores:\n"
 
-        for proveedor in Proveedor.todos:
+        for proveedor in proveedores:
             if proveedor.get_fecha_baja() is None:
                 estado = "Activo"
             else:
                 estado = f"Baja: {proveedor.get_fecha_baja()}"
 
-            reporte += (
-                f"Nombre: {proveedor.get_nombre()}\nDNI: {proveedor.get_dni()}\nTelefono: {proveedor.get_telefono()}\nEmail: {proveedor.get_email()}\nPlazo estimado: {proveedor.get_plazo_estimado()} dias\nPuntaje: {proveedor.get_puntaje()}\nEstado: {estado}\n")
-
+            reporte += (f"Nombre: {proveedor.get_nombre()}\n"
+                f"DNI: {proveedor.get_dni()}\n"
+                f"Telefono: {proveedor.get_telefono()}\n"
+                f"Email: {proveedor.get_email()}\n"
+                f"Plazo estimado: {proveedor.get_plazo_estimado()} dias\n"
+                f"Puntaje: {proveedor.get_puntaje()}\n"
+                f"Estado: {estado}\n")
         return reporte
 
 
-    def generar_reporte_clientes(self):
+    def generar_reporte_clientes(self, clientes):
         reporte = "Reporte de clientes:\n"
 
-        for cliente in Cliente.todos:
+        for cliente in clientes:
             if cliente.get_fecha_baja() is None:
                 estado = "Activo"
             else:
                 estado = f"Baja: {cliente.get_fecha_baja()}"
 
-            reporte += (f"Nombre: {cliente.get_nombre()}\nDNI: {cliente.get_dni()}\nTelefono: {cliente.get_telefono()}\nEmail: {cliente.get_email()}\nEstado: {estado}\n")
-
+            reporte += (f"Nombre: {cliente.get_nombre()}\n"
+                f"DNI: {cliente.get_dni()}\n"
+                f"Telefono: {cliente.get_telefono()}\n"
+                f"Email: {cliente.get_email()}\n"
+                f"Estado: {estado}\n")
         return reporte
+
 
     @staticmethod
     def validar_listas(materiales, cantidades):

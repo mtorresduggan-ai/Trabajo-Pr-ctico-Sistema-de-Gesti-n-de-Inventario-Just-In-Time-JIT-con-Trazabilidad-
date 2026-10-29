@@ -7,10 +7,8 @@ class Movimiento:
         self._cantidades = cantidades
 
     def a_fila(self):
-        return [self.get_id_movimiento(), self.get_fecha()]
+        return [self.get_fecha()]
  
-    def get_id_movimiento(self):
-        return self._id_movimiento
     def get_fecha(self):
         return self._fecha
     def get_materiales(self):
