@@ -60,21 +60,23 @@ def test_stock_tipo_incorrecto():
 
 
 def test_id_manual():
-    Material.todos.clear()
+    Material.contador = 0
     material = Material("Acero", "Fe", "kg", 50, id_manual=7)
 
     assert material.get_id_material() == 7
 
 
 def test_a_fila():
-    Material.todos.clear()
+    Material.contador = 0
     material = Material("Aluminio", "Al", "kg", 100, id_manual=3)
 
-    assert material.a_fila() == [3, "Aluminio", "Al", "kg", 100]
+    assert material.a_fila() == [3, "Aluminio", "Al", "kg", 100,
+        material.get_precio_base(),
+        material.get_precio_venta()]
 
 
 def test_id_nuevo():
-    Material.todos.clear()
+    Material.contador = 0
     Material("Aluminio", "Al", "kg", 100, id_manual=3)
     material = Material("Acero", "Fe", "kg", 50)
 

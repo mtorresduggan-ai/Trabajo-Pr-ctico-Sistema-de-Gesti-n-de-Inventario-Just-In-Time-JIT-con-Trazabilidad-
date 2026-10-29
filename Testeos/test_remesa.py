@@ -1,4 +1,3 @@
-import pytest
 from datetime import date
 from unittest.mock import Mock
 from remesa import Remesa
@@ -7,43 +6,43 @@ from remesa import Remesa
 def test_evaluar_proveedor_a_tiempo():
     remesa = Remesa.__new__(Remesa)
 
-    remesa.solicitud = Mock()
-    remesa.solicitud.fecha = date(2026, 10, 1)
+    remesa._solicitud = Mock()
+    remesa._solicitud.get_fecha.return_value = date(2026, 10, 1)
 
-    remesa.proveedor = Mock()
-    remesa.proveedor.plazo_estimado = 5
+    remesa._proveedor = Mock()
+    remesa._proveedor.get_plazo_estimado.return_value = 5
 
-    remesa.fecha_llegada = date(2026, 10, 5)
+    remesa._fecha_llegada = date(2026, 10, 5)
 
     remesa.evaluar_proveedor()
-    # Verifica que un método se haya llamado exactamente una vez y con ese argumento (en este caso 0.5).
-    remesa.proveedor.modificar_puntaje.assert_called_once_with(0.5)
+
+    remesa._proveedor.modificar_puntaje.assert_called_once_with(0.5)
 
 
 def test_evaluar_proveedor_tarde():
     remesa = Remesa.__new__(Remesa)
 
-    remesa.solicitud = Mock()
-    remesa.solicitud.fecha = date(2026, 10, 1)
+    remesa._solicitud = Mock()
+    remesa._solicitud.get_fecha.return_value = date(2026, 10, 1)
 
-    remesa.proveedor = Mock()
-    remesa.proveedor.plazo_estimado = 5
+    remesa._proveedor = Mock()
+    remesa._proveedor.get_plazo_estimado.return_value = 5
 
-    remesa.fecha_llegada = date(2026, 10, 8)
+    remesa._fecha_llegada = date(2026, 10, 8)
 
     remesa.evaluar_proveedor()
 
-    remesa.proveedor.modificar_puntaje.assert_called_once_with(-0.5)
+    remesa._proveedor.modificar_puntaje.assert_called_once_with(-0.5)
 
 
 def test_crear_remesa():
-    Remesa.todos.clear()
+    Remesa.contador = 0
 
     solicitud = Mock()
-    solicitud.fecha = date(2026, 10, 1)
+    solicitud.get_fecha.return_value = date(2026, 10, 1)
 
     proveedor = Mock()
-    proveedor.plazo_estimado = 5
+    proveedor.get_plazo_estimado.return_value = 5
 
     materiales = ["Aluminio"]
     cantidades = [20]
@@ -53,29 +52,31 @@ def test_crear_remesa():
     deposito = Mock()
     fecha_llegada = date(2026, 10, 5)
 
-    remesa = Remesa(materiales, proveedor, solicitud, cantidades, fechas_vencimiento, deposito, tareas, fecha_llegada)
+    remesa = Remesa(materiales, proveedor, solicitud, cantidades,fechas_vencimiento, deposito, tareas, fecha_llegada)
 
-    assert remesa.materiales == materiales
-    assert remesa.cantidades == cantidades
-    assert remesa.fechas_vencimiento == fechas_vencimiento
-    assert remesa in Remesa.todos
+    assert remesa.get_materiales() == materiales
+    assert remesa.get_cantidades() == cantidades
+    assert remesa.get_fechas_vencimiento() == fechas_vencimiento
+    assert remesa.get_id_remesa() == 1
+
     tareas.agregar.assert_called_once()
 
 
 def test_remesas_tienen_ids_distintos():
-    Remesa.todos.clear()
+    Remesa.contador = 0
 
     solicitud = Mock()
-    solicitud.fecha = date(2026, 10, 1)
+    solicitud.get_fecha.return_value = date(2026, 10, 1)
 
     proveedor = Mock()
-    proveedor.plazo_estimado = 5
+    proveedor.get_plazo_estimado.return_value = 5
 
     tareas = Mock()
     deposito = Mock()
 
-    remesa1 = Remesa(["Aluminio"], proveedor, solicitud, [20],[date(2027, 10, 1)], deposito, tareas,date(2026, 10, 5))
-    remesa2 = Remesa(["Acero"], proveedor, solicitud, [10],[date(2027, 12, 1)], deposito, tareas,date(2026, 10, 5))
+    remesa1 = Remesa(["Aluminio"], proveedor, solicitud, [20],[date(2027, 10, 1)], deposito, tareas, date(2026, 10, 5))
 
-    assert remesa1.id_remesa != remesa2.id_remesa
-    assert remesa2.id_remesa == remesa1.id_remesa + 1
+    remesa2 = Remesa(["Acero"], proveedor, solicitud, [10],[date(2027, 12, 1)], deposito, tareas, date(2026, 10, 5))
+
+    assert remesa1.get_id_remesa() != remesa2.get_id_remesa()
+    assert remesa2.get_id_remesa() == remesa1.get_id_remesa() + 1
