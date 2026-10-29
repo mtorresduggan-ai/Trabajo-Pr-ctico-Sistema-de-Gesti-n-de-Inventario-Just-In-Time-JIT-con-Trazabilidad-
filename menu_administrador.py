@@ -5,12 +5,13 @@ from deposito import Deposito
 
 
 class MenuAdministrador(Menu):
-    def __init__(self, administrador, tareas_pendientes_admin, tareas_pendientes_supervisor):
+    def __init__(self, administrador, tareas_pendientes_admin,tareas_pendientes_supervisor, sistema=None):
         super().__init__(
             tareas_pendientes_comprador=None,
             tareas_pendientes_vendedor=None,
             tareas_pendientes_supervisor=tareas_pendientes_supervisor,
-            tareas_pendientes_admin=tareas_pendientes_admin)
+            tareas_pendientes_admin=tareas_pendientes_admin,
+            sistema=sistema)
         self.administrador = administrador
 
     def menu_administrador(self):
@@ -43,19 +44,19 @@ class MenuAdministrador(Menu):
 
     def input_empleado(self):
         print("\nSeleccione un empleado:")
-        for i, emp in enumerate(Empleado.todos, start=1):
+        for i, emp in enumerate(self.sistema._empleados, start=1):
             print(f"{i}. {emp.get_nombre()} (DNI: {emp.get_dni()})")
 
         opcion = self.pedir_int("Ingrese el número del empleado (o 'volver'): ")
-        return Empleado.todos[opcion - 1]
+        return self.sistema._empleados[opcion - 1]
 
     def input_deposito(self, mensaje="Seleccione un depósito:"):
         print(f"\n{mensaje}")
-        for i, dep in enumerate(Deposito.todos, start=1):
+        for i, dep in enumerate(self.sistema._depositos, start=1):
             print(f"{i}. {dep.get_nombre()}")
 
         opcion = self.pedir_int("Ingrese el número del depósito (o 'volver'): ")
-        return Deposito.todos[opcion - 1]
+        return self.sistema._depositos[opcion - 1]
 
     def input_crear_transferencia(self):
         print("\n--- CREAR TRANSFERENCIA ENTRE DEPÓSITOS ---")
