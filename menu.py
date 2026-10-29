@@ -36,7 +36,7 @@ class Menu:
             Menu.volver()
         elif opcion == "1":
             try:
-                empleado = Menu.login()
+                empleado = self.login()
             except ValueError as error:
                 print(f"Error: {error}")
                 return

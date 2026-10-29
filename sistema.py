@@ -58,14 +58,11 @@ class Sistema:
         filas = GestorArchivos.leer_csv_dict("materiales.csv")
 
         for fila in filas:
-            material = Material(
-                fila["nombre"],
+            material = Material(fila["nombre"],
                 fila["composicion"],
                 fila["unidad_medida"],
                 float(fila["punto_reposicion"]),
-                id_manual=fila["id"],
-                precio_base=float(fila["precio_base"]),
-                precio_venta=float(fila["precio_venta"]))
+                id_manual=fila["id"])
             self._materiales.append(material)
 
 
@@ -135,6 +132,13 @@ class Sistema:
             "fecha_baja", "usuario", "clave", "tipo"],
             filas)
 
+    def crear_administrador_inicial(self):
+        if len(self._empleados) == 0:
+            administrador = Administrador("Administrador",
+                "1111111111",12345678,self.convertir_fecha("2026-01-01"),
+                "admin@aerotech.com","admin","Admin1234!")
+
+            self._empleados.append(administrador)
 
     def cargar_empleados(self):
         filas = GestorArchivos.leer_csv_dict("empleados.csv")
@@ -256,7 +260,7 @@ class Sistema:
             ["id", "fecha", "proveedor_id", "estado", "comprador_id", "fecha_envio"],filas)
         
         GestorArchivos.escribir_csv("solicitudes_items.csv",
-            ["solicitud_id", "material_id", "cantidad", "precio_unitario"],filas_items)
+        ["solicitud_id", "material_id", "cantidad", "precio_unitario"],filas_items)
 
 
     def cargar_solicitudes(self):
@@ -285,7 +289,8 @@ class Sistema:
                         if material.get_id_material() == int(item["material_id"]):
                             materiales.append(material)
                             cantidades.append(float(item["cantidad"]))
-                            precios_unitarios.append(float(item["precio_unitario"]))
+                            precio = float(item["precio_unitario"]) if item.get("precio_unitario") else material.get_precio_base()
+                            precios_unitarios.append(precio)
 
             solicitud = Solicitud_proveedor(proveedor_encontrado,
                 self.convertir_fecha(fila["fecha"]),materiales,cantidades,
@@ -345,7 +350,8 @@ class Sistema:
                         if material.get_id_material() == int(item["material_id"]):
                             materiales.append(material)
                             cantidades.append(float(item["cantidad"]))
-                            precios_unitarios.append(float(item["precio_unitario"]))
+                            precio = float(item["precio_unitario"]) if item.get("precio_unitario") else material.get_precio_base()
+                            precios_unitarios.append(precio)
 
             pedido = Pedido_salida(
                 self.convertir_fecha(fila["fecha"]),materiales,cantidades,

@@ -19,7 +19,7 @@ def test_agregar():
     tareas.agregar(tarea)
 
     assert tareas.es_vacia() == False
-    assert tareas.ver_primera().tipo == tarea.tipo
+    assert tareas.ver_primera().get_tipo() == tarea.get_tipo()
 
 
 def test_agregar_varias():
@@ -31,8 +31,10 @@ def test_agregar_varias():
     tareas.agregar(tarea1)
     tareas.agregar(tarea2)
 
-    assert tareas.ver_primera().tipo == "pedido"
-    assert tareas.frente.siguiente.tipo == "remesa"
+    assert tareas.ver_primera().get_tipo() == "pedido"
+    
+    segunda = tareas.get_frente().get_siguiente()
+    assert segunda.get_tipo() == "remesa"
 
 
 def test_agregar_objeto_incorrecto():
@@ -54,7 +56,7 @@ def test_sacar():
     tareas.sacar()
 
     assert tareas.es_vacia() == True
-    assert tareas.final == None
+    assert tareas.get_final() is None
 
 
 def test_sacar_sin_tareas():
@@ -73,7 +75,7 @@ def test_ver_primera():
     tarea = Tarea("pedido", Mock())
     tareas.agregar(tarea)
 
-    assert tareas.ver_primera().tipo == "pedido"
+    assert tareas.ver_primera().get_tipo() == "pedido"
 
 
 def test_ver_primera_vacia():

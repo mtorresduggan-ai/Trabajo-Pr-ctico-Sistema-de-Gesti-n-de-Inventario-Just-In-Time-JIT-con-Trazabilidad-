@@ -6,7 +6,7 @@ from supervisor import Supervisor
 
 
 def test_recibir_remesa():
-    supervisor = Supervisor("Ana", "112233", "12345678", date(2026, 1, 1), "ana@gmail.com", "ana", "1234")
+    supervisor = Supervisor("Ana", "112233", 12345678, date(2026, 1, 1), "ana@gmail.com", "ana", "Clave1234!")
 
     material = Mock()
     remesa = Mock()
@@ -34,7 +34,7 @@ def test_recibir_remesa():
 
 
 def test_sacar_pedido_sin_stock():
-    supervisor = Supervisor("Ana", "112233", "12345678", date(2026, 1, 1), "ana@gmail.com", "ana", "1234")
+    supervisor = Supervisor("Ana", "112233", 12345678, date(2026, 1, 1), "ana@gmail.com", "ana", "Clave1234!")
 
     material = Mock()
     material.get_nombre.return_value = "Aluminio"
@@ -56,7 +56,7 @@ def test_sacar_pedido_sin_stock():
 
 
 def test_sacar_pedido_correctamente():
-    supervisor = Supervisor("Ana", "112233", "12345678", date(2026, 1, 1), "ana@gmail.com", "ana", "1234")
+    supervisor = Supervisor("Ana", "112233", 12345678, date(2026, 1, 1), "ana@gmail.com", "ana", "Clave1234!")
 
     material = Mock()
     material.get_nombre.return_value = "Aluminio"
@@ -83,7 +83,7 @@ def test_sacar_pedido_correctamente():
 
 
 def test_ejecutar_siguiente_tarea_sin_pendientes():
-    supervisor = Supervisor("Ana", "112233", "12345678", date(2026, 1, 1), "ana@gmail.com", "ana", "1234")
+    supervisor = Supervisor("Ana", "112233", 12345678, date(2026, 1, 1), "ana@gmail.com", "ana", "Clave1234!")
 
     tareas_supervisor = Mock()
     tareas_supervisor.ver_primera.return_value = None
@@ -96,7 +96,7 @@ def test_ejecutar_siguiente_tarea_sin_pendientes():
 
 
 def test_retirar_vencidos():
-    supervisor = Supervisor("Ana", "112233", "12345678", date(2026, 1, 1), "ana@gmail.com", "ana", "1234")
+    supervisor = Supervisor("Ana", "112233", 12345678, date(2026, 1, 1), "ana@gmail.com", "ana", "Clave1234!")
 
     estante = Mock()
     deposito = Mock()

@@ -1,5 +1,1 @@
 id,nombre,telefono,dni,email,fecha_alta,fecha_baja,usuario,clave,tipo
-3,Juan Pérez,1112345678,40123456,juan@aerotech.com,2026-09-01,,jperez,Juan123!,Comprador
-4,Ana López,1155555555,40234567,ana@aerotech.com,2026-09-01,,alopez,Ana1234!,Vendedor
-5,Carlos Gómez,1166666666,40345678,carlos@aerotech.com,2026-09-01,,cgomez,Carlos123!,Administrador
-6,Juana Fernandez,1177777777,40456789,jfernandez@gmail.com,2026-09-01,,jfernandez,Juana123!,Supervisor
