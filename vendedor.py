@@ -7,11 +7,11 @@ class Vendedor(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja=None, id_manual=None):
         super().__init__(nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja, id_manual)
 
-    def crear_pedido_salida(self, fecha, materiales, cantidades, cliente, tareas_pendientes_admin):
+    def crear_pedido_salida(self, fecha, materiales, cantidades, cliente, clientes, tareas_pendientes_admin):
         Empleado.validar_fecha(fecha)
         Empleado.validar_cantidades(cantidades)
         Empleado.validar_materiales(materiales)
-        self.validar_cliente(cliente)
+        self.validar_cliente(cliente, clientes)
         self.validar_listas(materiales, cantidades)
 
         precios_unitarios = []

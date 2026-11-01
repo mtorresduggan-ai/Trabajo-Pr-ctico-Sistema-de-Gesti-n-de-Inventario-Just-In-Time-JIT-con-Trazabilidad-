@@ -10,6 +10,9 @@ from deposito import Deposito
 from remesa import Remesa
 from supervisor import Supervisor
 from pendientes import Tareas_pendientes
+from precios import Precio
+from sistema import Sistema
+
 
 tareas_admin = Tareas_pendientes()
 tareas_supervisor = Tareas_pendientes()
@@ -34,8 +37,16 @@ supervisor = Supervisor("Juana Fernandez", "1177777777", 40456789, date(2026, 9,
 deposito = Deposito('Deposito central')
 deposito_s = Deposito('Deposito sur')
 
+precio=Precio()
 
-solicitud = comprador.crear_solicitud(date(2026, 9, 29), [aluminio, acero],[150, 80], proveedor, tareas_admin)
+sistema= Sistema()
+sistema.agregar_proveedor(proveedor)
+sistema.agregar_cliente(cliente)
+
+proveedores = sistema.get_proveedores()
+clientes= sistema.get_clientes()
+
+solicitud = comprador.crear_solicitud(date(2026, 9, 29), [aluminio, acero],[150, 80], proveedor, proveedores, tareas_admin, [50,60], precio)
 administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor)
 remesa = Remesa([aluminio, acero], proveedor, solicitud, [150, 80],[date(2027, 12, 31), date(2028, 6, 30)], deposito, tareas_supervisor, date(2026, 10, 4))
 supervisor.ejecutar_siguiente_tarea(tareas_supervisor, tareas_comprador)    
@@ -44,7 +55,7 @@ print("Depósito tras la remesa:")
 print(deposito)
 
 
-pedido = vendedor.crear_pedido_salida(date(2026, 10, 5), [aluminio, acero],[50, 20], cliente, tareas_admin)
+pedido = vendedor.crear_pedido_salida(date(2026, 10, 5), [aluminio, acero],[50, 20], cliente, clientes, tareas_admin)
 administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor)
 supervisor.ejecutar_siguiente_tarea(tareas_supervisor, tareas_comprador)
 
@@ -55,7 +66,7 @@ print(deposito)
 print("\nTareas pendientes del comprador:")
 tareas_comprador.mostrar_cantidades()
 
-pedido2 = vendedor.crear_pedido_salida(date(2026, 10, 6), [acero], [1000], cliente, tareas_admin)
+pedido2 = vendedor.crear_pedido_salida(date(2026, 10, 6), [acero], [1000], cliente, clientes, tareas_admin)
 
 try:
     administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor)

@@ -16,6 +16,7 @@ class Proveedor(Individuo):
             self._puntaje = 5
 
         self._precios_materiales = {}
+        proveedores = []
 
     def a_fila(self):
         return super().a_fila() + [self.get_plazo_estimado(),self.get_puntaje()]
@@ -60,14 +61,13 @@ class Proveedor(Individuo):
         self.validar_precio(precio_unitario)
         codigo = material.get_id_material()
 
-        if codigo not in self._precios_materiales:
-            self._precios_materiales[codigo] = precio_unitario
-
-        elif self._precios_materiales[codigo] != precio_unitario:
-            self._precios_materiales[codigo] = precio_unitario
+        self._precios_materiales[codigo] = precio_unitario
     
     def obtener_precio(self, material):
         codigo = material.get_id_material()
+        if codigo not in self._precios_materiales:
+            raise ValueError("El proveedor no ofrece este material")
+        
         return self._precios_materiales[codigo]
     
     @staticmethod

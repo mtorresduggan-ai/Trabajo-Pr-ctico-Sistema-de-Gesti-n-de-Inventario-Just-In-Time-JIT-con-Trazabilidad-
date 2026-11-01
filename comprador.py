@@ -9,11 +9,11 @@ class Comprador(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja=None, id_manual=None):
         super().__init__(nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja, id_manual)
     
-    def crear_solicitud(self, fecha, materiales, cantidades, proveedor, tareas_pendientes_admin, precios_unitarios, precios):
+    def crear_solicitud(self, fecha, materiales, cantidades, proveedor, proveedores, tareas_pendientes_admin, precios_unitarios, precios):
         Empleado.validar_fecha(fecha)
         Empleado.validar_cantidades(cantidades)
         Empleado.validar_materiales(materiales)
-        self.validar_proveedor(proveedor)
+        self.validar_proveedor(proveedor, proveedores)
         self.validar_listas(materiales, cantidades)
 
         if len(materiales) != len(precios_unitarios):

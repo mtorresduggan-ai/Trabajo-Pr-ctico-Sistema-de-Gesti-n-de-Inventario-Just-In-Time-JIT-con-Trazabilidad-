@@ -476,3 +476,15 @@ class Sistema:
         self.guardar_pedidos()
         self.guardar_remesas()
         self.guardar_stock()
+
+    def agregar_proveedor(self, proveedor):
+        self._proveedores.append(proveedor)
+
+    def get_proveedores(self):
+        return self._proveedores.copy()
+
+    def agregar_cliente(self, cliente):
+        self._clientes.append(cliente)
+
+    def get_clientes(self):
+        return self._clientes.copy()
