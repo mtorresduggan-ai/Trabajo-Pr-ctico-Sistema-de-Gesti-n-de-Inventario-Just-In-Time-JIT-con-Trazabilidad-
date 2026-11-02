@@ -115,3 +115,5 @@ class Material:
             raise TypeError("El precio base debe ser un número")
         if precio_base < 0:
             raise ValueError("El precio base no puede ser negativo")
+
+    

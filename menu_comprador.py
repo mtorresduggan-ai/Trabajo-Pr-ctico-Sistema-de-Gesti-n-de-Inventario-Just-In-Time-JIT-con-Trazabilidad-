@@ -18,9 +18,9 @@ class MenuComprador(Menu):
             '1': lambda: self.tareas_comprador.mostrar_cantidades(),
             '2': lambda: self.comprador.ejecutar_siguiente_tarea(self.tareas_comprador, date.today(), self.input_proveedor(), self.tareas_admin),
             '3': self.input_crear_solicitud,
-            '4': lambda: self.comprador.cancelar_solicitud(self.pedir_int("ID de solicitud a cancelar: ")),
-            '5': self.comprador.consultar_solicitudes_todas,
-            '6': lambda: self.comprador.consultar_solicitud(self.pedir_int("ID de solicitud: ")),
+            '4': lambda: self.comprador.cancelar_solicitud(self.pedir_int("ID de solicitud a cancelar: "), self.sistema._solicitudes),
+            '5': self.input_consultar_todas,
+            '6': self.input_consultar_por_id,
             '7': self.input_modificar_solicitud}
 
         self.pantalla("MENÚ COMPRADOR", [
@@ -63,7 +63,7 @@ class MenuComprador(Menu):
         materiales, cantidades = self.input_materiales_cantidades()
         proveedor = self.input_proveedor()
         
-        precios_unitarios = [mat.get_precio_base() for mat in materiales]
+        precios_unitarios = [material.get_precio_base() for material in materiales]
 
         solicitud= self.comprador.crear_solicitud(
             date.today(),
@@ -78,4 +78,31 @@ class MenuComprador(Menu):
         self.sistema._solicitudes.append(solicitud)
         
         return f"\n ¡Solicitud N° {solicitud.get_id_solicitud()} generada con éxito!"
-    
+
+    def input_consultar_todas(self):
+        solicitudes = self.comprador.consultar_solicitudes_todas(self.sistema._solicitudes)
+        if not solicitudes:
+            return "\nNo tenés solicitudes registradas."
+        
+        lineas = ["\n=== MIS SOLICITUDES ==="]
+        for s in solicitudes:
+            lineas.append(f"• ID: {s.get_id_solicitud()} | Proveedor: {s.get_proveedor().get_nombre()} | Estado: {s.get_estado()}")
+        return "\n".join(lineas)
+
+    def input_consultar_por_id(self):
+        id_sol = self.pedir_int("ID de solicitud: ")
+        solicitud = self.comprador.consultar_solicitud(id_sol, self.sistema._solicitudes)
+        
+        lineas = [
+            f"\n=== DETALLE DE SOLICITUD N° {solicitud.get_id_solicitud()} ===",
+            f"Fecha: {solicitud.get_fecha()}",
+            f"Estado: {solicitud.get_estado()}",
+            f"Proveedor: {solicitud.get_proveedor().get_nombre()}",
+            "\nItems:"
+        ]
+        
+        for material, cant in zip(solicitud.get_materiales(), solicitud.get_cantidades()):
+            lineas.append(f"  - {material.get_nombre()}: {cant} {material.get_unidad_medida()}")
+            
+        return "\n".join(lineas)
+        

@@ -491,6 +491,7 @@ class Sistema:
     def agregar_empleado(self, empleado):
         self._empleados.append(empleado)
 
+
     def buscar_por_id(self, lista, id_objeto, metodo_id):
         for objeto in lista:
             if getattr(objeto, metodo_id)() == int(id_objeto):

@@ -33,7 +33,11 @@ class Menu:
         opcion = input("Elegí una opción: ").strip()
 
         if opcion == "0":
+            if self.sistema is not None:
+                self.sistema.guardar_solicitudes()
+                print("¡Datos guardados correctamente!")
             Menu.volver()
+            
         elif opcion == "1":
             try:
                 empleado = self.login()
@@ -85,7 +89,7 @@ class Menu:
             print(f"Error: {error}")
 
     def input_materiales_cantidades(self):
-        print('---SELECCIONAR MATERIALES---')
+        print('---MATERIALES---')
         materiales, cantidades = [], []
 
         while True:
