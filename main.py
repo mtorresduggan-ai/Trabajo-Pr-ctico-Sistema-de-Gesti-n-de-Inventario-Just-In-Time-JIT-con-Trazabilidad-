@@ -21,7 +21,7 @@ def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprado
     proveedor = Proveedor("Metalúrgica Sur", 5, "1123456789", 30123456,"proveedor@gmail.com", date(2026, 9, 1))
     cliente = Cliente("AeroParts", "1198765432", 30987654,"cliente@gmail.com", date(2026, 9, 1))
     comprador = Comprador("Juan Pérez", "1112345678", 40123456, date(2026, 9, 1),"juan@aerotech.com", "jperez", "Juan123!")
-    vendedor = Vendedor("Ana López", "1155555555", 40234567, date(2026, 9, 1),"ana@aerotech.com", "alopez", "Ana1234!")
+    vendedor = Vendedor("María López", "1155555555", 40234567, date(2026, 9, 1),"maria@aerotech.com", "mlopez", "Maria123!")
     administrador = Administrador("Carlos Gómez", "1166666666", 40345678, date(2026, 9, 1),"carlos@aerotech.com", "cgomez", "Carlos123!")
     supervisor = Supervisor("Juana Fernandez", "1177777777", 40456789, date(2026, 9, 1),"jfernandez@gmail.com", "jfernandez", "Juana123!")
     deposito = Deposito('Deposito central')

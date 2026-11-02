@@ -37,7 +37,7 @@ class Menu:
                 self.sistema.guardar_solicitudes()
                 print("¡Datos guardados correctamente!")
             Menu.volver()
-            
+
         elif opcion == "1":
             try:
                 empleado = self.login()
@@ -56,7 +56,7 @@ class Menu:
 
         creadores = {
             Comprador: lambda: MenuComprador(empleado, self.tareas_comprador, self.tareas_admin, self.sistema).menu_comprador,
-            Vendedor: lambda: MenuVendedor(empleado, self.tareas_vendedor, self.tareas_admin).menu_vendedor,
+            Vendedor: lambda: MenuVendedor(empleado, self.tareas_vendedor, self.tareas_admin, self.sistema).menu_vendedor,
             Administrador: lambda: MenuAdministrador(empleado, self.tareas_admin, self.tareas_supervisor).menu_administrador,
             Supervisor: lambda: MenuSupervisor(empleado, self.tareas_supervisor, self.tareas_comprador, self.deposito).menu_supervisor,
         }
