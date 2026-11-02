@@ -5,22 +5,22 @@ from deposito import Deposito
 
 
 class MenuAdministrador(Menu):
-    def __init__(self, administrador, tareas_pendientes_admin,tareas_pendientes_supervisor, sistema=None):
+    def __init__(self, administrador, tareas_admin,tareas_supervisor, sistema=None):
         super().__init__(
-            tareas_pendientes_comprador=None,
-            tareas_pendientes_vendedor=None,
-            tareas_pendientes_supervisor=tareas_pendientes_supervisor,
-            tareas_pendientes_admin=tareas_pendientes_admin,
+            tareas_comprador=None,
+            tareas_vendedor=None,
+            tareas_supervisor=tareas_supervisor,
+            tareas_admin=tareas_admin,
             sistema=sistema)
         self.administrador = administrador
 
     def menu_administrador(self):
         opciones = {
-            '1': lambda: self.tareas_pendientes_admin.mostrar_cantidades(), 
+            '1': lambda: self.tareas_admin.mostrar_cantidades(), 
             '2': lambda: self.administrador.ejecutar_siguiente_tarea(
-                self.tareas_pendientes_admin,
+                self.tareas_admin,
                 self.input_deposito("Seleccione el depósito sobre el que impactará la tarea:"),
-                self.tareas_pendientes_supervisor),
+                self.tareas_supervisor),
             '3': self.input_crear_transferencia,
             '4': lambda: self.administrador.baja_empleado(self.input_empleado()),
             '5': self.input_modificar_empleado,
@@ -65,7 +65,7 @@ class MenuAdministrador(Menu):
 
         materiales, cantidades = self.input_materiales_cantidades()
 
-        self.administrador.crear_transferencia(dep_origen, dep_destino, materiales, cantidades, self.tareas_pendientes_supervisor)
+        self.administrador.crear_transferencia(dep_origen, dep_destino, materiales, cantidades, self.tareas_supervisor)
         return "Transferencia solicitada con éxito."
 
     def input_modificar_empleado(self):

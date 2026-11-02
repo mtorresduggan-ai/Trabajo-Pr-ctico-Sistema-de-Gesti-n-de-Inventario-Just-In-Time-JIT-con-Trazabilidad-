@@ -259,14 +259,24 @@ class Sistema:
             precios_unitarios = solicitud.get_precios_unitarios()
 
             for i in range(len(materiales)):
-                filas_items.append([solicitud.get_id_solicitud(),materiales[i].get_id_material(),
-                    cantidades[i],precios_unitarios[i]])
+                mat = materiales[i]
+                mat_id = mat.get_id_material() if hasattr(mat, 'get_id_material') and mat.get_id_material() is not None else 0
+                
+                filas_items.append([
+                    solicitud.get_id_solicitud(),
+                    mat_id,
+                    cantidades[i],
+                    precios_unitarios[i]])
 
-        GestorArchivos.escribir_csv("solicitudes.csv",
-            ["id", "fecha", "proveedor_id", "estado", "comprador_id", "fecha_envio"],filas)
+        GestorArchivos.escribir_csv(
+            "solicitudes.csv",
+            ["id", "fecha", "proveedor_id", "estado", "comprador_id", "fecha_envio"],
+            filas)
         
-        GestorArchivos.escribir_csv("solicitudes_items.csv",
-        ["solicitud_id", "material_id", "cantidad", "precio_unitario"],filas_items)
+        GestorArchivos.escribir_csv(
+            "solicitudes_items.csv",
+            ["solicitud_id", "material_id", "cantidad", "precio_unitario"],
+            filas_items)
 
 
     def cargar_solicitudes(self):

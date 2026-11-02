@@ -1,18 +1,20 @@
 from datetime import date
 from menu import Menu
+from excepciones import VolverAtras
 
 
 class MenuVendedor(Menu):
-    def __init__(self, vendedor, tareas_pendientes_vendedor, tareas_pendientes_admin):
-        super().__init__(tareas_pendientes_comprador=None,
-        tareas_pendientes_vendedor=tareas_pendientes_vendedor,
-        tareas_pendientes_supervisor=None,
-        tareas_pendientes_admin=tareas_pendientes_admin)
+    def __init__(self, vendedor, tareas_vendedor, tareas_admin, sistema=None):
+        super().__init__(tareas_comprador=None,
+        tareas_vendedor=tareas_vendedor,
+        tareas_supervisor=None,
+        tareas_admin=tareas_admin, 
+        sistema=sistema)
         self.vendedor = vendedor
 
     def menu_vendedor(self):
         opciones = {
-            '1': lambda: self.vendedor.crear_pedido_salida(date.today(), *self.input_materiales_cantidades(), self.input_cliente(), self.tareas_pendientes_admin),
+            '1': lambda: self.vendedor.crear_pedido_salida(date.today(), *self.input_materiales_cantidades(), self.input_cliente(), self.tareas_admin),
             '2': lambda: self.vendedor.cancelar_pedido(self.pedir_int("ID del pedido a cancelar: ")),
             '3': self.vendedor.consultar_pedido_todos,
             '4': lambda: self.vendedor.consultar_pedido(self.pedir_int("ID del pedido: ")),
@@ -51,3 +53,20 @@ class MenuVendedor(Menu):
             fecha=fecha,
             cliente=cliente,
             estado=estado)
+
+    def input_materiales_cantidades_venta(self):
+        stock = self.deposito.get_stock()
+        disponibles = [mat for mat, estante in stock.items() if estante.obtener_cantidad_total() > 0]
+
+        if not disponibles:
+            print("No hay stock disponible en el depósito.")
+            raise VolverAtras()
+
+        # Usamos una lista temporal para que el menú base maneje la selección limpia
+        originales = self.sistema._materiales
+        self.sistema._materiales = disponibles
+        
+        try:
+            return super().input_materiales_cantidades()
+        finally:
+            self.sistema._materiales = originales

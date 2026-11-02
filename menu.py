@@ -11,12 +11,12 @@ from excepciones import VolverAtras
 class Menu:
     pila = []
 
-    def __init__(self, tareas_pendientes_comprador, tareas_pendientes_vendedor,
-            tareas_pendientes_supervisor, tareas_pendientes_admin,deposito=None, sistema=None):
-        self.tareas_pendientes_comprador = tareas_pendientes_comprador
-        self.tareas_pendientes_vendedor = tareas_pendientes_vendedor
-        self.tareas_pendientes_supervisor = tareas_pendientes_supervisor
-        self.tareas_pendientes_admin = tareas_pendientes_admin
+    def __init__(self, tareas_comprador, tareas_vendedor,
+            tareas_supervisor, tareas_admin,deposito=None, sistema=None):
+        self.tareas_comprador = tareas_comprador
+        self.tareas_vendedor = tareas_vendedor
+        self.tareas_supervisor = tareas_supervisor
+        self.tareas_admin = tareas_admin
         self.deposito = deposito
         self.sistema = sistema
 
@@ -51,10 +51,10 @@ class Menu:
         from menu_administrador import MenuAdministrador
 
         creadores = {
-            Comprador: lambda: MenuComprador(empleado, self.tareas_pendientes_comprador, self.tareas_pendientes_admin).menu_comprador,
-            Vendedor: lambda: MenuVendedor(empleado, self.tareas_pendientes_vendedor, self.tareas_pendientes_admin).menu_vendedor,
-            Administrador: lambda: MenuAdministrador(empleado, self.tareas_pendientes_admin, self.tareas_pendientes_supervisor).menu_administrador,
-            Supervisor: lambda: MenuSupervisor(empleado, self.tareas_pendientes_supervisor, self.tareas_pendientes_comprador, self.deposito).menu_supervisor,
+            Comprador: lambda: MenuComprador(empleado, self.tareas_comprador, self.tareas_admin, self.sistema).menu_comprador,
+            Vendedor: lambda: MenuVendedor(empleado, self.tareas_vendedor, self.tareas_admin).menu_vendedor,
+            Administrador: lambda: MenuAdministrador(empleado, self.tareas_admin, self.tareas_supervisor).menu_administrador,
+            Supervisor: lambda: MenuSupervisor(empleado, self.tareas_supervisor, self.tareas_comprador, self.deposito).menu_supervisor,
         }
         Menu.pila.append(creadores[type(empleado)]())
 
@@ -84,25 +84,49 @@ class Menu:
         except (ValueError, TypeError, IndexError) as error:
             print(f"Error: {error}")
 
-
     def input_materiales_cantidades(self):
-        materiales = []
-        cantidades = []
-        continuar = "si"
+        print('---SELECCIONAR MATERIALES---')
+        materiales, cantidades = [], []
 
-        while continuar == "si":
+        while True:
+            print("\n--- Seleccionar Material ---")
             for i, material in enumerate(self.sistema._materiales, start=1):
                 print(f"{i}. {material}")
+            print("0. Registrar nuevo material (temporal)")
 
-            opcion = self.pedir_int("Ingrese el número del material (o 'volver'): ")
-            materiales.append(self.sistema._materiales[opcion - 1])
-            cantidades.append(self.pedir_int("Ingrese la cantidad: "))
+            try:
+                opcion = self.pedir_int("Ingrese el número del material (o 'volver'): ")
+                
+                if opcion == 0:
+                    nombre = self.pedir("Nombre: ")
+                    composicion = self.pedir("Composición: ")
+                    unidad = self.pedir("Unidad: ")
+                    from material import Material
+                    material_temp = Material(nombre, composicion, unidad, punto_reposicion=0)
+                else:
+                    material_temp = self.sistema._materiales[opcion - 1]
 
-            continuar = self.pedir("¿Desea agregar otro material? (si/no): ").lower()
+                cant = self.pedir_int("Cantidad (> 0): ")
+                if cant <= 0:
+                    raise ValueError("La cantidad debe ser mayor a 0")
+
+                materiales.append(material_temp)
+                cantidades.append(cant)
+
+            except IndexError:
+                print(" Opción fuera de rango. Intentá de nuevo.")
+                continue
+            except ValueError as err:
+                print(f" Entrada inválida: {err}")
+                continue
+
+            if self.pedir("¿Agregar otro material? (si/no): ").lower() != "si":
+                break
 
         return materiales, cantidades
 
     def input_proveedor(self):
+        print('---SELECCIONAR PROOVEDOR---')
         for i, proveedor in enumerate(self.sistema._proveedores, start=1):
             print(f"{i}. {proveedor}")
 
@@ -110,6 +134,7 @@ class Menu:
         return self.sistema._proveedores[opcion - 1]
 
     def input_cliente(self):
+        print('---SELECCIONAR CLIENTE---')
         for i, cliente in enumerate(self.sistema._clientes, start=1):
             print(f"{i}. {cliente}")
 

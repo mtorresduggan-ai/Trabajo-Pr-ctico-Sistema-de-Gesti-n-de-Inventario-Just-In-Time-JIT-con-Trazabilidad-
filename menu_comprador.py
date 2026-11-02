@@ -3,19 +3,21 @@ from menu import Menu
 
 
 class MenuComprador(Menu):
-    def __init__(self, comprador, tareas_pendientes_comprador, tareas_pendientes_admin):
-        super().__init__(tareas_pendientes_comprador=tareas_pendientes_comprador,
-            tareas_pendientes_vendedor=None,
-            tareas_pendientes_supervisor=None,
-            tareas_pendientes_admin=tareas_pendientes_admin)
+    def __init__(self, comprador, tareas_comprador, tareas_admin, sistema=None):
+        super().__init__(tareas_comprador=tareas_comprador,
+            tareas_vendedor=None,
+            tareas_supervisor=None,
+            tareas_admin=tareas_admin,
+            sistema=sistema)
         self.comprador = comprador
-        self.tareas_pendientes_comprador = tareas_pendientes_comprador
+        self.tareas_comprador = tareas_comprador
+        self.tareas_admin=tareas_admin
 
     def menu_comprador(self):
         opciones = {
-            '1': lambda: self.tareas_pendientes_comprador.mostrar_cantidades(),
-            '2': lambda: self.comprador.ejecutar_siguiente_tarea(self.tareas_pendientes_comprador, date.today(), self.input_proveedor(), self.tareas_pendientes_admin),
-            '3': lambda: self.comprador.crear_solicitud(date.today(), *self.input_materiales_cantidades(), self.input_proveedor(), self.tareas_pendientes_admin),
+            '1': lambda: self.tareas_comprador.mostrar_cantidades(),
+            '2': lambda: self.comprador.ejecutar_siguiente_tarea(self.tareas_comprador, date.today(), self.input_proveedor(), self.tareas_admin),
+            '3': self.input_crear_solicitud,
             '4': lambda: self.comprador.cancelar_solicitud(self.pedir_int("ID de solicitud a cancelar: ")),
             '5': self.comprador.consultar_solicitudes_todas,
             '6': lambda: self.comprador.consultar_solicitud(self.pedir_int("ID de solicitud: ")),
@@ -56,3 +58,24 @@ class MenuComprador(Menu):
             fecha=fecha,
             proveedor=proveedor,
             estado=estado)
+
+    def input_crear_solicitud(self):
+        materiales, cantidades = self.input_materiales_cantidades()
+        proveedor = self.input_proveedor()
+        
+        precios_unitarios = [mat.get_precio_base() for mat in materiales]
+
+        solicitud= self.comprador.crear_solicitud(
+            date.today(),
+            materiales,
+            cantidades,
+            proveedor,
+            self.sistema.get_proveedores(),
+            self.tareas_admin,
+            precios_unitarios,
+            None)
+
+        self.sistema._solicitudes.append(solicitud)
+        
+        return f"\n ¡Solicitud N° {solicitud.get_id_solicitud()} generada con éxito!"
+    

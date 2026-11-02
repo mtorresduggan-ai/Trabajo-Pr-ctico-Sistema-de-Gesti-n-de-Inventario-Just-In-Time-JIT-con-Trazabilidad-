@@ -9,28 +9,30 @@ class Comprador(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja=None, id_manual=None):
         super().__init__(nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja, id_manual)
     
-    def crear_solicitud(self, fecha, materiales, cantidades, proveedor, proveedores, tareas_pendientes_admin, precios_unitarios, precios):
-        Empleado.validar_fecha(fecha)
-        Empleado.validar_cantidades(cantidades)
-        Empleado.validar_materiales(materiales)
-        self.validar_proveedor(proveedor, proveedores)
-        self.validar_listas(materiales, cantidades)
+    def crear_solicitud(self, fecha, materiales, cantidades, proveedor, proveedores, tareas_pendientes_admin, precios_unitarios, precios=None):
+            Empleado.validar_fecha(fecha)
+            Empleado.validar_cantidades(cantidades)
+            Empleado.validar_materiales(materiales)
+            self.validar_proveedor(proveedor, proveedores)
+            self.validar_listas(materiales, cantidades)
 
-        if len(materiales) != len(precios_unitarios):
-            raise ValueError("Debe haber un precio por cada material")
+            if len(materiales) != len(precios_unitarios):
+                raise ValueError("Debe haber un precio por cada material")
 
-        for precio in precios_unitarios:
-            proveedor.validar_precio(precio)
+            for precio in precios_unitarios:
+                proveedor.validar_precio(precio)
 
-        solicitud = Solicitud_proveedor(proveedor, fecha, materiales, cantidades, "Pendiente", self, precios_unitarios=precios_unitarios)
+            solicitud = Solicitud_proveedor(proveedor, fecha, materiales, cantidades, "Pendiente", self, precios_unitarios=precios_unitarios)
 
-        tareas_pendientes_admin.agregar(Tarea('solicitud', solicitud))
+            tareas_pendientes_admin.agregar(Tarea('solicitud', solicitud))
 
-        for material, precio in zip(materiales, precios_unitarios):
-            proveedor.agregar_material(material, precio)
-            precios.agregar_precio(material, proveedor)
-        
-        return solicitud
+            for material, precio in zip(materiales, precios_unitarios):
+                proveedor.agregar_material(material, precio)
+                
+                if precios is not None:
+                    precios.agregar_precio(material, proveedor)
+            
+            return solicitud
 
 
     def consultar_solicitudes_todas(self, solicitudes):
