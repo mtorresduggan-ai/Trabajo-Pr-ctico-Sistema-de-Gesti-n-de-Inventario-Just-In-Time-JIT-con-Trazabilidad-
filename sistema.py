@@ -14,6 +14,7 @@ from estante import Estante
 from solicitud_proveedor import Solicitud_proveedor
 from pedido import Pedido_salida
 from remesa import Remesa
+from tarea import Tarea
 
 
 class Sistema:
@@ -40,42 +41,50 @@ class Sistema:
 
         return date(anio, mes, dia)
 
-
-    def guardar_materiales(self):
+    def guardar_csv(self, archivo, encabezados, objetos):
         filas = []
 
-        for material in self._materiales:
-            filas.append(material.a_fila())
+        for objeto in objetos:
+            filas.append(objeto.a_fila())
 
-        GestorArchivos.escribir_csv(
-            "materiales.csv",
-            ["id", "nombre", "composicion", "unidad_medida",
-            "punto_reposicion", "precio_base", "precio_venta"],
-            filas)
+        GestorArchivos.escribir_csv(archivo, encabezados, filas)
+
+    def guardar_materiales(self):
+        self.guardar_csv("materiales.csv", 
+            ["id", "nombre", "composicion", "unidad_medida", "punto_reposicion", "precio_base", "precio_venta"],
+            self._materiales)
 
 
     def cargar_materiales(self):
         filas = GestorArchivos.leer_csv_dict("materiales.csv")
 
         for fila in filas:
-            material = Material(fila["nombre"],
+            material = Material(
+                fila["nombre"],
                 fila["composicion"],
                 fila["unidad_medida"],
                 float(fila["punto_reposicion"]),
-                id_manual=fila["id"])
+                id_manual=fila["id"],
+                precio_base=float(fila["precio_base"]),
+                precio_venta=float(fila["precio_venta"]))
             self._materiales.append(material)
 
+    def agregar_pedido(self, pedido):
+        self._pedidos.append(pedido)
+
+    def get_pedidos(self):
+        return self._pedidos.copy()
+
+    def get_materiales(self):
+        return self._materiales.copy()
+
+    def get_empleados(self):
+        return self._empleados.copy()
 
     def guardar_proveedores(self):
-        filas = []
-
-        for proveedor in self._proveedores:
-            filas.append(proveedor.a_fila())
-
-        GestorArchivos.escribir_csv("proveedores.csv",
-            ["id", "nombre", "telefono", "dni", "email", "fecha_alta",
-            "fecha_baja", "plazo_estimado", "puntaje"],
-            filas)
+        self.guardar_csv("proveedores.csv",
+            ["id", "nombre", "telefono", "dni", "email", "fecha_alta", "fecha_baja", "plazo_estimado", "puntaje"],
+            self._proveedores)
 
 
     def cargar_proveedores(self):
@@ -95,14 +104,9 @@ class Sistema:
 
 
     def guardar_clientes(self):
-        filas = []
-
-        for cliente in self._clientes:
-            filas.append(cliente.a_fila())
-
-        GestorArchivos.escribir_csv("clientes.csv",
+        self.guardar_csv("clientes.csv",
             ["id", "nombre", "telefono", "dni", "email", "fecha_alta", "fecha_baja"],
-            filas)
+            self._clientes)
 
 
     def cargar_clientes(self):
@@ -128,9 +132,9 @@ class Sistema:
             filas.append(fila)
 
         GestorArchivos.escribir_csv("empleados.csv",
-            ["id", "nombre", "telefono", "dni", "email", "fecha_alta",
-            "fecha_baja", "usuario", "clave", "tipo"],
+            ["id", "nombre", "telefono", "dni", "email", "fecha_alta", "fecha_baja", "usuario", "clave", "tipo"],
             filas)
+
 
     def crear_administrador_inicial(self):
         if len(self._empleados) == 0:
@@ -139,6 +143,7 @@ class Sistema:
                 "admin@aerotech.com","admin","Admin1234!")
 
             self._empleados.append(administrador)
+
 
     def cargar_empleados(self):
         filas = GestorArchivos.leer_csv_dict("empleados.csv")
@@ -186,8 +191,9 @@ class Sistema:
 
         GestorArchivos.escribir_csv("depositos.csv", ["nombre"], filas)
 
-
     def cargar_depositos(self):
+        self._depositos = []
+
         filas = GestorArchivos.leer_csv_dict("depositos.csv")
 
         for fila in filas:
@@ -451,31 +457,8 @@ class Sistema:
             if proveedor_encontrado is not None and material_encontrado is not None:
                 proveedor_encontrado.agregar_material(material_encontrado, float(fila["precio"]))
 
-
-    def cargar_estado_total(self):
-        self.cargar_materiales()
-        self.cargar_proveedores()
-        self.cargar_precios_proveedores()
-        self.cargar_clientes()
-        self.cargar_empleados()
-        self.cargar_depositos()
-        self.cargar_solicitudes()
-        self.cargar_pedidos()
-        self.cargar_remesas()
-        self.cargar_stock()
-
-
-    def guardar_estado_total(self):
-        self.guardar_materiales()
-        self.guardar_proveedores()
-        self.guardar_precios_proveedores()
-        self.guardar_clientes()
-        self.guardar_empleados()
-        self.guardar_depositos()
-        self.guardar_solicitudes()
-        self.guardar_pedidos()
-        self.guardar_remesas()
-        self.guardar_stock()
+    def agregar_material(self, material):
+        self._materiales.append(material)
 
     def agregar_proveedor(self, proveedor):
         self._proveedores.append(proveedor)
@@ -488,3 +471,237 @@ class Sistema:
 
     def get_clientes(self):
         return self._clientes.copy()
+
+    def agregar_deposito(self, deposito):
+        self._depositos.append(deposito)
+    
+    def get_depositos(self):
+        return self._depositos.copy()
+
+    def agregar_empleado(self, empleado):
+        self._empleados.append(empleado)
+
+    def buscar_por_id(self, lista, id_objeto, metodo_id):
+        for objeto in lista:
+            if getattr(objeto, metodo_id)() == int(id_objeto):
+                return objeto
+        return None
+
+    def fila_tarea_solicitud(self, tarea):
+        return [
+            "solicitud", tarea.get_objeto().get_id_solicitud(),
+            "", "", "", ""
+        ]
+
+    def fila_tarea_pedido(self, tarea):
+        deposito = ""
+
+        if tarea.get_datos() is not None:
+            deposito = tarea.get_datos().get_nombre()
+
+        return [
+            "pedido", tarea.get_objeto().get_id_pedido(),
+            deposito, "", "", ""
+        ]
+
+    def fila_tarea_remesa(self, tarea):
+        return [
+            "remesa", tarea.get_objeto().get_id_remesa(),
+            tarea.get_datos().get_nombre(), "", "", ""
+        ]
+
+    def fila_tarea_reponer(self, tarea):
+        return [
+            "reponer", tarea.get_objeto().get_id_material(),
+            "", "", "", ""
+        ]
+
+    def fila_tarea_retirar(self, tarea):
+        return [
+            "retirar_vencidos", "",
+            tarea.get_objeto().get_nombre(), "", "", ""
+        ]
+
+    def fila_tarea_transferencia(self, tarea):
+        origen, destino, materiales, cantidades = tarea.get_datos()
+
+        ids_materiales = []
+
+        for material in materiales:
+            ids_materiales.append(str(material.get_id_material()))
+
+        return [
+            "transferencia", "",
+            origen.get_nombre(),
+            destino.get_nombre(),
+            ";".join(ids_materiales),
+            ";".join(map(str, cantidades))
+        ]
+
+    def guardar_tareas(self, archivo, cola):
+        filas = []
+
+        funciones = {
+            "solicitud": self.fila_tarea_solicitud,
+            "pedido": self.fila_tarea_pedido,
+            "remesa": self.fila_tarea_remesa,
+            "reponer": self.fila_tarea_reponer,
+            "retirar_vencidos": self.fila_tarea_retirar,
+            "transferencia": self.fila_tarea_transferencia
+        }
+
+        for tarea in cola.obtener_tareas():
+            tipo = tarea.get_tipo()
+            fila = funciones[tipo](tarea)
+            filas.append(fila)
+
+        GestorArchivos.escribir_csv(
+            archivo,
+            [
+                "tipo", "objeto_id", "deposito",
+                "deposito_destino", "materiales", "cantidades"
+            ],
+            filas
+        )
+
+    def cargar_tarea_solicitud(self, fila):
+        objeto = self.buscar_por_id(
+            self._solicitudes,
+            fila["objeto_id"],
+            "get_id_solicitud"
+        )
+        return Tarea("solicitud", objeto)
+
+    def cargar_tarea_pedido(self, fila):
+        objeto = self.buscar_por_id(
+            self._pedidos,
+            fila["objeto_id"],
+            "get_id_pedido"
+        )
+
+        datos = None
+
+        if fila["deposito"]:
+            datos = self.buscar_deposito(fila["deposito"])
+
+        return Tarea("pedido", objeto, datos)
+
+    def cargar_tarea_remesa(self, fila):
+        objeto = self.buscar_por_id(
+            self._remesas,
+            fila["objeto_id"],
+            "get_id_remesa"
+        )
+        deposito = self.buscar_deposito(fila["deposito"])
+
+        return Tarea("remesa", objeto, deposito)
+
+    def cargar_tarea_reponer(self, fila):
+        objeto = self.buscar_por_id(
+            self._materiales,
+            fila["objeto_id"],
+            "get_id_material"
+        )
+        return Tarea("reponer", objeto)
+
+    def cargar_tarea_retirar(self, fila):
+        deposito = self.buscar_deposito(fila["deposito"])
+        return Tarea("retirar_vencidos", deposito)
+
+    def cargar_tarea_transferencia(self, fila):
+        origen = self.buscar_deposito(fila["deposito"])
+        destino = self.buscar_deposito(fila["deposito_destino"])
+
+        materiales = []
+        cantidades = []
+
+        ids_materiales = fila["materiales"].split(";")
+        cantidades_texto = fila["cantidades"].split(";")
+
+        for id_material in ids_materiales:
+            material = self.buscar_por_id(
+                self._materiales,
+                id_material,
+                "get_id_material"
+            )
+            materiales.append(material)
+
+        for cantidad in cantidades_texto:
+            cantidades.append(float(cantidad))
+
+        datos = (origen, destino, materiales, cantidades)
+
+        return Tarea("transferencia", None, datos)
+
+
+    def cargar_tareas(self, archivo, cola):
+        filas = GestorArchivos.leer_csv_dict(archivo)
+
+        funciones = {
+            "solicitud": self.cargar_tarea_solicitud,
+            "pedido": self.cargar_tarea_pedido,
+            "remesa": self.cargar_tarea_remesa,
+            "reponer": self.cargar_tarea_reponer,
+            "retirar_vencidos": self.cargar_tarea_retirar,
+            "transferencia": self.cargar_tarea_transferencia
+        }
+
+        for fila in filas:
+            tipo = fila["tipo"]
+
+            if tipo in funciones:
+                tarea = funciones[tipo](fila)
+
+                if tarea is not None:
+                    cola.agregar(tarea)
+
+    def guardar_tareas_todas(
+        self, tareas_admin, tareas_supervisor,
+        tareas_comprador, tareas_vendedor):
+        self.guardar_tareas("tareas_admin.csv", tareas_admin)
+        self.guardar_tareas("tareas_supervisor.csv", tareas_supervisor)
+        self.guardar_tareas("tareas_comprador.csv", tareas_comprador)
+        self.guardar_tareas("tareas_vendedor.csv", tareas_vendedor)
+
+
+    def cargar_tareas_todas(
+        self, tareas_admin, tareas_supervisor,
+        tareas_comprador, tareas_vendedor):
+        self.cargar_tareas("tareas_admin.csv", tareas_admin)
+        self.cargar_tareas("tareas_supervisor.csv", tareas_supervisor)
+        self.cargar_tareas("tareas_comprador.csv", tareas_comprador)
+        self.cargar_tareas("tareas_vendedor.csv", tareas_vendedor)
+
+    
+    def cargar_estado_total(self, tareas_admin, tareas_supervisor,
+        tareas_comprador, tareas_vendedor):
+        self.cargar_materiales()
+        self.cargar_proveedores()
+        self.cargar_precios_proveedores()
+        self.cargar_clientes()
+        self.cargar_empleados()
+        self.cargar_depositos()
+        self.cargar_solicitudes()
+        self.cargar_pedidos()
+        self.cargar_remesas()
+        self.cargar_stock()
+        self.cargar_tareas_todas(tareas_admin, tareas_supervisor,
+        tareas_comprador, tareas_vendedor)
+
+
+    def guardar_estado_total(self, tareas_admin, tareas_supervisor,
+        tareas_comprador, tareas_vendedor):
+        self.guardar_materiales()
+        self.guardar_proveedores()
+        self.guardar_precios_proveedores()
+        self.guardar_clientes()
+        self.guardar_empleados()
+        self.guardar_depositos()
+        self.guardar_solicitudes()
+        self.guardar_pedidos()
+        self.guardar_remesas()
+        self.guardar_stock()
+        self.guardar_tareas_todas(tareas_admin, tareas_supervisor,
+        tareas_comprador, tareas_vendedor)
+
+    

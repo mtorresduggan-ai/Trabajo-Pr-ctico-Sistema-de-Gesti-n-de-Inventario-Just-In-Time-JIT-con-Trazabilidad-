@@ -1,1 +1,3 @@
 id,nombre,composicion,unidad_medida,punto_reposicion,precio_base,precio_venta
+1,Aluminio,Al,kg,100.0,0.0,50.0
+2,Acero,Fe,kg,50.0,0.0,60.0

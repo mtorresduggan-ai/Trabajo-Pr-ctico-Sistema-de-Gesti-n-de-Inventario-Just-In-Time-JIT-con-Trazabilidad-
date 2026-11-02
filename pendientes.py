@@ -81,3 +81,13 @@ class Tareas_pendientes:
             actual = actual.get_siguiente()
 
         return False
+
+    def obtener_tareas(self):
+        tareas = []
+        actual = self._frente
+
+        while actual is not None:
+            tareas.append(actual)
+            actual = actual.get_siguiente()
+
+        return tareas
