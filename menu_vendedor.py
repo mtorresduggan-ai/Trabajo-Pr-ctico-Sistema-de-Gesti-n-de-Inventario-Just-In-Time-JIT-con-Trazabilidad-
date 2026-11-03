@@ -27,7 +27,7 @@ class MenuVendedor(Menu):
             "5. Modificar pedido"], opciones)
 
     def input_crear_pedido(self):
-        materiales, cantidades = self.input_materiales_cantidades()
+        materiales, cantidades = self.input_materiales_cantidades(permitir_nuevo=False)
         cliente = self.input_cliente()
 
         pedido = self.vendedor.crear_pedido_salida(date.today(), materiales, cantidades, cliente, self.sistema.get_clientes(), self.tareas_admin)

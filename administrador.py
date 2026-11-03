@@ -55,30 +55,42 @@ class Administrador(Empleado):
         tareas_pendientes_supervisor.agregar(Tarea('transferencia', None, datos))
 
 
-    def ejecutar_siguiente_tarea(self, tareas_pendientes_admin, deposito, tareas_pendientes_supervisor):
+    def ejecutar_siguiente_tarea(self, tareas_pendientes_admin, deposito, tareas_pendientes_supervisor, decision):
         tarea = tareas_pendientes_admin.ver_primera()
 
         if tarea is None:
             raise ValueError("No hay tareas pendientes")
 
+        acciones = {"solicitud": self.aceptar_solicitud,
+        "pedido": lambda objeto: self.aceptar_pedido_salida(objeto, deposito)}
+
         objeto = tarea.get_objeto()
-        tareas_pendientes_admin.sacar()
+        tipo = tarea.get_tipo()
 
-        if tarea.get_tipo() == "solicitud":
-            self.aceptar_solicitud(objeto)
+        if decision == "rechazar":
+            objeto.set_estado("Rechazado")
+            tareas_pendientes_admin.sacar()
+            return "Tarea rechazada correctamente."
 
-        elif tarea.get_tipo() == "pedido":
-            try:
-                self.aceptar_pedido_salida(objeto, deposito)
-            except ValueError as error:
-                if objeto.get_estado() == "Pendiente":
-                    objeto.set_estado("Cancelado")
-                raise ValueError(f"Pedido N° {objeto.get_id_pedido()} rechazado: {error}")
+        if decision != "aceptar":
+            raise ValueError("Decisión inválida")
 
+        if tipo not in acciones:
+            raise ValueError("Tipo de tarea desconocido")
+
+        try:
+            acciones[tipo](objeto)
+        except ValueError as error:
+            objeto.set_estado("Cancelado")
+            tareas_pendientes_admin.sacar()
+            return f"No se pudo aceptar la tarea: {error}"
+
+        if tipo == "pedido":
             tareas_pendientes_supervisor.agregar(Tarea("pedido", objeto, deposito))
 
-        else:
-            raise ValueError('Tipo de tarea desconocido')
+        tareas_pendientes_admin.sacar()
+        return "Tarea aceptada correctamente."
+
 
 
     def baja_empleado(self, empleado, empleados):

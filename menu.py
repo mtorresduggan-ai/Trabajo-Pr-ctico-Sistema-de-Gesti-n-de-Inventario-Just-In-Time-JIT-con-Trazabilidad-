@@ -88,7 +88,7 @@ class Menu:
         except (ValueError, TypeError, IndexError) as error:
             print(f"Error: {error}")
 
-    def input_materiales_cantidades(self):
+    def input_materiales_cantidades(self, permitir_nuevo=True):
         print('---MATERIALES---')
         materiales, cantidades = [], []
 
@@ -96,12 +96,14 @@ class Menu:
             print("\n--- Seleccionar Material ---")
             for i, material in enumerate(self.sistema._materiales, start=1):
                 print(f"{i}. {material}")
-            print("0. Registrar nuevo material (temporal)")
+
+            if permitir_nuevo:
+                print("0. Registrar nuevo material (temporal)")
 
             try:
                 opcion = self.pedir_int("Ingrese el número del material (o 'volver'): ")
                 
-                if opcion == 0:
+                if opcion == 0 and permitir_nuevo:
                     nombre = self.pedir("Nombre: ")
                     composicion = self.pedir("Composición: ")
                     unidad = self.pedir("Unidad: ")
@@ -109,6 +111,8 @@ class Menu:
                     material_temp = Material(nombre, composicion, unidad, punto_reposicion=0)
                     self.sistema.agregar_material(material_temp)
                 else:
+                    if opcion < 1 or opcion > len(self.sistema._materiales):
+                        raise ValueError("Seleccione un material existente.")
                     material_temp = self.sistema._materiales[opcion - 1]
 
                 cant = self.pedir_int("Cantidad (> 0): ")

@@ -75,9 +75,11 @@ class MenuComprador(Menu):
         for material in materiales:
             try:
                 precio = proveedor.obtener_precio(material)
+                precios_unitarios.append(precio)
             except ValueError:
-                precio = float(self.pedir(f"Precio unitario de {material.get_nombre()} para este proveedor: "))
-            precios_unitarios.append(precio)
+                raise ValueError(f"El proveedor {proveedor.get_nombre()} "
+                f"no vende el material {material.get_nombre()}.")
+                
 
         solicitud= self.comprador.crear_solicitud(
             date.today(),

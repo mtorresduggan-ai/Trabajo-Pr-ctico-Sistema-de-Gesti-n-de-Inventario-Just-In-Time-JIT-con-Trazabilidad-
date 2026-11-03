@@ -14,58 +14,6 @@ from sistema import Sistema
 from menu import Menu
 from pendientes import Tareas_pendientes
 
-
-def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprador, tareas_vendedor):
-    aluminio = Material("Aluminio", "Al", "kg", 100)
-    acero = Material("Acero", "Fe", "kg", 50)
-    proveedor = Proveedor("Metalúrgica Sur", 5, "1123456789", 30123456,"proveedor@gmail.com", date(2026, 9, 1))
-    cliente = Cliente("AeroParts", "1198765432", 30987654,"cliente@gmail.com", date(2026, 9, 1))
-    comprador = Comprador("Juan Pérez", "1112345678", 40123456, date(2026, 9, 1),"juan@aerotech.com", "jperez", "Juan123!")
-    vendedor = Vendedor("María López", "1155555555", 40234567, date(2026, 9, 1),"maria@aerotech.com", "mlopez", "Maria123!")
-    administrador = Administrador("Carlos Gómez", "1166666666", 40345678, date(2026, 9, 1),"carlos@aerotech.com", "cgomez", "Carlos123!")
-    supervisor = Supervisor("Juana Fernandez", "1177777777", 40456789, date(2026, 9, 1),"jfernandez@gmail.com", "jfernandez", "Juana123!")
-    deposito = Deposito('Deposito central')
-    deposito_norte = Deposito('Deposito norte')
-    precio=Precio()
-
-    sistema.agregar_proveedor(proveedor)
-    sistema.agregar_cliente(cliente)
-    sistema.agregar_material(aluminio)
-    sistema.agregar_material(acero)
-    sistema.agregar_empleado(comprador)
-    sistema.agregar_empleado(vendedor)
-    sistema.agregar_empleado(administrador)
-    sistema.agregar_empleado(supervisor)
-    sistema.agregar_deposito(deposito)
-    sistema.agregar_deposito(deposito_norte)
-
-    proveedores = sistema.get_proveedores()
-    clientes = sistema.get_clientes()
-
-    solicitud = comprador.crear_solicitud(date(2026, 9, 29), [aluminio, acero],[150, 80], proveedor, proveedores, tareas_admin, [50,60], precio)
-    sistema.agregar_solicitud(solicitud)
-    administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor)
-    remesa = Remesa([aluminio, acero], proveedor, solicitud, [150, 80],[date(2027, 12, 31), date(2028, 6, 30)], deposito, tareas_supervisor, date(2026, 10, 4))
-    sistema.agregar_remesa(remesa)
-    supervisor.ejecutar_siguiente_tarea(tareas_supervisor, tareas_comprador)    
-    pedido = vendedor.crear_pedido_salida(date(2026, 10, 5), [aluminio, acero],[50, 20], cliente, clientes, tareas_admin)
-    sistema.agregar_pedido(pedido)
-    administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor)
-    supervisor.ejecutar_siguiente_tarea(tareas_supervisor, tareas_comprador)
-    pedido2 = vendedor.crear_pedido_salida(date(2026, 10, 6), [acero], [1000], cliente, clientes, tareas_admin)
-    sistema.agregar_pedido(pedido2)
-
-    return deposito
-    
-def hay_datos(sistema):
-    listas = [sistema.get_materiales(),
-        sistema.get_proveedores(),
-        sistema.get_clientes(),
-        sistema.get_empleados(),
-        sistema.get_depositos()]
-
-    return any(map(bool, listas))
-
 def main():
 
     sistema = Sistema()
@@ -96,9 +44,7 @@ def main():
             deposito = Deposito('Deposito central')
             sistema.agregar_deposito(deposito)
 
-    for tarea in tareas_admin.obtener_tareas():
-        print("TIPO:", tarea.get_tipo(), "OBJETO:", tarea.get_objeto())
-
+    
     sistema.guardar_estado_total(tareas_admin, tareas_supervisor, tareas_comprador, tareas_vendedor)
     
     menu = Menu(
@@ -110,6 +56,104 @@ def main():
         sistema)
 
     menu.mostrar_menu()
+
+
+
+def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprador, tareas_vendedor):
+    aluminio = Material("Aluminio", "Al", "kg", 100, 5000, 7500)
+    acero = Material("Acero", "Fe", "kg", 50, 3000, 4500)
+    algodon = Material("Tela de algodón", "100% algodón", "metros", 50, 2500, 3500)
+    poliester = Material("Tela de poliéster", "100% poliéster", "metros", 40, 1800, 2600)
+    hilo_blanco = Material("Hilo blanco", "Algodón", "rollos", 20, 900, 1400)
+    hilo_negro = Material("Hilo negro", "Poliéster", "rollos", 15, 1100, 1600)
+    botones = Material("Botones medianos", "Plástico", "unidades", 100, 80, 130)
+    cierres = Material("Cierres de 20 cm", "Metal", "unidades", 30, 450, 650)
+    elastico = Material("Elástico", "Poliéster y látex", "metros", 25, 700, 1000)
+    etiquetas = Material("Etiquetas", "Tela", "unidades", 50, 120, 200)
+
+    proveedor = Proveedor("Metalúrgica Sur", 5, "1123456789", 30123456,"proveedor@gmail.com", date(2026, 9, 1))
+    proveedor1 = Proveedor("Textil Sur", 5, "1123456789", 30123456, "textilsur@gmail.com", date(2026, 9, 1))
+    proveedor2 = Proveedor("Insumos del Centro", 3, "1134567890", 30234567, "insumoscentro@gmail.com", date(2026, 9, 1))
+    proveedor3 = Proveedor("Distribuidora Norte", 7, "1145678901", 30345678, "distribuidoranorte@gmail.com", date(2026, 9, 1))
+        
+    cliente = Cliente("AeroParts", "1198765432", 30987654,"cliente@gmail.com", date(2026, 9, 1))
+    cliente1 = Cliente("Confecciones Luna", "1156789012", 30456789, "luna@gmail.com", date(2026, 9, 1))
+    cliente2 = Cliente("Moda Urbana", "1167890123", 30567890, "modaurbana@gmail.com", date(2026, 9, 1))
+    cliente3 = Cliente("Taller Abril", "1178901234", 30678901, "tallerabril@gmail.com", date(2026, 9, 1))
+    cliente4 = Cliente("Diseño Textil", "1189012345", 30789012, "disenotextil@gmail.com", date(2026, 9, 1))
+    cliente5 = Cliente("Ropa del Sur", "1190123456", 30890123, "ropadelsur@gmail.com", date(2026, 9, 1))
+    
+    comprador = Comprador("Juan Pérez", "1112345678", 40123456, date(2026, 9, 1),"juan@aerotech.com", "jperez", "Juan123!")
+    vendedor = Vendedor("María López", "1155555555", 40234567, date(2026, 9, 1),"maria@aerotech.com", "mlopez", "Maria123!")
+    administrador = Administrador("Carlos Gómez", "1166666666", 40345678, date(2026, 9, 1),"carlos@aerotech.com", "cgomez", "Carlos123!")
+    supervisor = Supervisor("Juana Fernandez", "1177777777", 40456789, date(2026, 9, 1),"jfernandez@gmail.com", "jfernandez", "Juana123!")
+    deposito = Deposito('Deposito central')
+    deposito_norte = Deposito('Deposito norte')
+    precio=Precio()
+
+    sistema.agregar_proveedor(proveedor)
+    sistema.agregar_proveedor(proveedor1)
+    sistema.agregar_proveedor(proveedor2)
+    sistema.agregar_proveedor(proveedor3)
+
+    sistema.agregar_cliente(cliente)
+    sistema.agregar_cliente(cliente1)
+    sistema.agregar_cliente(cliente2)
+    sistema.agregar_cliente(cliente3)
+    sistema.agregar_cliente(cliente4)
+    sistema.agregar_cliente(cliente5)
+
+    materiales = [aluminio, acero, algodon, poliester,hilo_blanco, hilo_negro, botones, cierres, elastico, etiquetas]
+    for material in materiales:
+        sistema.agregar_material(material)
+
+    sistema.agregar_empleado(comprador)
+    sistema.agregar_empleado(vendedor)
+    sistema.agregar_empleado(administrador)
+    sistema.agregar_empleado(supervisor)
+
+    sistema.agregar_deposito(deposito)
+    sistema.agregar_deposito(deposito_norte)
+
+    proveedor.agregar_material(aluminio, 5000)
+    proveedor.agregar_material(acero, 3000)
+    proveedor1.agregar_material(algodon, 2500)
+    proveedor1.agregar_material(poliester, 1800)
+    proveedor1.agregar_material(hilo_blanco, 900)
+    proveedor2.agregar_material(botones, 80)
+    proveedor2.agregar_material(cierres, 450)
+    proveedor2.agregar_material(etiquetas, 120)
+    proveedor3.agregar_material(hilo_negro, 1100)
+    proveedor3.agregar_material(elastico, 700)
+    proveedor3.agregar_material(poliester, 1950)
+
+    proveedores = sistema.get_proveedores()
+    clientes = sistema.get_clientes()
+
+    solicitud = comprador.crear_solicitud(date(2026, 9, 29), [aluminio, acero],[150, 80], proveedor, proveedores, tareas_admin, [50,60], precio)
+    sistema.agregar_solicitud(solicitud)
+    administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor)
+    remesa = Remesa([aluminio, acero], proveedor, solicitud, [150, 80],[date(2027, 12, 31), date(2028, 6, 30)], deposito, tareas_supervisor, date(2026, 10, 4))
+    sistema.agregar_remesa(remesa)
+    supervisor.ejecutar_siguiente_tarea(tareas_supervisor, tareas_comprador)    
+    pedido = vendedor.crear_pedido_salida(date(2026, 10, 5), [aluminio, acero],[50, 20], cliente, clientes, tareas_admin)
+    sistema.agregar_pedido(pedido)
+    administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor)
+    supervisor.ejecutar_siguiente_tarea(tareas_supervisor, tareas_comprador)
+    pedido2 = vendedor.crear_pedido_salida(date(2026, 10, 6), [acero], [30], cliente, clientes, tareas_admin)
+    sistema.agregar_pedido(pedido2)
+
+    return deposito
+    
+def hay_datos(sistema):
+    listas = [sistema.get_materiales(),
+        sistema.get_proveedores(),
+        sistema.get_clientes(),
+        sistema.get_empleados(),
+        sistema.get_depositos()]
+
+    return any(map(bool, listas))
+
 
 if __name__ == "__main__":
     main()

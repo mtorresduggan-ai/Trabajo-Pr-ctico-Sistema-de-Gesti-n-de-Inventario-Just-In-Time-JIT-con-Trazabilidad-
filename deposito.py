@@ -31,8 +31,6 @@ class Deposito:
         total = 0
         estante = self._stock.get(material)
 
-        self._stock.get(material)
-
         if estante is not None:
             actual = estante.get_primera()
 

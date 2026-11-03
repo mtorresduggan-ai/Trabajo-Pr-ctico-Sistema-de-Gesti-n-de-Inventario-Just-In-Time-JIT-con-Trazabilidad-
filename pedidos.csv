@@ -1,3 +1,5 @@
 id,fecha,cliente_id,estado,vendedor_id,fecha_aceptacion,fecha_envio
-1,2026-10-05,2,Despachado,4,2026-11-03,
-2,2026-10-06,2,Pendiente,4,,
+1,2026-10-05,5,Despachado,12,2026-11-03,
+2,2026-10-06,5,Cancelado,12,,
+3,2026-11-03,9,Pendiente,12,,
+4,2026-11-03,7,Pendiente,12,,

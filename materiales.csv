@@ -1,3 +1,11 @@
 id,nombre,composicion,unidad_medida,punto_reposicion,precio_base,precio_venta
-1,Aluminio,Al,kg,100.0,0.0,50.0
-2,Acero,Fe,kg,50.0,0.0,60.0
+1,Aluminio,Al,kg,100.0,0.0,0.0
+2,Acero,Fe,kg,50.0,0.0,0.0
+3,Tela de algodón,100% algodón,metros,50.0,0.0,0.0
+4,Tela de poliéster,100% poliéster,metros,40.0,0.0,0.0
+5,Hilo blanco,Algodón,rollos,20.0,0.0,0.0
+6,Hilo negro,Poliéster,rollos,15.0,0.0,0.0
+7,Botones medianos,Plástico,unidades,100.0,0.0,0.0
+8,Cierres de 20 cm,Metal,unidades,30.0,0.0,0.0
+9,Elástico,Poliéster y látex,metros,25.0,0.0,0.0
+10,Etiquetas,Tela,unidades,50.0,0.0,0.0

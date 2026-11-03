@@ -26,11 +26,6 @@ class Comprador(Empleado):
 
             tareas_pendientes_admin.agregar(Tarea('solicitud', solicitud))
 
-            for material, precio in zip(materiales, precios_unitarios):
-                proveedor.agregar_material(material, precio)
-                
-                if precios is not None:
-                    precios.agregar_precio(material, proveedor)
             
             return solicitud
 
