@@ -4,6 +4,7 @@ class Tareas_pendientes:
     def __init__(self):
         self._frente = None
         self._final = None
+        self._registradas = set()
 
     def get_frente(self):
         return self._frente
@@ -34,6 +35,9 @@ class Tareas_pendientes:
 
         self._final = nuevo
 
+        if tarea.get_objeto() is not None:
+            self._registradas.add((tarea.get_tipo(), tarea.get_objeto()))
+
     def sacar(self):
         if self.es_vacia():
             raise ValueError("No hay tareas pendientes")
@@ -44,6 +48,8 @@ class Tareas_pendientes:
 
         if self._frente is None:
             self._final = None
+
+        self._registradas.discard((tarea.get_tipo(), tarea.get_objeto()))
 
         return tarea
 
@@ -66,22 +72,15 @@ class Tareas_pendientes:
 
         return cantidades
 
-
     def mostrar_cantidades(self):
         print(self.contar_tareas())
 
-    
+    def existe_tarea(self, tipo, objeto):
+        return (tipo, objeto) in self._registradas
+
     def existe_tarea_reposicion(self, material):
-        actual = self._frente
-
-        while actual is not None:
-            if actual.get_tipo() == "reponer" and actual.get_objeto() == material:
-                return True
-
-            actual = actual.get_siguiente()
-
-        return False
-
+        return self.existe_tarea("reponer", material)
+   
     def obtener_tareas(self):
         tareas = []
         actual = self._frente

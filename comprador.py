@@ -31,22 +31,21 @@ class Comprador(Empleado):
 
 
     def consultar_solicitudes_todas(self, solicitudes):
-        return [s for s in solicitudes if s.get_comprador() == self]
-
+        return list(filter(lambda solicitud: solicitud.get_comprador() == self, solicitudes))
 
     def consultar_solicitud(self, id_solicitud, solicitudes):
-        for solicitud in solicitudes:
-            if (solicitud.get_comprador() == self
-                    and solicitud.get_id_solicitud() == id_solicitud):
-                return solicitud
+        encontradas = list(filter(lambda solicitud: solicitud.get_id_solicitud() == id_solicitud,
+        self.consultar_solicitudes_todas(solicitudes)))
 
-        raise ValueError("No existe esa solicitud")
+        if len(encontradas) == 0:
+            raise ValueError("No existe esa solicitud")
 
+        return encontradas[0]
 
     def cancelar_solicitud(self, id_solicitud, solicitudes):
         solicitud = self.consultar_solicitud(id_solicitud, solicitudes)
 
-        if solicitud.get_estado() in ("Recibido", "Cancelado"):
+        if solicitud.get_estado() in ("Recibido", "Cancelado", "Rechazado"):
             raise ValueError(f"No se puede cancelar una solicitud en estado "f"'{solicitud.get_estado()}'")
 
         solicitud.set_estado("Cancelado")
@@ -56,15 +55,14 @@ class Comprador(Empleado):
     def modificar_solicitud(self, id_solicitud, solicitudes, materiales=None,cantidades=None, fecha=None, proveedor=None, estado=None, proveedores=None):
         solicitud = self.consultar_solicitud(id_solicitud, solicitudes)
 
-        if solicitud.get_estado() in ("Recibido", "Cancelado"):
+        if solicitud.get_estado() in ("Recibido", "Cancelado", "Rechazado"):
             raise ValueError(f"No se puede modificar una solicitud en estado "f"'{solicitud.get_estado()}'")
 
         precios_nuevos = None
         if materiales is not None:
             proveedor_final = proveedor if proveedor is not None else solicitud.get_proveedor()
-            precios_nuevos = []
-            for material in materiales:
-                precios_nuevos.append(proveedor_final.obtener_precio(material))
+        
+        precios_nuevos = list(map(proveedor_final.obtener_precio, materiales))
 
         parametros = {
             "materiales": (materiales, self.validar_materiales, solicitud.set_materiales),
@@ -90,7 +88,7 @@ class Comprador(Empleado):
             raise ValueError("El proveedor no esta registrado")
 
 
-    def ejecutar_siguiente_tarea(self, tareas_pendientes_comprador, fecha, proveedor, preoveedores, tareas_pendientes_admin, precios):
+    def ejecutar_siguiente_tarea(self, tareas_pendientes_comprador, fecha, proveedor, proveedores, tareas_pendientes_admin, precios):
         tarea = tareas_pendientes_comprador.ver_primera()
 
         if tarea is None:

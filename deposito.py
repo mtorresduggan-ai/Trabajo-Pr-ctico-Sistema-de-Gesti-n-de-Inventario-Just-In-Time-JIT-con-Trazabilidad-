@@ -38,7 +38,7 @@ class Deposito:
                 vencimiento = actual.get_fecha_vencimiento()
                 if fecha is None or vencimiento is None or vencimiento >= fecha:
                     total += actual.get_cantidad()
-                    actual = actual.get_prox()
+                actual = actual.get_prox()
         return total
 
     @staticmethod

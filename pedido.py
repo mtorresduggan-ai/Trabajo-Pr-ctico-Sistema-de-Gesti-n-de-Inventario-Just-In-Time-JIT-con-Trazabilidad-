@@ -90,6 +90,6 @@ class Pedido_salida(Movimiento):
 
     @staticmethod
     def validar_estado(estado):
-        estados_validos = ['Pendiente', 'En preparacion', 'Despachado','Entregado', 'Cancelado']
+        estados_validos = ['Pendiente', 'En preparacion', 'Despachado','Entregado', 'Cancelado', 'Rechazado']
         if estado not in estados_validos:
             raise ValueError(f"Estado no valido. Solo se permiten: {estados_validos}")

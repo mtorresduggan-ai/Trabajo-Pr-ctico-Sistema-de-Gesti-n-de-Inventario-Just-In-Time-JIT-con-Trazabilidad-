@@ -17,10 +17,7 @@ class MenuAdministrador(Menu):
     def menu_administrador(self):
         opciones = {
             '1': lambda: self.tareas_admin.mostrar_cantidades(), 
-            '2': lambda: self.administrador.ejecutar_siguiente_tarea(
-                self.tareas_admin,
-                self.input_deposito("Seleccione el depósito sobre el que impactará la tarea:"),
-                self.tareas_supervisor),
+            '2': self.input_ejecutar_tarea,
             '3': self.input_crear_transferencia,
             '4': lambda: self.administrador.baja_empleado(self.input_empleado(), self.sistema.get_empleados()),
             '5': self.input_modificar_empleado,
@@ -44,20 +41,31 @@ class MenuAdministrador(Menu):
 
     def input_empleado(self):
         print("\nSeleccione un empleado:")
-        for i, emp in enumerate(self.sistema._empleados, start=1):
+        for i, emp in enumerate(self.sistema.get_empleados(), start=1):
             print(f"{i}. {emp.get_nombre()} (DNI: {emp.get_dni()})")
 
         opcion = self.pedir_int("Ingrese el número del empleado (o 'volver'): ")
-        return self.sistema._empleados[opcion - 1]
+        return self.sistema.get_empleados()[opcion - 1]
 
     def input_deposito(self, mensaje="Seleccione un depósito:"):
         print(f"\n{mensaje}")
-        for i, dep in enumerate(self.sistema._depositos, start=1):
+        for i, dep in enumerate(self.sistema.get_depositos(), start=1):
             print(f"{i}. {dep.get_nombre()}")
 
         opcion = self.pedir_int("Ingrese el número del depósito (o 'volver'): ")
-        return self.sistema._depositos[opcion - 1]
+        return self.sistema.get_depositos()[opcion - 1]
 
+    def input_ejecutar_tarea(self):
+        tarea = self.tareas_admin.ver_primera()
+        if tarea is None:
+            raise ValueError("No hay tareas pendientes")
+
+        print(f"\nSiguiente tarea: {tarea.get_objeto()}")
+        deposito = self.input_deposito("Seleccione el depósito sobre el que impactará la tarea:")
+        decision = self.pedir("¿Aceptar o rechazar? (aceptar/rechazar): ").lower()
+
+        return self.administrador.ejecutar_siguiente_tarea(self.tareas_admin, deposito, self.tareas_supervisor, decision)
+    
     def input_crear_transferencia(self):
         print("\n--- CREAR TRANSFERENCIA ENTRE DEPÓSITOS ---")
         dep_origen = self.input_deposito("Depósito de origen:")

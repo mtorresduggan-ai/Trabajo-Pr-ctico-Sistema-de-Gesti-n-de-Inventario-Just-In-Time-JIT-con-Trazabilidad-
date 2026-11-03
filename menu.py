@@ -33,9 +33,6 @@ class Menu:
         opcion = input("Elegí una opción: ").strip()
 
         if opcion == "0":
-            if self.sistema is not None:
-                self.sistema.guardar_estado_total(self.tareas_admin, self.tareas_supervisor, self.tareas_comprador, self.tareas_vendedor)
-                print("¡Datos guardados correctamente!")
             Menu.volver()
 
         elif opcion == "1":
@@ -94,7 +91,7 @@ class Menu:
 
         while True:
             print("\n--- Seleccionar Material ---")
-            for i, material in enumerate(self.sistema._materiales, start=1):
+            for i, material in enumerate(self.sistema.get_materiales(), start=1):
                 print(f"{i}. {material}")
 
             if permitir_nuevo:
@@ -111,9 +108,9 @@ class Menu:
                     material_temp = Material(nombre, composicion, unidad, punto_reposicion=0)
                     self.sistema.agregar_material(material_temp)
                 else:
-                    if opcion < 1 or opcion > len(self.sistema._materiales):
+                    if opcion < 1 or opcion > len(self.sistema.get_materiales()):
                         raise ValueError("Seleccione un material existente.")
-                    material_temp = self.sistema._materiales[opcion - 1]
+                    material_temp = self.sistema.get_materiales()[opcion - 1]
 
                 cant = self.pedir_int("Cantidad (> 0): ")
                 if cant <= 0:
@@ -136,19 +133,19 @@ class Menu:
 
     def input_proveedor(self):
         print('---SELECCIONAR PROOVEDOR---')
-        for i, proveedor in enumerate(self.sistema._proveedores, start=1):
+        for i, proveedor in enumerate(self.sistema.get_proveedores(), start=1):
             print(f"{i}. {proveedor}")
 
         opcion = self.pedir_int("Ingrese el número del proveedor (o 'volver'): ")
-        return self.sistema._proveedores[opcion - 1]
+        return self.sistema.get_proveedores()[opcion - 1]
 
     def input_cliente(self):
         print('---SELECCIONAR CLIENTE---')
-        for i, cliente in enumerate(self.sistema._clientes, start=1):
+        for i, cliente in enumerate(self.sistema.get_clientes(), start=1):
             print(f"{i}. {cliente}")
 
         opcion = self.pedir_int("Ingrese el número del cliente (o 'volver'): ")
-        return self.sistema._clientes[opcion - 1]
+        return self.sistema.get_clientes()[opcion - 1]
 
     def login(self):
         print("---INICIO DE SESIÓN---")
@@ -156,15 +153,11 @@ class Menu:
         usuario_ingresado = input("Usuario: ").strip()
         clave_ingresada = input("Clave: ").strip()
 
-        for empleado in self.sistema._empleados:
-            if (empleado.get_fecha_baja() is None and
-                empleado.get_usuario() == usuario_ingresado and
-                empleado.get_clave() == clave_ingresada):
+        empleado = self.sistema.autenticar(usuario_ingresado, clave_ingresada)
 
-                print(f"\n¡Bienvenido/a {empleado.get_nombre()}!")
-                return empleado
+        print(f"\n¡Bienvenido/a {empleado.get_nombre()}!")
+        return empleado
 
-        raise ValueError("Usuario o contraseña incorrectos")
 
     @staticmethod
     def volver():

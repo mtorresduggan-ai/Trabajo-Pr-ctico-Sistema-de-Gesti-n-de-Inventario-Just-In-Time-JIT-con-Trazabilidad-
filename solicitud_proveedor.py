@@ -74,10 +74,7 @@ class Solicitud_proveedor(Movimiento):
         return self.get_cantidades()[posicion] * self.get_precios_unitarios()[posicion]
 
     def calcular_total(self):
-        total = 0
-        for i in range(len(self.get_materiales())):
-            total += self.calcular_subtotal(i)
-        return total
+        return sum(map(self.calcular_subtotal, range(len(self.get_materiales()))))
 
     def __str__(self):
         return ('ID Solicitud: ' + str(self.get_id_solicitud())
@@ -87,7 +84,7 @@ class Solicitud_proveedor(Movimiento):
 
     @staticmethod
     def validar_estado(estado):
-        estados_validos = ['Pendiente', 'Solicitado', 'Recibido', 'Cancelado']
+        estados_validos = ['Pendiente', 'Solicitado', 'Recibido', 'Cancelado', 'Rechazado']
 
         if estado not in estados_validos:
             raise ValueError(f"Estado no valido. Solo se permiten: {estados_validos}")

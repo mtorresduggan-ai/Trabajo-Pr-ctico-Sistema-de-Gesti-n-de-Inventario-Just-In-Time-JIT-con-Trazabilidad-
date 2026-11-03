@@ -15,6 +15,7 @@ from solicitud_proveedor import Solicitud_proveedor
 from pedido import Pedido_salida
 from remesa import Remesa
 from tarea import Tarea
+from arbol import Arbol
 
 
 class Sistema:
@@ -28,6 +29,7 @@ class Sistema:
         self._solicitudes = []
         self._pedidos = []
         self._remesas = []
+        self._arbol_materiales = Arbol()
 
     @staticmethod
     def convertir_fecha(texto_fecha):
@@ -57,7 +59,7 @@ class Sistema:
 
     def cargar_materiales(self):
         filas = GestorArchivos.leer_csv_dict("materiales.csv")
-
+        materiales = []
         for fila in filas:
             material = Material(
                 fila["nombre"],
@@ -67,7 +69,8 @@ class Sistema:
                 id_manual=fila["id"],
                 precio_base=float(fila["precio_base"]),
                 precio_venta=float(fila["precio_venta"]))
-            self._materiales.append(material)
+            materiales.append(material)
+        self.agregar_materiales(materiales)
 
     def agregar_pedido(self, pedido):
         self._pedidos.append(pedido)
@@ -468,8 +471,27 @@ class Sistema:
                 proveedor_encontrado.agregar_material(material_encontrado, float(fila["precio"]))
 
     def agregar_material(self, material):
+        self._arbol_materiales.insertar(material.get_nombre().strip().lower(), material)
         self._materiales.append(material)
-    
+
+    def agregar_materiales(self, materiales):
+        pares = list(map(lambda material: (material.get_nombre().strip().lower(), material), materiales))
+        pares_ordenados = sorted(pares, key=lambda par: par[0])
+
+        self._arbol_materiales.insertar_balanceado(pares_ordenados)
+        self._materiales.extend(materiales)
+
+    def buscar_material_por_nombre(self, nombre):
+        return self._arbol_materiales.buscar(nombre.strip().lower())
+
+    def get_pasos_ultima_busqueda(self):
+        return self._arbol_materiales.get_pasos_ultima_busqueda()
+
+    def get_cantidad_materiales(self):
+        return self._arbol_materiales.get_cantidad()
+
+    def get_materiales_ordenados(self):
+        return self._arbol_materiales.recorrido_inorden()
     def agregar_solicitud(self, solicitud):
         self._solicitudes.append(solicitud)
 
@@ -500,9 +522,18 @@ class Sistema:
     def get_depositos(self):
         return self._depositos.copy()
 
+    def autenticar(self, usuario, clave):
+        coincidencias = list(filter(lambda empleado: empleado.get_fecha_baja() is None
+            and empleado.get_usuario() == usuario
+            and empleado.get_clave() == clave, self._empleados))
+
+        if len(coincidencias) == 0:
+            raise ValueError("Usuario o contraseña incorrectos")
+
+        return coincidencias[0]
+    
     def agregar_empleado(self, empleado):
         self._empleados.append(empleado)
-
 
     def buscar_por_id(self, lista, id_objeto, metodo_id):
         for objeto in lista:

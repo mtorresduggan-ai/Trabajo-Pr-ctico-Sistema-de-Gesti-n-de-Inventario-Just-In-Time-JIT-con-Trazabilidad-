@@ -1,6 +1,7 @@
 from supervisor import Supervisor
 from menu import Menu
 from datetime import date
+import math
 from remesa import Remesa
 
 
@@ -21,26 +22,25 @@ class MenuSupervisor(Menu):
             "2": lambda: self.supervisor.ejecutar_siguiente_tarea(self.tareas_supervisor, self.tareas_comprador),
             "3": lambda: self.supervisor.revisar_vencimientos(self.deposito, self.tareas_supervisor),
             "4": lambda: self.supervisor.generar_reporte_stock(self.deposito),
-            "5": self.input_registrar_remesa}
+            "5": self.input_registrar_remesa,
+            "6": self.input_buscar_material,
+            "7": self.input_listar_materiales}
         
         self.pantalla("MENÚ SUPERVISOR", [
             "1. Mostrar tareas pendientes y cantidades",
             "2. Ejecutar siguiente tarea",
             "3. Revisar vencidos",
             "4. Generar reporte",
-            "5. Registrar llegada de remesa"], opciones)
+            "5. Registrar llegada de remesa",
+            "6. Buscar material por nombre",
+            "7. Listar materiales en orden alfabético"]
+            , opciones)
 
     def tiene_remesa(self, solicitud):
-        for remesa in self.sistema.get_remesas():
-            if remesa.get_solicitud() == solicitud:
-                return True
-        return False
+        return any(map(lambda remesa: remesa.get_solicitud() == solicitud, self.sistema.get_remesas()))
 
     def input_registrar_remesa(self):
-        solicitudes = []
-        for solicitud in self.sistema.get_solicitudes():
-            if solicitud.get_estado() == "Solicitado" and not self.tiene_remesa(solicitud):
-                solicitudes.append(solicitud)
+        solicitudes = list(filter(lambda solicitud: solicitud.get_estado() == "Solicitado" and not self.tiene_remesa(solicitud), self.sistema.get_solicitudes()))
 
         if len(solicitudes) == 0:
             return "No hay solicitudes aceptadas esperando una remesa."
@@ -74,3 +74,27 @@ class MenuSupervisor(Menu):
         self.sistema.agregar_remesa(remesa)
 
         return f"Remesa N° {remesa.get_id_remesa()} registrada. Ejecutá la siguiente tarea para ingresarla al depósito."
+
+    def texto_material(self, material):
+        unidad = material.get_unidad_medida()
+        return (f"{material.get_nombre()} (ID {material.get_id_material()})"
+            f" - Stock total: {self.deposito.stock_total(material)} {unidad}"
+            f" - Disponible: {self.deposito.stock_total(material, date.today())} {unidad}"
+            f" - Punto de reposición: {material.get_punto_reposicion()} {unidad}")
+
+    def input_buscar_material(self):
+        nombre = self.pedir("Nombre del material: ")
+        material = self.sistema.buscar_material_por_nombre(nombre)
+
+        pasos = self.sistema.get_pasos_ultima_busqueda()
+        n = self.sistema.get_cantidad_materiales()
+        print(f"[Árbol] Encontrado en {pasos} pasos | n = {n} materiales | "
+            f"log2(n) = {math.log2(n):.2f} | una búsqueda lineal revisaría hasta {n}")
+
+        return self.texto_material(material)
+
+    def input_listar_materiales(self):
+        texto = "\n--- MATERIALES (A-Z) ---\n"
+        for material in self.sistema.get_materiales_ordenados():
+            texto += self.texto_material(material) + "\n"
+        return texto

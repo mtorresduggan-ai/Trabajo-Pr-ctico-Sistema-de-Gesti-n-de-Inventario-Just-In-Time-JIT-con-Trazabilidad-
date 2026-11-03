@@ -14,10 +14,7 @@ class Vendedor(Empleado):
         self.validar_cliente(cliente, clientes)
         self.validar_listas(materiales, cantidades)
 
-        precios_unitarios = []
-
-        for material in materiales:
-            precios_unitarios.append(material.get_precio_venta())
+        precios_unitarios = list(map(lambda material: material.get_precio_venta(), materiales))
 
         pedido = Pedido_salida(fecha, materiales, cantidades, precios_unitarios, cliente, "Pendiente", self)
         
@@ -27,20 +24,22 @@ class Vendedor(Empleado):
 
 
     def consultar_pedido_todos(self, pedidos):
-        return [p for p in pedidos if p.get_vendedor() == self]
+        return list(filter(lambda pedido: pedido.get_vendedor() == self, pedidos))
 
 
     def consultar_pedido(self, id_pedido, pedidos):
-        for pedido in pedidos:
-            if (pedido.get_vendedor() == self and pedido.get_id_pedido() == id_pedido):
-                return pedido
-        raise ValueError("No existe ese pedido")
+        encontrados = list(filter(lambda pedido: pedido.get_id_pedido() == id_pedido,
+        self.consultar_pedido_todos(pedidos)))
 
+        if len(encontrados) == 0:
+            raise ValueError("No existe ese pedido")
+
+        return encontrados[0]
 
     def cancelar_pedido(self, id_pedido, pedidos):
         pedido = self.consultar_pedido(id_pedido, pedidos)
 
-        if pedido.get_estado() in ("Entregado", "Cancelado"):
+        if pedido.get_estado() in ("Entregado", "Cancelado", "Rechazado"):
             raise ValueError(f"No se puede cancelar un pedido en estado "f"'{pedido.get_estado()}'")
 
         pedido.set_estado("Cancelado")
@@ -50,14 +49,12 @@ class Vendedor(Empleado):
     def modificar_pedido(self, id_pedido, pedidos, materiales=None,cantidades=None, fecha=None, cliente=None, estado=None, clientes=None):
         pedido = self.consultar_pedido(id_pedido, pedidos)
         
-        if pedido.get_estado() in ("Entregado", "Cancelado"):
+        if pedido.get_estado() in ("Entregado", "Cancelado", "Rechazado"):
             raise ValueError(f"No se puede modificar un pedido en estado '{pedido.get_estado()}'")
         
         precios_nuevos = None
         if materiales is not None:
-            precios_nuevos = []
-            for material in materiales:
-                precios_nuevos.append(material.get_precio_venta())
+            precios_nuevos = list(map(lambda material: material.get_precio_venta(), materiales))
 
         campos = {"materiales": (materiales, Empleado.validar_materiales, pedido.set_materiales),
             "cantidades": (cantidades, Empleado.validar_cantidades, pedido.set_cantidades),

@@ -66,8 +66,7 @@ class Proveedor(Individuo):
     def obtener_precio(self, material):
         codigo = material.get_id_material()
         if codigo not in self._precios_materiales:
-            raise ValueError("El proveedor no ofrece este material")
-        
+            raise ValueError(f"El proveedor {self.get_nombre()} no vende el material {material.get_nombre()}.")
         return self._precios_materiales[codigo]
     
     @staticmethod

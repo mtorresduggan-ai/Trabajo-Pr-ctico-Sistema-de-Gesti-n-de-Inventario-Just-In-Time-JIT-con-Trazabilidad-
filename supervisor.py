@@ -109,27 +109,8 @@ class Supervisor(Empleado):
             print(tipo, ":", cantidad)
         
     def revisar_vencimientos(self, deposito, tareas_supervisor):
-        fecha_actual = date.today()
-        hay_vencidas = False
-
-        for estante in deposito.get_stock().values():
-            if estante.hay_cajas_vencidas(fecha_actual):
-                hay_vencidas = True
-                break
-
-        if hay_vencidas:
-            tarea = tareas_supervisor.get_frente()
-            existe = False
-
-            while tarea is not None:
-                if (tarea.get_tipo() == "retirar_vencidos" and tarea.get_objeto() == deposito):
-                    existe = True
-                    break
-
-                tarea = tarea.get_siguiente()
-
-            if not existe:
-                tareas_supervisor.agregar(Tarea("retirar_vencidos", deposito))
+        if hay_vencidas and not tareas_supervisor.existe_tarea("retirar_vencidos", deposito):
+            tareas_supervisor.agregar(Tarea("retirar_vencidos", deposito))
 
     def retirar_vencidos(self, deposito):
         fecha_actual = date.today()
