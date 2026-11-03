@@ -58,23 +58,33 @@ class Comprador(Empleado):
         return solicitud
 
 
-    def modificar_solicitud(self, id_solicitud, solicitudes, materiales=None,cantidades=None, fecha=None, proveedor=None, estado=None):
+    def modificar_solicitud(self, id_solicitud, solicitudes, materiales=None,cantidades=None, fecha=None, proveedor=None, estado=None, proveedores=None):
         solicitud = self.consultar_solicitud(id_solicitud, solicitudes)
 
         if solicitud.get_estado() in ("Recibido", "Cancelado"):
             raise ValueError(f"No se puede modificar una solicitud en estado "f"'{solicitud.get_estado()}'")
 
+        precios_nuevos = None
+        if materiales is not None:
+            proveedor_final = proveedor if proveedor is not None else solicitud.get_proveedor()
+            precios_nuevos = []
+            for material in materiales:
+                precios_nuevos.append(proveedor_final.obtener_precio(material))
+
         parametros = {
             "materiales": (materiales, self.validar_materiales, solicitud.set_materiales),
             "cantidades": (cantidades, self.validar_cantidades, solicitud.set_cantidades),
             "fecha": (fecha, self.validar_fecha, solicitud.set_fecha),
-            "proveedor": (proveedor, self.validar_proveedor, solicitud.set_proveedor),
+            "proveedor": (proveedor, lambda valor: self.validar_proveedor(valor, proveedores), solicitud.set_proveedor),
             "estado": (estado, Solicitud_proveedor.validar_estado, solicitud.set_estado)}
 
         for valor, validar, set_valor in parametros.values():
             if valor is not None:
                 validar(valor)
                 set_valor(valor)
+        
+        if precios_nuevos is not None:
+            solicitud.set_precios_unitarios(precios_nuevos)
 
         return solicitud
 
@@ -85,7 +95,7 @@ class Comprador(Empleado):
             raise ValueError("El proveedor no esta registrado")
 
 
-    def ejecutar_siguiente_tarea(self, tareas_pendientes_comprador, fecha, proveedor, tareas_pendientes_admin, precios):
+    def ejecutar_siguiente_tarea(self, tareas_pendientes_comprador, fecha, proveedor, preoveedores, tareas_pendientes_admin, precios):
         tarea = tareas_pendientes_comprador.ver_primera()
 
         if tarea is None:
@@ -96,10 +106,11 @@ class Comprador(Empleado):
 
             precio = proveedor.obtener_precio(material)
 
-            self.crear_solicitud(fecha,
+            solicitud = self.crear_solicitud(fecha,
                 [material],
                 [material.get_punto_reposicion()],
                 proveedor,
+                proveedores,
                 tareas_pendientes_admin,
                 [precio],
                 precios)
@@ -108,6 +119,7 @@ class Comprador(Empleado):
             raise ValueError('Tipo de tarea desconocido')
 
         tareas_pendientes_comprador.sacar()
+        return solicitud
 
     @staticmethod
     def validar_listas(materiales, cantidades):

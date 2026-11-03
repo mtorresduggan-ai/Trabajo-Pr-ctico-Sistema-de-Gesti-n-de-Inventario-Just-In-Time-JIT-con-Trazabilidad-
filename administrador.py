@@ -26,7 +26,7 @@ class Administrador(Empleado):
             if material not in deposito.get_stock():
                 raise ValueError(f"No hay stock de {material.get_nombre()}")
 
-            stock_total = deposito.stock_total(material)
+            stock_total = deposito.stock_total(material, date.today())
 
             if stock_total < cantidad:
                 raise ValueError(f"No hay suficiente stock de {material.get_nombre()}")
@@ -47,7 +47,7 @@ class Administrador(Empleado):
             if material not in deposito_origen.get_stock():
                 raise ValueError(f"No hay stock de {material.get_nombre()} en el depósito de origen")
 
-            stock_disponible = deposito_origen.stock_total(material)
+            stock_disponible = deposito_origen.stock_total(material, date.today())
             if stock_disponible < cantidad:
                 raise ValueError(f"Transferencia cancelada: Stock insuficiente de {material.get_nombre()} en origen. ")
 
@@ -61,18 +61,24 @@ class Administrador(Empleado):
         if tarea is None:
             raise ValueError("No hay tareas pendientes")
 
+        objeto = tarea.get_objeto()
+        tareas_pendientes_admin.sacar()
+
         if tarea.get_tipo() == "solicitud":
-            self.aceptar_solicitud(tarea.get_objeto())
+            self.aceptar_solicitud(objeto)
 
         elif tarea.get_tipo() == "pedido":
-            self.aceptar_pedido_salida(tarea.get_objeto(), deposito)
+            try:
+                self.aceptar_pedido_salida(objeto, deposito)
+            except ValueError as error:
+                if objeto.get_estado() == "Pendiente":
+                    objeto.set_estado("Cancelado")
+                raise ValueError(f"Pedido N° {objeto.get_id_pedido()} rechazado: {error}")
 
-            tareas_pendientes_supervisor.agregar(Tarea("pedido", tarea.get_objeto(), deposito))
+            tareas_pendientes_supervisor.agregar(Tarea("pedido", objeto, deposito))
 
         else:
             raise ValueError('Tipo de tarea desconocido')
-
-        tareas_pendientes_admin.sacar()
 
 
     def baja_empleado(self, empleado, empleados):

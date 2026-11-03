@@ -34,7 +34,7 @@ class Menu:
 
         if opcion == "0":
             if self.sistema is not None:
-                self.sistema.guardar_solicitudes()
+                self.sistema.guardar_estado_total(self.tareas_admin, self.tareas_supervisor, self.tareas_comprador, self.tareas_vendedor)
                 print("¡Datos guardados correctamente!")
             Menu.volver()
 
@@ -57,8 +57,8 @@ class Menu:
         creadores = {
             Comprador: lambda: MenuComprador(empleado, self.tareas_comprador, self.tareas_admin, self.sistema).menu_comprador,
             Vendedor: lambda: MenuVendedor(empleado, self.tareas_vendedor, self.tareas_admin, self.sistema).menu_vendedor,
-            Administrador: lambda: MenuAdministrador(empleado, self.tareas_admin, self.tareas_supervisor).menu_administrador,
-            Supervisor: lambda: MenuSupervisor(empleado, self.tareas_supervisor, self.tareas_comprador, self.deposito).menu_supervisor,
+            Administrador: lambda: MenuAdministrador(empleado, self.tareas_admin, self.tareas_supervisor, self.sistema).menu_administrador,
+            Supervisor: lambda: MenuSupervisor(empleado, self.tareas_supervisor, self.tareas_comprador, self.deposito, self.sistema).menu_supervisor,
         }
         Menu.pila.append(creadores[type(empleado)]())
 
@@ -107,6 +107,7 @@ class Menu:
                     unidad = self.pedir("Unidad: ")
                     from material import Material
                     material_temp = Material(nombre, composicion, unidad, punto_reposicion=0)
+                    self.sistema.agregar_material(material_temp)
                 else:
                     material_temp = self.sistema._materiales[opcion - 1]
 

@@ -22,13 +22,13 @@ class MenuAdministrador(Menu):
                 self.input_deposito("Seleccione el depósito sobre el que impactará la tarea:"),
                 self.tareas_supervisor),
             '3': self.input_crear_transferencia,
-            '4': lambda: self.administrador.baja_empleado(self.input_empleado()),
+            '4': lambda: self.administrador.baja_empleado(self.input_empleado(), self.sistema.get_empleados()),
             '5': self.input_modificar_empleado,
-            '6': lambda: self.administrador.baja_proveedor(self.input_proveedor()),
-            '7': lambda: self.administrador.baja_cliente(self.input_cliente()),
-            '8': self.administrador.generar_reporte_empleados,
-            '9': self.administrador.generar_reporte_proveedores,
-            '10': self.administrador.generar_reporte_clientes}
+            '6': lambda: self.administrador.baja_proveedor(self.input_proveedor(), self.sistema.get_proveedores()),
+            '7': lambda: self.administrador.baja_cliente(self.input_cliente(), self.sistema.get_clientes()),
+            '8': lambda: self.administrador.generar_reporte_empleados(self.sistema.get_empleados()),
+            '9': lambda: self.administrador.generar_reporte_proveedores(self.sistema.get_proveedores()),
+            '10': lambda: self.administrador.generar_reporte_clientes(self.sistema.get_clientes())}
 
         self.pantalla("MENÚ ADMINISTRADOR", [
             "1. Mostrar tareas pendientes",
@@ -79,6 +79,7 @@ class MenuAdministrador(Menu):
         clave = self.pedir("Nueva clave: ") or None
 
         self.administrador.modificar_empleado(empleado=empleado,
+            empleados = self.sistema.get_empleados(),
             nombre=nombre,
             telefono=telefono,
             email=email,

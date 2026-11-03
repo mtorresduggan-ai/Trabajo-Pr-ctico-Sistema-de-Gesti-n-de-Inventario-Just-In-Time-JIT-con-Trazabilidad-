@@ -1,1 +1,4 @@
 deposito,material_id,fecha_vencimiento,cantidad
+Deposito central,1,2027-12-31,80.0
+Deposito central,2,2028-06-30,60.0
+Deposito norte,1,2027-12-31,20.0

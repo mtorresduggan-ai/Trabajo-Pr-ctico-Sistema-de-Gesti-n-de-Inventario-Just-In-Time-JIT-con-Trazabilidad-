@@ -414,7 +414,7 @@ class Sistema:
                     proveedor_encontrado = proveedor
 
             for solicitud in self._solicitudes:
-                if solicitud.get_id_solicitud() == int(fila["solicitud_id"]):
+                if fila["solicitud_id"] != "" and solicitud.get_id_solicitud() == int(fila["solicitud_id"]):
                     solicitud_encontrada = solicitud
 
             materiales = []
@@ -469,6 +469,18 @@ class Sistema:
 
     def agregar_material(self, material):
         self._materiales.append(material)
+    
+    def agregar_solicitud(self, solicitud):
+        self._solicitudes.append(solicitud)
+
+    def get_solicitudes(self):
+        return self._solicitudes.copy()
+
+    def agregar_remesa(self, remesa):
+        self._remesas.append(remesa)
+
+    def get_remesas(self):
+        return self._remesas.copy()
 
     def agregar_proveedor(self, proveedor):
         self._proveedores.append(proveedor)

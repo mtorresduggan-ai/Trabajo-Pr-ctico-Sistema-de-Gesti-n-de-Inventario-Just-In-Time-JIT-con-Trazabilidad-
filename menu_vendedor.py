@@ -1,6 +1,5 @@
 from datetime import date
 from menu import Menu
-from excepciones import VolverAtras
 
 
 class MenuVendedor(Menu):
@@ -14,10 +13,10 @@ class MenuVendedor(Menu):
 
     def menu_vendedor(self):
         opciones = {
-            '1': lambda: self.vendedor.crear_pedido_salida(date.today(), *self.input_materiales_cantidades(), self.input_cliente(), self.tareas_admin),
-            '2': lambda: self.vendedor.cancelar_pedido(self.pedir_int("ID del pedido a cancelar: ")),
-            '3': self.vendedor.consultar_pedido_todos,
-            '4': lambda: self.vendedor.consultar_pedido(self.pedir_int("ID del pedido: ")),
+            '1': self.input_crear_pedido,
+            '2': lambda: self.vendedor.cancelar_pedido(self.pedir_int("ID del pedido a cancelar: "), self.sistema._pedidos),
+            '3': self.input_consultar_todos,
+            '4': lambda: self.vendedor.consultar_pedido(self.pedir_int("ID del pedido: "), self.sistema._pedidos),
             '5': self.input_modificar_pedido}
 
         self.pantalla("MENÚ VENDEDOR", [
@@ -26,6 +25,25 @@ class MenuVendedor(Menu):
             "3. Consultar todos los pedidos",
             "4. Consultar pedido por ID",
             "5. Modificar pedido"], opciones)
+
+    def input_crear_pedido(self):
+        materiales, cantidades = self.input_materiales_cantidades()
+        cliente = self.input_cliente()
+
+        pedido = self.vendedor.crear_pedido_salida(date.today(), materiales, cantidades, cliente, self.sistema.get_clientes(), self.tareas_admin)
+        self.sistema.agregar_pedido(pedido)
+
+        return f"\n ¡Pedido N° {pedido.get_id_pedido()} generado con éxito!"
+
+    def input_consultar_todos(self):
+        pedidos = self.vendedor.consultar_pedido_todos(self.sistema._pedidos)
+        if not pedidos:
+            return "\nNo tenés pedidos registrados."
+
+        texto = "\n=== MIS PEDIDOS ===\n"
+        for pedido in pedidos:
+            texto += str(pedido) + "\n"
+        return texto
 
     def input_modificar_pedido(self):
         id_movimiento = self.pedir_int("ID del pedido a modificar: ")
@@ -47,26 +65,11 @@ class MenuVendedor(Menu):
         estado = estado_str if estado_str else None
 
         return self.vendedor.modificar_pedido(
-            id_movimiento=id_movimiento,
+            id_pedido=id_movimiento,
+            pedidos=self.sistema._pedidos,
+            clientes=self.sistema.get_clientes(),
             materiales=materiales,
             cantidades=cantidades,
             fecha=fecha,
             cliente=cliente,
             estado=estado)
-
-    def input_materiales_cantidades_venta(self):
-        stock = self.deposito.get_stock()
-        disponibles = [mat for mat, estante in stock.items() if estante.obtener_cantidad_total() > 0]
-
-        if not disponibles:
-            print("No hay stock disponible en el depósito.")
-            raise VolverAtras()
-
-        # Usamos una lista temporal para que el menú base maneje la selección limpia
-        originales = self.sistema._materiales
-        self.sistema._materiales = disponibles
-        
-        try:
-            return super().input_materiales_cantidades()
-        finally:
-            self.sistema._materiales = originales

@@ -27,16 +27,20 @@ class Deposito:
 
         return texto
 
-    def stock_total(self, material):
+    def stock_total(self, material, fecha=None):
         total = 0
         estante = self._stock.get(material)
+
+        self._stock.get(material)
 
         if estante is not None:
             actual = estante.get_primera()
 
             while actual is not None:
-                total += actual.get_cantidad()
-                actual = actual.get_prox()
+                vencimiento = actual.get_fecha_vencimiento()
+                if fecha is None or vencimiento is None or vencimiento >= fecha:
+                    total += actual.get_cantidad()
+                    actual = actual.get_prox()
         return total
 
     @staticmethod

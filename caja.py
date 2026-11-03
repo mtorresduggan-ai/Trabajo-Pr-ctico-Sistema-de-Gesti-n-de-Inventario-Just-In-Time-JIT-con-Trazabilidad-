@@ -34,7 +34,7 @@ class Caja:
     
     @staticmethod
     def _validar_fecha_vencimiento(fecha):
-        if not isinstance(fecha, date):
+        if fecha is not None and not isinstance(fecha, date):
             raise TypeError("La fecha de vencimiento debe ser una fecha")
 
     @staticmethod

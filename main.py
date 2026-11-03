@@ -25,6 +25,7 @@ def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprado
     administrador = Administrador("Carlos Gómez", "1166666666", 40345678, date(2026, 9, 1),"carlos@aerotech.com", "cgomez", "Carlos123!")
     supervisor = Supervisor("Juana Fernandez", "1177777777", 40456789, date(2026, 9, 1),"jfernandez@gmail.com", "jfernandez", "Juana123!")
     deposito = Deposito('Deposito central')
+    deposito_norte = Deposito('Deposito norte')
     precio=Precio()
 
     sistema.agregar_proveedor(proveedor)
@@ -36,20 +37,23 @@ def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprado
     sistema.agregar_empleado(administrador)
     sistema.agregar_empleado(supervisor)
     sistema.agregar_deposito(deposito)
-    sistema.agregar_pedido(pedido)
-    sistema.agregar_pedido(pedido)
+    sistema.agregar_deposito(deposito_norte)
 
     proveedores = sistema.get_proveedores()
     clientes = sistema.get_clientes()
 
     solicitud = comprador.crear_solicitud(date(2026, 9, 29), [aluminio, acero],[150, 80], proveedor, proveedores, tareas_admin, [50,60], precio)
+    sistema.agregar_solicitud(solicitud)
     administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor)
     remesa = Remesa([aluminio, acero], proveedor, solicitud, [150, 80],[date(2027, 12, 31), date(2028, 6, 30)], deposito, tareas_supervisor, date(2026, 10, 4))
+    sistema.agregar_remesa(remesa)
     supervisor.ejecutar_siguiente_tarea(tareas_supervisor, tareas_comprador)    
     pedido = vendedor.crear_pedido_salida(date(2026, 10, 5), [aluminio, acero],[50, 20], cliente, clientes, tareas_admin)
+    sistema.agregar_pedido(pedido)
     administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor)
     supervisor.ejecutar_siguiente_tarea(tareas_supervisor, tareas_comprador)
     pedido2 = vendedor.crear_pedido_salida(date(2026, 10, 6), [acero], [1000], cliente, clientes, tareas_admin)
+    sistema.agregar_pedido(pedido2)
 
     return deposito
     

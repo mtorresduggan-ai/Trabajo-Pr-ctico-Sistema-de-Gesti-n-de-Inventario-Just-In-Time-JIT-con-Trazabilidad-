@@ -76,7 +76,7 @@ class Material:
             raise TypeError("El stock actual debe ser un número")
         if stock_actual < 0:
             raise ValueError("El stock actual no puede ser negativo")
-        return stock_actual <= self._punto_reposicion
+        return stock_actual < self._punto_reposicion
 
     def __str__(self):
         return 'Material: ' + self._nombre + ', Composicion: ' + self._composicion + ', Unidad de medida: ' + self._unidad_medida

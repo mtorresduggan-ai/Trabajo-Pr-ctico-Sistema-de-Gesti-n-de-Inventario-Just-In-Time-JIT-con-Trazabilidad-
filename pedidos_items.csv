@@ -1,1 +1,4 @@
 pedido_id,material_id,cantidad,precio_unitario
+1,1,50.0,50.0
+1,2,20.0,60.0
+2,2,1000.0,60.0

@@ -19,7 +19,7 @@ class Estante:
         anterior= None
         actual= self._primera
 
-        while actual is not None and actual.get_fecha_vencimiento() < fecha_vencimiento:
+        while actual is not None and self.va_antes(actual.get_fecha_vencimiento(), fecha_vencimiento):
             anterior= actual
             actual= actual.get_prox()
 
@@ -40,13 +40,15 @@ class Estante:
 
     def sacar_cajas(self, cantidad):
         self.validar_cantidad(cantidad)
+        hoy = date.today()
 
-        if self.stock_total() < cantidad:
+        if self.stock_total(hoy) < cantidad:
             raise ValueError("Stock insuficiente")
+
+        self.retirar_cajas_vencidas(hoy)
 
         faltante = cantidad
         cajas_a_mover = []
-
 
         while faltante > 0:
             caja = self._primera
@@ -64,22 +66,24 @@ class Estante:
         return cajas_a_mover
             
 
-    def stock_total(self):
+    def stock_total(self, fecha=None):
         total = 0
         actual = self._primera
 
         while actual is not None:
-            total += actual.get_cantidad()
-            actual = actual.get_prox()
-
+            vencimiento = actual.get_fecha_vencimiento()
+            if fecha is None or vencimiento is None or vencimiento >= fecha:
+                total += actual.get_cantidad()
+                actual = actual.get_prox()
+        
         return total  
 
-    
+
     def hay_cajas_vencidas(self, fecha_actual):
         caja = self._primera
 
         while caja is not None:
-            if caja.get_fecha_vencimiento() < fecha_actual:
+            if caja.get_fecha_vencimiento() is not None and caja.get_fecha_vencimiento() < fecha_actual:
                 return True
 
             caja = caja.get_prox()
@@ -92,7 +96,7 @@ class Estante:
         caja = self._primera
 
         while caja is not None:
-            if caja.get_fecha_vencimiento() < fecha_actual:
+            if caja.get_fecha_vencimiento() is not None and caja.get_fecha_vencimiento() < fecha_actual:
                 if anterior is None:
                     self._primera = caja.get_prox()
                 else:
@@ -103,6 +107,15 @@ class Estante:
             else:
                 anterior = caja
                 caja = caja.get_prox()
+
+    @staticmethod
+    def va_antes(fecha_a, fecha_b):
+        if fecha_a is None:
+            return False
+        if fecha_b is None:
+            return True
+        return fecha_a < fecha_b
+
 
     @staticmethod
     def validar_fecha(fecha):

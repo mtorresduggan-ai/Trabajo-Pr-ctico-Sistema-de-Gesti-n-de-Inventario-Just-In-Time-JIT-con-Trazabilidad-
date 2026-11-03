@@ -32,7 +32,8 @@ class Supervisor(Empleado):
             estante = stock[material]
             estante.agregar_caja(fecha, cantidad)
 
-        remesa.get_solicitud().set_estado("Recibido")
+        if remesa.get_solicitud() is not None:
+            remesa.get_solicitud().set_estado("Recibido")
 
     def sacar_pedido(self, pedido, deposito, tareas_pendientes_comprador):
         materiales = pedido.get_materiales()
@@ -45,7 +46,7 @@ class Supervisor(Empleado):
 
             estante = stock[material]
 
-            if estante.stock_total() < cantidad:
+            if estante.stock_total(date.today()) < cantidad:
                 raise ValueError(f"No hay suficiente stock de {material.get_nombre()}")
 
         for material, cantidad in zip(materiales, cantidades):
@@ -55,9 +56,9 @@ class Supervisor(Empleado):
         pedido.set_estado("Despachado")
 
         for material in materiales:
-            cantidad_stock = deposito.stock_total(material)
+            cantidad_stock = deposito.stock_total(material, date.today())
 
-            if cantidad_stock <= material.get_punto_reposicion():
+            if cantidad_stock < material.get_punto_reposicion():
                 if not tareas_pendientes_comprador.existe_tarea_reposicion(material):
                     tareas_pendientes_comprador.agregar(Tarea("reponer", material))
 
@@ -142,7 +143,7 @@ class Supervisor(Empleado):
         for material, estante in deposito.get_stock().items():
             cantidad_total = estante.stock_total()
 
-            if material.necesita_reposicion(cantidad_total):
+            if material.necesita_reposicion(estante.stock_total(date.today())):
                 reposicion = "Si"
             else:
                 reposicion = "No"
@@ -164,7 +165,7 @@ class Supervisor(Empleado):
         if not isinstance(fechas, list):
             raise TypeError("Las fechas de vencimiento deben estar en una lista")
 
-        if not all(isinstance(fecha, date) for fecha in fechas):
+        if not all(fecha is None or isinstance(fecha, date) for fecha in fechas):
             raise TypeError("Cada fecha de vencimiento debe ser una fecha")
 
     @staticmethod

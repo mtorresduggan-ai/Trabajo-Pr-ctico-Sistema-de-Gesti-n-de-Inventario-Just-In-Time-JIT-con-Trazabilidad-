@@ -16,7 +16,7 @@ class MenuComprador(Menu):
     def menu_comprador(self):
         opciones = {
             '1': lambda: self.tareas_comprador.mostrar_cantidades(),
-            '2': lambda: self.comprador.ejecutar_siguiente_tarea(self.tareas_comprador, date.today(), self.input_proveedor(), self.tareas_admin),
+            '2': self.input_ejecutar_tarea,
             '3': self.input_crear_solicitud,
             '4': lambda: self.comprador.cancelar_solicitud(self.pedir_int("ID de solicitud a cancelar: "), self.sistema._solicitudes),
             '5': self.input_consultar_todas,
@@ -31,6 +31,12 @@ class MenuComprador(Menu):
             "5. Consultar todas las solicitudes",
             "6. Consultar solicitud por ID",
             "7. Modificar solicitud"], opciones)
+
+    def input_ejecutar_tarea(self):
+        proveedor = self.input_proveedor()
+        solicitud = self.comprador.ejecutar_siguiente_tarea(self.tareas_comprador, date.today(), proveedor, self.sistema.get_proveedores(), self.tareas_admin, None)
+        self.sistema.agregar_solicitud(solicitud)
+        return solicitud
 
     def input_modificar_solicitud(self):
         id_movimiento = self.pedir_int("ID de la solicitud a modificar: ")
@@ -52,7 +58,9 @@ class MenuComprador(Menu):
         estado = estado_str if estado_str else None
 
         return self.comprador.modificar_solicitud(
-            id_movimiento=id_movimiento,
+            id_solicitud=id_movimiento,
+            solicitudes=self.sistema._solicitudes,
+            proveedores=self.sistema.get_proveedores(),
             materiales=materiales,
             cantidades=cantidades,
             fecha=fecha,
@@ -63,7 +71,13 @@ class MenuComprador(Menu):
         materiales, cantidades = self.input_materiales_cantidades()
         proveedor = self.input_proveedor()
         
-        precios_unitarios = [material.get_precio_base() for material in materiales]
+        precios_unitarios = []
+        for material in materiales:
+            try:
+                precio = proveedor.obtener_precio(material)
+            except ValueError:
+                precio = float(self.pedir(f"Precio unitario de {material.get_nombre()} para este proveedor: "))
+            precios_unitarios.append(precio)
 
         solicitud= self.comprador.crear_solicitud(
             date.today(),
@@ -101,8 +115,13 @@ class MenuComprador(Menu):
             "\nItems:"
         ]
         
-        for material, cant in zip(solicitud.get_materiales(), solicitud.get_cantidades()):
-            lineas.append(f"  - {material.get_nombre()}: {cant} {material.get_unidad_medida()}")
-            
+        for i in range(len(solicitud.get_materiales())):
+            material = solicitud.get_materiales()[i]
+            cantidad = solicitud.get_cantidades()[i]
+            precio = solicitud.get_precios_unitarios()[i]
+            lineas.append(f"  - {material.get_nombre()}: {cantidad} {material.get_unidad_medida()} x ${precio} = ${solicitud.calcular_subtotal(i)}")
+
+        lineas.append(f"\nTotal: ${solicitud.calcular_total()}")
+
         return "\n".join(lineas)
         

@@ -27,9 +27,14 @@ class Remesa:
 
     
     def a_fila(self):
+        id_solicitud = ""
+
+        if self.get_solicitud() is not None:
+            id_solicitud = self.get_solicitud().get_id_solicitud()
+        
         return [self.get_id_remesa(),
             self.get_proveedor().get_id(),
-            self.get_solicitud().get_id_solicitud(),
+            id_solicitud,
             self.get_fecha_llegada()]
 
     def get_id_remesa(self):

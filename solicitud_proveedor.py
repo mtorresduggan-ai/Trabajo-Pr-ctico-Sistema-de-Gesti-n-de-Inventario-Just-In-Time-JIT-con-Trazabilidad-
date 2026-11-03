@@ -70,6 +70,15 @@ class Solicitud_proveedor(Movimiento):
     def set_precios_unitarios(self, nuevos_precios):
         self._precios_unitarios = nuevos_precios
 
+    def calcular_subtotal(self, posicion):
+        return self.get_cantidades()[posicion] * self.get_precios_unitarios()[posicion]
+
+    def calcular_total(self):
+        total = 0
+        for i in range(len(self.get_materiales())):
+            total += self.calcular_subtotal(i)
+        return total
+
     def __str__(self):
         return ('ID Solicitud: ' + str(self.get_id_solicitud())
             + ' Proveedor: ' + self.get_proveedor().get_nombre()
