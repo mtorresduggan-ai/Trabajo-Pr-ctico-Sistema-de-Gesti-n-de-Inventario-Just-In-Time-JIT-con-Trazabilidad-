@@ -1,4 +1,5 @@
 from datetime import date
+from itertools import product
 
 from material import Material
 from proveedor import Proveedor
@@ -46,6 +47,8 @@ def main():
 
     
     sistema.guardar_estado_total(tareas_admin, tareas_supervisor, tareas_comprador, tareas_vendedor)
+    
+    print(f"Materiales cargados en el árbol: {sistema.get_cantidad_materiales()}")
     
     menu = Menu(
         tareas_comprador,
@@ -107,7 +110,15 @@ def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprado
     sistema.agregar_cliente(cliente5)
 
     materiales = [aluminio, acero, algodon, poliester,hilo_blanco, hilo_negro, botones, cierres, elastico, etiquetas]
-    sistema.agregar_materiales(materiales)
+    tipos = ["Tornillo", "Tuerca", "Arandela", "Remache", "Perno", "Bulón", "Pasador", "Espárrago"]
+    medidas = ["M3", "M4", "M5", "M6", "M8", "M10", "M12", "M16"]
+    largos = [6, 10, 16, 20, 25, 30, 40, 50]
+    aleaciones = ["acero", "inox", "titanio", "aluminio"]
+
+    catalogo = list(map(lambda combinacion: Material(f"{combinacion[0]} {combinacion[1]}x{combinacion[2]} {combinacion[3]}", combinacion[3], "unidades", 100, precio_base=combinacion[2] * 10, precio_venta=combinacion[2] * 15), product(tipos, medidas, largos, aleaciones)))
+
+    sistema.agregar_materiales(materiales + catalogo)
+
 
     sistema.agregar_empleado(comprador)
     sistema.agregar_empleado(vendedor)

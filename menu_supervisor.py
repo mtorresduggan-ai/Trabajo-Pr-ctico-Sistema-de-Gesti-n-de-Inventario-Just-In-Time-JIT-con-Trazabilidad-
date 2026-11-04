@@ -1,7 +1,6 @@
 from supervisor import Supervisor
 from menu import Menu
 from datetime import date
-import math
 from remesa import Remesa
 
 
@@ -84,17 +83,13 @@ class MenuSupervisor(Menu):
 
     def input_buscar_material(self):
         nombre = self.pedir("Nombre del material: ")
-        material = self.sistema.buscar_material_por_nombre(nombre)
-
-        pasos = self.sistema.get_pasos_ultima_busqueda()
-        n = self.sistema.get_cantidad_materiales()
-        print(f"[Árbol] Encontrado en {pasos} pasos | n = {n} materiales | "
-            f"log2(n) = {math.log2(n):.2f} | una búsqueda lineal revisaría hasta {n}")
-
+        material = self.buscar_material(nombre)
         return self.texto_material(material)
 
     def input_listar_materiales(self):
+        materiales = self.sistema.get_materiales_ordenados()
         texto = "\n--- MATERIALES (A-Z) ---\n"
-        for material in self.sistema.get_materiales_ordenados():
+        for material in materiales:
             texto += self.texto_material(material) + "\n"
+        texto += f"Total: {len(materiales)} materiales\n"
         return texto

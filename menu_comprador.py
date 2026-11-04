@@ -54,9 +54,6 @@ class MenuComprador(Menu):
         actualizar_prov = self.pedir("¿Deseas modificar el proveedor? (si/no): ").lower()
         proveedor = self.input_proveedor() if actualizar_prov == 'si' else None
 
-        estado_str = self.pedir("Nuevo estado: ")
-        estado = estado_str if estado_str else None
-
         return self.comprador.modificar_solicitud(
             id_solicitud=id_movimiento,
             solicitudes=self.sistema.get_solicitudes(),
@@ -64,8 +61,7 @@ class MenuComprador(Menu):
             materiales=materiales,
             cantidades=cantidades,
             fecha=fecha,
-            proveedor=proveedor,
-            estado=estado)
+            proveedor=proveedor)
 
     def input_crear_solicitud(self):
         materiales, cantidades = self.input_materiales_cantidades()

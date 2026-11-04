@@ -52,11 +52,11 @@ class Comprador(Empleado):
         return solicitud
 
 
-    def modificar_solicitud(self, id_solicitud, solicitudes, materiales=None,cantidades=None, fecha=None, proveedor=None, estado=None, proveedores=None):
+    def modificar_solicitud(self, id_solicitud, solicitudes, materiales=None,cantidades=None, fecha=None, proveedor=None, proveedores=None):
         solicitud = self.consultar_solicitud(id_solicitud, solicitudes)
 
-        if solicitud.get_estado() in ("Recibido", "Cancelado", "Rechazado"):
-            raise ValueError(f"No se puede modificar una solicitud en estado "f"'{solicitud.get_estado()}'")
+        if solicitud.get_estado() != "Pendiente":
+            raise ValueError(f"Solo se pueden modificar solicitudes en estado Pendiente (esta está '{solicitud.get_estado()})'")
 
         precios_nuevos = None
         if materiales is not None:
@@ -67,8 +67,7 @@ class Comprador(Empleado):
             "materiales": (materiales, self.validar_materiales, solicitud.set_materiales),
             "cantidades": (cantidades, self.validar_cantidades, solicitud.set_cantidades),
             "fecha": (fecha, self.validar_fecha, solicitud.set_fecha),
-            "proveedor": (proveedor, lambda valor: self.validar_proveedor(valor, proveedores), solicitud.set_proveedor),
-            "estado": (estado, Solicitud_proveedor.validar_estado, solicitud.set_estado)}
+            "proveedor": (proveedor, lambda valor: self.validar_proveedor(valor, proveedores), solicitud.set_proveedor)}
 
         for valor, validar, set_valor in parametros.values():
             if valor is not None:

@@ -7,6 +7,7 @@ from vendedor import Vendedor
 from administrador import Administrador
 from supervisor import Supervisor 
 from excepciones import VolverAtras
+import math 
 
 class Menu:
     pila = []
@@ -85,45 +86,45 @@ class Menu:
         except (ValueError, TypeError, IndexError) as error:
             print(f"Error: {error}")
 
+    def buscar_material(self, nombre):
+        material = self.sistema.buscar_material_por_nombre(nombre)
+
+        pasos = self.sistema.get_pasos_ultima_busqueda()
+        n = self.sistema.get_cantidad_materiales()
+        print(f"[Árbol] '{material.get_nombre()}' encontrado en {pasos} saltos | n = {n} materiales | "
+            f"log2(n) = {round(math.log2(n), 2)} | una búsqueda lineal revisaría hasta {n}")
+
+        return material
+
     def input_materiales_cantidades(self, permitir_nuevo=True):
         print('---MATERIALES---')
         materiales, cantidades = [], []
 
         while True:
-            print("\n--- Seleccionar Material ---")
-            for i, material in enumerate(self.sistema.get_materiales(), start=1):
-                print(f"{i}. {material}")
-
-            if permitir_nuevo:
-                print("0. Registrar nuevo material (temporal)")
-
             try:
-                opcion = self.pedir_int("Ingrese el número del material (o 'volver'): ")
-                
-                if opcion == 0 and permitir_nuevo:
+                if permitir_nuevo:
+                    texto = self.pedir("\nNombre del material ('nuevo' para registrar uno, o 'volver'): ")
+                else:
+                    texto = self.pedir("\nNombre del material (o 'volver'): ")
+
+                if permitir_nuevo and texto.lower() == "nuevo":
                     nombre = self.pedir("Nombre: ")
                     composicion = self.pedir("Composición: ")
                     unidad = self.pedir("Unidad: ")
-                    from material import Material
-                    material_temp = Material(nombre, composicion, unidad, punto_reposicion=0)
-                    self.sistema.agregar_material(material_temp)
+                    material = Material(nombre, composicion, unidad, punto_reposicion=0)
+                    self.sistema.agregar_material(material)
                 else:
-                    if opcion < 1 or opcion > len(self.sistema.get_materiales()):
-                        raise ValueError("Seleccione un material existente.")
-                    material_temp = self.sistema.get_materiales()[opcion - 1]
+                    material = self.buscar_material(texto)
 
                 cant = self.pedir_int("Cantidad (> 0): ")
                 if cant <= 0:
                     raise ValueError("La cantidad debe ser mayor a 0")
 
-                materiales.append(material_temp)
+                materiales.append(material)
                 cantidades.append(cant)
 
-            except IndexError:
-                print(" Opción fuera de rango. Intentá de nuevo.")
-                continue
-            except ValueError as err:
-                print(f" Entrada inválida: {err}")
+            except ValueError as error:
+                print(f" Entrada inválida: {error}")
                 continue
 
             if self.pedir("¿Agregar otro material? (si/no): ").lower() != "si":

@@ -51,7 +51,7 @@ class MenuVendedor(Menu):
 
         actualizar_mat = self.pedir("¿Deseas modificar materiales y cantidades? (si/no): ").lower()
         if actualizar_mat == 'si':
-            materiales, cantidades = self.input_materiales_cantidades()
+            materiales, cantidades = self.input_materiales_cantidades(permitir_nuevo=False)
         else:
             materiales, cantidades = None, None
 
@@ -61,9 +61,6 @@ class MenuVendedor(Menu):
         actualizar_cli = self.pedir("¿Deseas modificar el cliente? (si/no): ").lower()
         cliente = self.input_cliente() if actualizar_cli == 'si' else None
 
-        estado_str = self.pedir("Nuevo estado: ")
-        estado = estado_str if estado_str else None
-
         return self.vendedor.modificar_pedido(
             id_pedido=id_movimiento,
             pedidos=self.sistema.get_pedidos(),
@@ -71,5 +68,4 @@ class MenuVendedor(Menu):
             materiales=materiales,
             cantidades=cantidades,
             fecha=fecha,
-            cliente=cliente,
-            estado=estado)
+            cliente=cliente)

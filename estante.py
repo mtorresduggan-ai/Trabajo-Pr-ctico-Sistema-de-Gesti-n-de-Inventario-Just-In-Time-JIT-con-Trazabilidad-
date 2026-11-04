@@ -79,6 +79,17 @@ class Estante:
         return total  
 
 
+    def obtener_cajas(self):
+        cajas = []
+        actual = self._primera
+
+        while actual is not None:
+            cajas.append((actual.get_fecha_vencimiento(), actual.get_cantidad()))
+            actual = actual.get_prox()
+
+        return cajas
+
+
     def hay_cajas_vencidas(self, fecha_actual):
         caja = self._primera
 

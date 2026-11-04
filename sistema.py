@@ -10,7 +10,6 @@ from vendedor import Vendedor
 from administrador import Administrador
 from supervisor import Supervisor
 from deposito import Deposito
-from estante import Estante
 from solicitud_proveedor import Solicitud_proveedor
 from pedido import Pedido_salida
 from remesa import Remesa
@@ -208,12 +207,9 @@ class Sistema:
         filas = []
 
         for deposito in self._depositos:
-            for material, estante in deposito.get_stock().items():
-                caja = estante.get_primera()
-
-                while caja is not None:
-                    filas.append([deposito.get_nombre(),material.get_id_material(),caja.get_fecha_vencimiento(),caja.get_cantidad()])
-                    caja = caja.get_prox()
+            for material in deposito.get_materiales():
+                for vencimiento, cantidad in deposito.obtener_cajas(material):
+                    filas.append([deposito.get_nombre(), material.get_id_material(), vencimiento, cantidad])
 
         GestorArchivos.escribir_csv("stock.csv",["deposito", "material_id", "fecha_vencimiento", "cantidad"],filas)
 
@@ -240,14 +236,7 @@ class Sistema:
             if material_encontrado is None:
                 raise ValueError("No se encontró el material")
 
-            stock = deposito_encontrado.get_stock()
-
-            if material_encontrado not in stock:
-                stock[material_encontrado] = Estante()
-
-            stock[material_encontrado].agregar_caja(
-                self.convertir_fecha(fila["fecha_vencimiento"]),
-                float(fila["cantidad"]))
+            deposito_encontrado.ingresar(material_encontrado, self.convertir_fecha(fila["fecha_vencimiento"]), float(fila["cantidad"]))
 
 
     def guardar_solicitudes(self):

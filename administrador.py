@@ -1,7 +1,5 @@
 from empleado import Empleado
 from datetime import date
-from proveedor import Proveedor
-from cliente import Cliente
 from tarea import Tarea
 
 
@@ -23,9 +21,6 @@ class Administrador(Empleado):
             raise ValueError("Solo se pueden aceptar pedidos en estado Pendiente")
 
         for material, cantidad in zip(pedido.get_materiales(), pedido.get_cantidades()):
-            if material not in deposito.get_stock():
-                raise ValueError(f"No hay stock de {material.get_nombre()}")
-
             stock_total = deposito.stock_total(material, date.today())
 
             if stock_total < cantidad:
@@ -44,9 +39,6 @@ class Administrador(Empleado):
             raise ValueError('El deposito origen y deposito destino no puede ser el mismo')
 
         for material, cantidad in zip(materiales, cantidades):
-            if material not in deposito_origen.get_stock():
-                raise ValueError(f"No hay stock de {material.get_nombre()} en el depósito de origen")
-
             stock_disponible = deposito_origen.stock_total(material, date.today())
             if stock_disponible < cantidad:
                 raise ValueError(f"Transferencia cancelada: Stock insuficiente de {material.get_nombre()} en origen. ")

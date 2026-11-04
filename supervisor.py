@@ -1,5 +1,4 @@
 from empleado import Empleado
-from estante import Estante
 from tarea import Tarea
 from datetime import date
 
@@ -23,14 +22,8 @@ class Supervisor(Empleado):
 
         Empleado.validar_fecha(remesa.get_fecha_llegada())
 
-        stock = deposito.get_stock()
-
         for material, cantidad, fecha in zip(materiales, cantidades, fechas):
-            if material not in stock:
-                stock[material] = Estante()
-
-            estante = stock[material]
-            estante.agregar_caja(fecha, cantidad)
+            deposito.ingresar(material, fecha, cantidad)
 
         if remesa.get_solicitud() is not None:
             remesa.get_solicitud().set_estado("Recibido")
@@ -38,21 +31,13 @@ class Supervisor(Empleado):
     def sacar_pedido(self, pedido, deposito, tareas_pendientes_comprador):
         materiales = pedido.get_materiales()
         cantidades = pedido.get_cantidades()
-        stock = deposito.get_stock()
 
         for material, cantidad in zip(materiales, cantidades):
-            if material not in stock:
-                raise ValueError(f"No hay stock de {material.get_nombre()}")
-
-            estante = stock[material]
-
-            if estante.stock_total(date.today()) < cantidad:
-                raise ValueError(f"No hay suficiente stock de {material.get_nombre()}")
+            if deposito.stock_total(material, date.today()) < cantidad:
+                raise ValueError(f"No hay suficiente stock de {material.get_nombre()} para el pedido")
 
         for material, cantidad in zip(materiales, cantidades):
-            estante = stock[material]
-            estante.sacar_cajas(cantidad)
-
+            deposito.retirar(material, cantidad)
         pedido.set_estado("Despachado")
 
         for material in materiales:
@@ -63,24 +48,15 @@ class Supervisor(Empleado):
                     tareas_pendientes_comprador.agregar(Tarea("reponer", material))
 
     def transferir_stock(self, deposito_origen, deposito_destino, materiales, cantidades):
-        stock_origen = deposito_origen.get_stock()
-        stock_destino = deposito_destino.get_stock()
-
+        
         for material, cantidad in zip(materiales, cantidades):
-            if material not in stock_origen:
-                raise ValueError(f"No hay stock de {material.get_nombre()} en el depósito de origen")
-
-            estante_origen = stock_origen[material]
-            estante_destino = stock_destino.get(material)
-
-            if estante_destino is None:
-                estante_destino = Estante()
-                stock_destino[material] = estante_destino
-
-            cajas_a_mover = estante_origen.sacar_cajas(cantidad)
-
+            if deposito_origen.stock_total(material, date.today()) < cantidad:
+                raise ValueError(f"No hay suficiente stock de {material.get_nombre()} en el depósito origen")
+           
+        for material, cantidad in zip(materiales, cantidades):
+            cajas_a_mover = deposito_origen.retirar(material, cantidad)
             for caja in cajas_a_mover:
-                estante_destino.agregar_caja(caja.get_fecha_vencimiento(), caja.get_cantidad())
+                deposito_destino.ingresar(material, caja.get_fecha_vencimiento(), caja.get_cantidad())
 
     def ejecutar_siguiente_tarea(self, tareas_pendientes_supervisor, tareas_pendientes_comprador):
         tarea = tareas_pendientes_supervisor.ver_primera()
@@ -110,36 +86,27 @@ class Supervisor(Empleado):
         
     def revisar_vencimientos(self, deposito, tareas_supervisor):
         fecha_actual = date.today()
-        hay_vencidas = any(map(lambda estante: estante.hay_cajas_vencidas(fecha_actual), deposito.get_stock().values()))
-
-        if hay_vencidas and not tareas_supervisor.existe_tarea("retirar_vencidos", deposito):
+        if deposito.hay_vencidos(fecha_actual) and not tareas_supervisor.existe_tarea("retirar_vencidos", deposito):
             tareas_supervisor.agregar(Tarea("retirar_vencidos", deposito))
-    
+        
     def retirar_vencidos(self, deposito):
-        fecha_actual = date.today()
-
-        for estante in deposito.get_stock().values():
-            estante.retirar_cajas_vencidas(fecha_actual)
+        deposito.retirar_vencidos(date.today())
 
     def generar_reporte_stock(self, deposito):
         reporte = "Reporte de stock:\n"
 
-        for material, estante in deposito.get_stock().items():
-            cantidad_total = estante.stock_total()
+        for material in deposito.get_materiales():
+            cantidad_total = deposito.stock_total(material)
 
-            if material.necesita_reposicion(estante.stock_total(date.today())):
+            if material.necesita_reposicion(deposito.stock_total(material, date.today())):
                 reposicion = "Si"
             else:
                 reposicion = "No"
 
-            reporte += (
-                f"Material: {material.get_nombre()}\nCantidad total: {cantidad_total} {material.get_unidad_medida()}\nPunto de reposicion: {material.get_punto_reposicion()}\nNecesita reposicion: {reposicion}\n")
+            reporte += (f"Material: {material.get_nombre()}\nCantidad total: {cantidad_total} {material.get_unidad_medida()}\nPunto de reposicion: {material.get_punto_reposicion()}\nNecesita reposicion: {reposicion}\n")
 
-            caja = estante.get_primera()
-
-            while caja is not None:
-                reporte += (f"Cantidad: {caja.get_cantidad()} {material.get_unidad_medida()} - Vence: {caja.get_fecha_vencimiento()}\n")
-                caja = caja.get_prox()
+            for vencimiento, cantidad in deposito.obtener_cajas(material):
+                reporte += f"Cantidad: {cantidad} {material.get_unidad_medida()} - Vence: {vencimiento}\n"
             reporte += "\n"
 
         return reporte

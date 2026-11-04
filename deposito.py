@@ -1,10 +1,14 @@
+from datetime import date
+from estante import Estante
+
+
 class Deposito:
     def __init__(self, nombre):
         self._stock = dict()
         self._nombre = nombre
 
     def get_stock(self):
-        return self._stock
+        return dict(self._stock)
     def get_nombre(self): 
         return self._nombre
 
@@ -40,6 +44,31 @@ class Deposito:
                     total += actual.get_cantidad()
                 actual = actual.get_prox()
         return total
+    
+    def get_materiales(self):
+        return list(self._stock.keys())
+
+    def obtener_cajas(self, material):
+        if material not in self._stock:
+            return []
+        return self._stock[material].obtener_cajas()
+
+    def ingresar(self, material, fecha_vencimiento, cantidad):
+        if material not in self._stock:
+            self._stock[material] = Estante()
+        self._stock[material].agregar_caja(fecha_vencimiento, cantidad)
+
+    def retirar(self, material, cantidad):
+        if self.stock_total(material, date.today()) < cantidad:
+            raise ValueError(f"No hay suficiente stock de {material.get_nombre()}")
+        return self._stock[material].sacar_cajas(cantidad)
+
+    def hay_vencidos(self, fecha):
+        return any(map(lambda estante: estante.hay_cajas_vencidas(fecha), self._stock.values()))
+
+    def retirar_vencidos(self, fecha):
+        for estante in self._stock.values():
+            estante.retirar_cajas_vencidas(fecha)
 
     @staticmethod
     def seleccionar_deposito(depositos):

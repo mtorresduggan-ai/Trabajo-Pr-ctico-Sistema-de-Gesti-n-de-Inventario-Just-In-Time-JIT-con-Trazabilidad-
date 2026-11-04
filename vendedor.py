@@ -46,11 +46,11 @@ class Vendedor(Empleado):
         return pedido
 
 
-    def modificar_pedido(self, id_pedido, pedidos, materiales=None,cantidades=None, fecha=None, cliente=None, estado=None, clientes=None):
+    def modificar_pedido(self, id_pedido, pedidos, materiales=None,cantidades=None, fecha=None, cliente=None, clientes=None):
         pedido = self.consultar_pedido(id_pedido, pedidos)
         
-        if pedido.get_estado() in ("Entregado", "Cancelado", "Rechazado"):
-            raise ValueError(f"No se puede modificar un pedido en estado '{pedido.get_estado()}'")
+        if pedido.get_estado() != "Pendiente":
+            raise ValueError(f"Solo se pueden modificar pedidos en estado Pendiente (este está '{pedido.get_estado()}')")
         
         precios_nuevos = None
         if materiales is not None:
@@ -59,9 +59,8 @@ class Vendedor(Empleado):
         campos = {"materiales": (materiales, Empleado.validar_materiales, pedido.set_materiales),
             "cantidades": (cantidades, Empleado.validar_cantidades, pedido.set_cantidades),
             "fecha": (fecha, Empleado.validar_fecha, pedido.set_fecha),
-            "cliente": (cliente, lambda valor: self.validar_cliente(valor, clientes), pedido.set_cliente),
-            "estado": (estado, Pedido_salida.validar_estado, pedido.set_estado),}
-
+            "cliente": (cliente, lambda valor: self.validar_cliente(valor, clientes), pedido.set_cliente)}
+            
         for valor, validar, set_valor in campos.values():
             if valor is not None:
                 validar(valor)
