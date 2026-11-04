@@ -1,7 +1,6 @@
 from supervisor import Supervisor
 from menu import Menu
 from datetime import date
-from remesa import Remesa
 
 
 class MenuSupervisor(Menu):
@@ -35,11 +34,8 @@ class MenuSupervisor(Menu):
             "7. Listar materiales en orden alfabético"]
             , opciones)
 
-    def tiene_remesa(self, solicitud):
-        return any(map(lambda remesa: remesa.get_solicitud() == solicitud, self.sistema.get_remesas()))
-
     def input_registrar_remesa(self):
-        solicitudes = list(filter(lambda solicitud: solicitud.get_estado() == "Solicitado" and not self.tiene_remesa(solicitud), self.sistema.get_solicitudes()))
+        solicitudes = self.supervisor.solicitudes_esperando_remesa(self.sistema.get_solicitudes(), self.sistema.get_remesas())
 
         if len(solicitudes) == 0:
             return "No hay solicitudes aceptadas esperando una remesa."
@@ -53,23 +49,15 @@ class MenuSupervisor(Menu):
             raise ValueError("Opción fuera de rango")
         solicitud = solicitudes[opcion - 1]
 
-        fecha_llegada = date.today()
         fechas_vencimiento = []
-
         for material in solicitud.get_materiales():
             texto = self.pedir(f"Vencimiento de {material.get_nombre()} (YYYY-MM-DD, Enter si no vence): ")
-
             if texto == "":
                 fechas_vencimiento.append(None)
             else:
-                fecha = self.sistema.convertir_fecha(texto)
-                if fecha <= fecha_llegada:
-                    raise ValueError("La fecha de vencimiento debe ser posterior a la fecha de llegada")
-                fechas_vencimiento.append(fecha)
+                fechas_vencimiento.append(self.sistema.convertir_fecha(texto))
 
-        remesa = Remesa(list(solicitud.get_materiales()), solicitud.get_proveedor(), solicitud,
-            list(solicitud.get_cantidades()), fechas_vencimiento, self.deposito,
-            self.tareas_supervisor, fecha_llegada)
+        remesa = self.supervisor.registrar_remesa(solicitud, fechas_vencimiento, date.today(), self.deposito, self.tareas_supervisor)
         self.sistema.agregar_remesa(remesa)
 
         return f"Remesa N° {remesa.get_id_remesa()} registrada. Ejecutá la siguiente tarea para ingresarla al depósito."

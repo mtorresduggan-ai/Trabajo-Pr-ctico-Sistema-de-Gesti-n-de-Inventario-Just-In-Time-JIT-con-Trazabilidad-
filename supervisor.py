@@ -1,6 +1,7 @@
 from empleado import Empleado
 from tarea import Tarea
 from datetime import date
+from remesa import Remesa
 
 class Supervisor(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja=None, id_manual=None):
@@ -32,27 +33,47 @@ class Supervisor(Empleado):
         materiales = pedido.get_materiales()
         cantidades = pedido.get_cantidades()
 
-        for material, cantidad in zip(materiales, cantidades):
-            if deposito.stock_total(material, date.today()) < cantidad:
-                raise ValueError(f"No hay suficiente stock de {material.get_nombre()} para el pedido")
+        faltantes = deposito.materiales_sin_stock(materiales, cantidades, date.today())
+        if len(faltantes) > 0:
+            raise ValueError(f"No hay suficiente stock de {faltantes[0].get_nombre()} para el pedido")
 
         for material, cantidad in zip(materiales, cantidades):
             deposito.retirar(material, cantidad)
         pedido.set_estado("Despachado")
 
-        for material in materiales:
-            cantidad_stock = deposito.stock_total(material, date.today())
+        a_reponer = filter(lambda material: deposito.stock_total(material, date.today()) < material.get_punto_reposicion()
+            and not tareas_pendientes_comprador.existe_tarea_reposicion(material), materiales)
 
-            if cantidad_stock < material.get_punto_reposicion():
-                if not tareas_pendientes_comprador.existe_tarea_reposicion(material):
-                    tareas_pendientes_comprador.agregar(Tarea("reponer", material))
+        for material in a_reponer:
+            tareas_pendientes_comprador.agregar(Tarea("reponer", material))
+   
+    def solicitudes_esperando_remesa(self, solicitudes, remesas):
+        solicitudes_con_remesa = set(map(lambda remesa: remesa.get_solicitud(), remesas))
+
+        return list(filter(lambda solicitud: solicitud.get_estado() == "Solicitado"
+            and solicitud not in solicitudes_con_remesa, solicitudes))
+
+    def registrar_remesa(self, solicitud, fechas_vencimiento, fecha_llegada, deposito, tareas_pendientes_supervisor):
+        if solicitud.get_estado() != "Solicitado":
+            raise ValueError("Solo se pueden registrar remesas de solicitudes aceptadas")
+
+        if len(fechas_vencimiento) != len(solicitud.get_materiales()):
+            raise ValueError("Debe haber una fecha de vencimiento por cada material")
+
+        fechas_invalidas = list(filter(lambda fecha: fecha is not None and fecha <= fecha_llegada, fechas_vencimiento))
+        if len(fechas_invalidas) > 0:
+            raise ValueError("La fecha de vencimiento debe ser posterior a la fecha de llegada")
+
+        return Remesa(list(solicitud.get_materiales()), solicitud.get_proveedor(), solicitud,
+            list(solicitud.get_cantidades()), fechas_vencimiento, deposito,
+            tareas_pendientes_supervisor, fecha_llegada)
 
     def transferir_stock(self, deposito_origen, deposito_destino, materiales, cantidades):
+        faltantes = deposito_origen.materiales_sin_stock(materiales, cantidades, date.today())
         
-        for material, cantidad in zip(materiales, cantidades):
-            if deposito_origen.stock_total(material, date.today()) < cantidad:
-                raise ValueError(f"No hay suficiente stock de {material.get_nombre()} en el depósito origen")
-           
+        if len(faltantes) > 0:
+            raise ValueError(f"No hay suficiente stock de {faltantes[0].get_nombre()} en el depósito origen")
+       
         for material, cantidad in zip(materiales, cantidades):
             cajas_a_mover = deposito_origen.retirar(material, cantidad)
             for caja in cajas_a_mover:
@@ -116,7 +137,7 @@ class Supervisor(Empleado):
         if not isinstance(fechas, list):
             raise TypeError("Las fechas de vencimiento deben estar en una lista")
 
-        if not all(fecha is None or isinstance(fecha, date) for fecha in fechas):
+        if not all(map(lambda fecha: fecha is None or isinstance(fecha, date), fechas)):
             raise TypeError("Cada fecha de vencimiento debe ser una fecha")
 
     @staticmethod

@@ -34,7 +34,7 @@ class MenuComprador(Menu):
 
     def input_ejecutar_tarea(self):
         proveedor = self.input_proveedor()
-        solicitud = self.comprador.ejecutar_siguiente_tarea(self.tareas_comprador, date.today(), proveedor, self.sistema.get_proveedores(), self.tareas_admin, None)
+        solicitud = self.comprador.ejecutar_siguiente_tarea(self.tareas_comprador, date.today(), proveedor, self.sistema.get_proveedores(), self.tareas_admin)
         self.sistema.agregar_solicitud(solicitud)
         return solicitud
 
@@ -66,7 +66,6 @@ class MenuComprador(Menu):
     def input_crear_solicitud(self):
         materiales, cantidades = self.input_materiales_cantidades()
         proveedor = self.input_proveedor()
-        precios_unitarios = list(map(proveedor.obtener_precio, materiales))          
 
         solicitud= self.comprador.crear_solicitud(
             date.today(),
@@ -74,9 +73,7 @@ class MenuComprador(Menu):
             cantidades,
             proveedor,
             self.sistema.get_proveedores(),
-            self.tareas_admin,
-            precios_unitarios,
-            None)
+            self.tareas_admin)
 
         self.sistema.agregar_solicitud(solicitud)
         
@@ -88,8 +85,7 @@ class MenuComprador(Menu):
             return "\nNo tenés solicitudes registradas."
         
         lineas = ["\n=== MIS SOLICITUDES ==="]
-        for s in solicitudes:
-            lineas.append(f"• ID: {s.get_id_solicitud()} | Proveedor: {s.get_proveedor().get_nombre()} | Estado: {s.get_estado()}")
+        lineas += list(map(lambda s: f"• ID: {s.get_id_solicitud()} | Proveedor: {s.get_proveedor().get_nombre()} | Estado: {s.get_estado()}", solicitudes))
         return "\n".join(lineas)
 
     def input_consultar_por_id(self):
@@ -104,12 +100,13 @@ class MenuComprador(Menu):
             "\nItems:"
         ]
         
-        for i in range(len(solicitud.get_materiales())):
-            material = solicitud.get_materiales()[i]
-            cantidad = solicitud.get_cantidades()[i]
-            precio = solicitud.get_precios_unitarios()[i]
-            lineas.append(f"  - {material.get_nombre()}: {cantidad} {material.get_unidad_medida()} x ${precio} = ${solicitud.calcular_subtotal(i)}")
+        materiales = solicitud.get_materiales()
+        cantidades = solicitud.get_cantidades()
+        precios = solicitud.get_precios_unitarios()
 
+        lineas += list(map(lambda i: f"  - {materiales[i].get_nombre()}: {cantidades[i]} {materiales[i].get_unidad_medida()} "
+            f"x ${precios[i]} = ${solicitud.calcular_subtotal(i)}", range(len(materiales))))
+        
         lineas.append(f"\nTotal: ${solicitud.calcular_total()}")
 
         return "\n".join(lineas)

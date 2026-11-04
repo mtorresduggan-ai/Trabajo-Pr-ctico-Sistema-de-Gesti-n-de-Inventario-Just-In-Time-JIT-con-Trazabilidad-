@@ -1,5 +1,4 @@
 from individuo import Individuo
-from material import Material
 
 class Empleado(Individuo):
 
@@ -53,22 +52,22 @@ class Empleado(Individuo):
             raise TypeError("La clave debe ser un str")
         if len(clave) < 8:
             raise ValueError("La clave debe tener al menos 8 caracteres")
-        if not any(caracter.isupper() for caracter in clave):
+        if not any(map(lambda caracter: caracter.isupper(), clave)):
             raise ValueError("La clave debe contener al menos una mayuscula")
-        if not any(caracter.islower() for caracter in clave):
+        if not any(map(lambda caracter: caracter.islower(), clave)):
             raise ValueError("La clave debe contener al menos una minuscula")
-        if not any(caracter.isdigit() for caracter in clave):
+        if not any(map(lambda caracter: caracter.isdigit(), clave)):
             raise ValueError("La clave debe tener al menos un numero")
-        if not any(not caracter.isalnum() for caracter in clave):
+        if not any(map(lambda caracter: not caracter.isalnum(), clave)):
             raise ValueError("La clave debe tener al menos un caracter especial")
 
     @staticmethod
     def validar_cantidades(cantidades):
         if not isinstance(cantidades, list):
             raise TypeError("Las cantidades deben estar en una lista")
-        if not all(isinstance(cantidad, (int, float)) for cantidad in cantidades):
+        if not all(map(lambda cantidad: isinstance(cantidad, (int, float)), cantidades)):
             raise TypeError("Cada cantidad debe ser un numero")
-        if any(cantidad <= 0 for cantidad in cantidades):
+        if any(map(lambda cantidad: cantidad <= 0, cantidades)):
             raise ValueError("La cantidad debe ser mayor a cero")
 
     @staticmethod

@@ -41,7 +41,7 @@ def test_sacar_pedido_sin_stock():
     pedido.get_cantidades.return_value = [5]
 
     deposito = Mock()
-    deposito.stock_total.return_value = 0
+    deposito.materiales_sin_stock.return_value = [material]
 
     tareas = Mock()
 
@@ -64,6 +64,7 @@ def test_sacar_pedido_correctamente():
     pedido.get_cantidades.return_value = [5]
 
     deposito = Mock()
+    deposito.materiales_sin_stock.return_value = []
     deposito.stock_total.return_value = 15
 
     tareas = Mock()

@@ -9,18 +9,14 @@ class Comprador(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja=None, id_manual=None):
         super().__init__(nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja, id_manual)
     
-    def crear_solicitud(self, fecha, materiales, cantidades, proveedor, proveedores, tareas_pendientes_admin, precios_unitarios, precios=None):
+    def crear_solicitud(self, fecha, materiales, cantidades, proveedor, proveedores, tareas_pendientes_admin):
             Empleado.validar_fecha(fecha)
             Empleado.validar_cantidades(cantidades)
             Empleado.validar_materiales(materiales)
             self.validar_proveedor(proveedor, proveedores)
             self.validar_listas(materiales, cantidades)
 
-            if len(materiales) != len(precios_unitarios):
-                raise ValueError("Debe haber un precio por cada material")
-
-            for precio in precios_unitarios:
-                proveedor.validar_precio(precio)
+            precios_unitarios = list(map(proveedor.obtener_precio, materiales))
 
             solicitud = Solicitud_proveedor(proveedor, fecha, materiales, cantidades, "Pendiente", self, precios_unitarios=precios_unitarios)
 
@@ -86,7 +82,7 @@ class Comprador(Empleado):
             raise ValueError("El proveedor no esta registrado")
 
 
-    def ejecutar_siguiente_tarea(self, tareas_pendientes_comprador, fecha, proveedor, proveedores, tareas_pendientes_admin, precios):
+    def ejecutar_siguiente_tarea(self, tareas_pendientes_comprador, fecha, proveedor, proveedores, tareas_pendientes_admin):
         tarea = tareas_pendientes_comprador.ver_primera()
 
         if tarea is None:
@@ -95,16 +91,12 @@ class Comprador(Empleado):
         if tarea.get_tipo() == "reponer":
             material = tarea.get_objeto()
 
-            precio = proveedor.obtener_precio(material)
-
             solicitud = self.crear_solicitud(fecha,
                 [material],
                 [material.get_punto_reposicion()],
                 proveedor,
                 proveedores,
-                tareas_pendientes_admin,
-                [precio],
-                precios)
+                tareas_pendientes_admin)
         
         else:
             raise ValueError('Tipo de tarea desconocido')

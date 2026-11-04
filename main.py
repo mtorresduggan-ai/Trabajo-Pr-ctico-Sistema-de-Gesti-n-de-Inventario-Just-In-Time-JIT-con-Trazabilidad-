@@ -10,7 +10,6 @@ from administrador import Administrador
 from deposito import Deposito
 from remesa import Remesa
 from supervisor import Supervisor
-from precios import Precio
 from sistema import Sistema
 from menu import Menu
 from pendientes import Tareas_pendientes
@@ -95,7 +94,6 @@ def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprado
     supervisor = Supervisor("Juana Fernandez", "1177777777", 40456789, date(2026, 9, 1),"jfernandez@gmail.com", "jfernandez", "Juana123!")
     deposito = Deposito('Deposito central')
     deposito_norte = Deposito('Deposito norte')
-    precio=Precio()
 
     sistema.agregar_proveedor(proveedor)
     sistema.agregar_proveedor(proveedor1)
@@ -143,7 +141,7 @@ def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprado
     proveedores = sistema.get_proveedores()
     clientes = sistema.get_clientes()
 
-    solicitud = comprador.crear_solicitud(date(2026, 9, 29), [aluminio, acero],[150, 80], proveedor, proveedores, tareas_admin, [5000,3000], precio)
+    solicitud = comprador.crear_solicitud(date(2026, 9, 29), [aluminio, acero],[150, 80], proveedor, proveedores, tareas_admin)
     sistema.agregar_solicitud(solicitud)
     administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor, "aceptar")
     remesa = Remesa([aluminio, acero], proveedor, solicitud, [150, 80],[date(2027, 12, 31), date(2028, 6, 30)], deposito, tareas_supervisor, date(2026, 10, 4))

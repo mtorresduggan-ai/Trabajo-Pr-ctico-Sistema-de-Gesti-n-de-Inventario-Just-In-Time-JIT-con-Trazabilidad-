@@ -20,11 +20,9 @@ class Administrador(Empleado):
         if pedido.get_estado() != "Pendiente":
             raise ValueError("Solo se pueden aceptar pedidos en estado Pendiente")
 
-        for material, cantidad in zip(pedido.get_materiales(), pedido.get_cantidades()):
-            stock_total = deposito.stock_total(material, date.today())
-
-            if stock_total < cantidad:
-                raise ValueError(f"No hay suficiente stock de {material.get_nombre()}")
+        faltantes = deposito.materiales_sin_stock(pedido.get_materiales(), pedido.get_cantidades(), date.today())
+        if len(faltantes) > 0:
+            raise ValueError(f"No hay suficiente stock de {faltantes[0].get_nombre()}")
 
         pedido.set_fecha_aceptacion(date.today())
         pedido.set_estado('En preparacion')
@@ -37,12 +35,11 @@ class Administrador(Empleado):
 
         if deposito_destino==deposito_origen:
             raise ValueError('El deposito origen y deposito destino no puede ser el mismo')
-
-        for material, cantidad in zip(materiales, cantidades):
-            stock_disponible = deposito_origen.stock_total(material, date.today())
-            if stock_disponible < cantidad:
-                raise ValueError(f"Transferencia cancelada: Stock insuficiente de {material.get_nombre()} en origen. ")
-
+        faltantes = deposito_origen.materiales_sin_stock(materiales, cantidades, date.today())
+       
+        if len(faltantes) > 0:
+            raise ValueError(f"Transferencia cancelada: Stock insuficiente de {faltantes[0].get_nombre()} en origen.")
+       
         datos = (deposito_origen, deposito_destino, materiales, cantidades)
         tareas_pendientes_supervisor.agregar(Tarea('transferencia', None, datos))
 

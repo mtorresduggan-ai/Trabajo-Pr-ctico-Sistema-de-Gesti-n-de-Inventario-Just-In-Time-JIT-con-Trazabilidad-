@@ -63,20 +63,13 @@ class Deposito:
             raise ValueError(f"No hay suficiente stock de {material.get_nombre()}")
         return self._stock[material].sacar_cajas(cantidad)
 
+    def materiales_sin_stock(self, materiales, cantidades, fecha):
+        faltantes = filter(lambda par: self.stock_total(par[0], fecha) < par[1], zip(materiales, cantidades))
+        return list(map(lambda par: par[0], faltantes))
+
     def hay_vencidos(self, fecha):
         return any(map(lambda estante: estante.hay_cajas_vencidas(fecha), self._stock.values()))
 
     def retirar_vencidos(self, fecha):
         for estante in self._stock.values():
             estante.retirar_cajas_vencidas(fecha)
-
-    @staticmethod
-    def seleccionar_deposito(depositos):
-        while True:
-            nombre = input("Ingresá el nombre de tu depósito: ")
-
-            for deposito in depositos:
-                if deposito.get_nombre() == nombre:
-                    return deposito
-
-            print("El depósito ingresado no existe. Intentá nuevamente.")
