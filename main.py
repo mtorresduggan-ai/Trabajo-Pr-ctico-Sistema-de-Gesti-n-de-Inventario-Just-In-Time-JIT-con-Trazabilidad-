@@ -107,7 +107,7 @@ def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprado
     sistema.agregar_cliente(cliente5)
 
     materiales = [aluminio, acero, algodon, poliester,hilo_blanco, hilo_negro, botones, cierres, elastico, etiquetas]
-    sistema.agregar_materiales(materialesjfern)
+    sistema.agregar_materiales(materiales)
 
     sistema.agregar_empleado(comprador)
     sistema.agregar_empleado(vendedor)

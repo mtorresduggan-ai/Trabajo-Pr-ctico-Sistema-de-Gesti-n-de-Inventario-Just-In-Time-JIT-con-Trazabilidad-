@@ -109,9 +109,12 @@ class Supervisor(Empleado):
             print(tipo, ":", cantidad)
         
     def revisar_vencimientos(self, deposito, tareas_supervisor):
+        fecha_actual = date.today()
+        hay_vencidas = any(map(lambda estante: estante.hay_cajas_vencidas(fecha_actual), deposito.get_stock().values()))
+
         if hay_vencidas and not tareas_supervisor.existe_tarea("retirar_vencidos", deposito):
             tareas_supervisor.agregar(Tarea("retirar_vencidos", deposito))
-
+    
     def retirar_vencidos(self, deposito):
         fecha_actual = date.today()
 

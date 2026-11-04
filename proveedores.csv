@@ -1,5 +1,5 @@
 id,nombre,telefono,dni,email,fecha_alta,fecha_baja,plazo_estimado,puntaje
 1,Metalúrgica Sur,1123456789,30123456,proveedor@gmail.com,2026-09-01,,5,5.5
-2,Textil Sur,1123456789,30123456,textilsur@gmail.com,2026-09-01,,5,5.0
-3,Insumos del Centro,1134567890,30234567,insumoscentro@gmail.com,2026-09-01,,3,5.0
-4,Distribuidora Norte,1145678901,30345678,distribuidoranorte@gmail.com,2026-09-01,,7,5.0
+2,Textil Sur,1123456789,30123456,textilsur@gmail.com,2026-09-01,,5,5
+3,Insumos del Centro,1134567890,30234567,insumoscentro@gmail.com,2026-09-01,,3,5
+4,Distribuidora Norte,1145678901,30345678,distribuidoranorte@gmail.com,2026-09-01,,7,5
