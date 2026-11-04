@@ -30,6 +30,11 @@ class Supervisor(Empleado):
             remesa.get_solicitud().set_estado("Recibido")
 
     def sacar_pedido(self, pedido, deposito, tareas_pendientes_comprador):
+
+        if pedido.get_estado() == "Cancelado":
+            print("Operación omitida: El pedido ya fue cancelado por el vendedor.")
+            return
+
         materiales = pedido.get_materiales()
         cantidades = pedido.get_cantidades()
 
@@ -46,7 +51,7 @@ class Supervisor(Empleado):
 
         for material in a_reponer:
             tareas_pendientes_comprador.agregar(Tarea("reponer", material))
-   
+
     def solicitudes_esperando_remesa(self, solicitudes, remesas):
         solicitudes_con_remesa = set(map(lambda remesa: remesa.get_solicitud(), remesas))
 

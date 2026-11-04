@@ -48,16 +48,18 @@ class Comprador(Empleado):
         return solicitud
 
 
-    def modificar_solicitud(self, id_solicitud, solicitudes, materiales=None,cantidades=None, fecha=None, proveedor=None, proveedores=None):
+    def modificar_solicitud(self, id_solicitud, solicitudes, materiales=None, cantidades=None, fecha=None, proveedor=None, proveedores=None):
         solicitud = self.consultar_solicitud(id_solicitud, solicitudes)
 
         if solicitud.get_estado() != "Pendiente":
-            raise ValueError(f"Solo se pueden modificar solicitudes en estado Pendiente (esta está '{solicitud.get_estado()})'")
+            raise ValueError(f"Solo se pueden modificar solicitudes en estado Pendiente (esta está '{solicitud.get_estado()}')")
 
         precios_nuevos = None
-        if materiales is not None:
+        
+        if materiales is not None or proveedor is not None:
             proveedor_final = proveedor if proveedor is not None else solicitud.get_proveedor()
-            precios_nuevos = list(map(proveedor_final.obtener_precio, materiales))
+            materiales_finales = materiales if materiales is not None else solicitud.get_materiales()     
+            precios_nuevos = list(map(proveedor_final.obtener_precio, materiales_finales))
 
         parametros = {
             "materiales": (materiales, self.validar_materiales, solicitud.set_materiales),
@@ -74,7 +76,6 @@ class Comprador(Empleado):
             solicitud.set_precios_unitarios(precios_nuevos)
 
         return solicitud
-
 
     @staticmethod
     def validar_proveedor(proveedor, proveedores):

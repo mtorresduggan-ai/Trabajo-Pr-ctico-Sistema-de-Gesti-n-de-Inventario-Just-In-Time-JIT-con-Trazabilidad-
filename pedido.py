@@ -1,6 +1,5 @@
 from movimiento import Movimiento
 
-
 class Pedido_salida(Movimiento):
     contador = 0
 
