@@ -60,7 +60,7 @@ class Comprador(Empleado):
             proveedor_final = proveedor if proveedor is not None else solicitud.get_proveedor()
             materiales_finales = materiales if materiales is not None else solicitud.get_materiales()     
             precios_nuevos = list(map(proveedor_final.obtener_precio, materiales_finales))
-
+            
         parametros = {
             "materiales": (materiales, self.validar_materiales, solicitud.set_materiales),
             "cantidades": (cantidades, self.validar_cantidades, solicitud.set_cantidades),

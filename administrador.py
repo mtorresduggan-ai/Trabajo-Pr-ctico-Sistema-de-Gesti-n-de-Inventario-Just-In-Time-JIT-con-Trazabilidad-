@@ -7,14 +7,12 @@ class Administrador(Empleado):
     def __init__(self, nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja=None, id_manual=None):
         super().__init__(nombre, telefono, dni, fecha_alta, email,usuario, clave, fecha_baja, id_manual)
     
-
     def aceptar_solicitud(self, solicitud):
         if solicitud.get_estado() != "Pendiente": 
             raise ValueError("Solo se pueden aceptar solicitudes en estado Pendiente")
         
         solicitud.set_fecha_envio(date.today())
         solicitud.set_estado("Solicitado")
-
 
     def aceptar_pedido_salida(self, pedido, deposito):
         if pedido.get_estado() != "Pendiente":
@@ -26,7 +24,6 @@ class Administrador(Empleado):
 
         pedido.set_fecha_aceptacion(date.today())
         pedido.set_estado('En preparacion')
-
         
     def crear_transferencia(self, deposito_origen, deposito_destino, materiales, cantidades, tareas_pendientes_supervisor):
         Empleado.validar_materiales(materiales)
@@ -42,7 +39,6 @@ class Administrador(Empleado):
        
         datos = (deposito_origen, deposito_destino, materiales, cantidades)
         tareas_pendientes_supervisor.agregar(Tarea('transferencia', None, datos))
-
 
     def ejecutar_siguiente_tarea(self, tareas_pendientes_admin, deposito, tareas_pendientes_supervisor, decision):
         tarea = tareas_pendientes_admin.ver_primera()
@@ -80,8 +76,6 @@ class Administrador(Empleado):
         tareas_pendientes_admin.sacar()
         return "Tarea aceptada correctamente."
 
-
-
     def baja_empleado(self, empleado, empleados):
         if empleado not in empleados:
             raise ValueError("El empleado no está registrado")
@@ -90,7 +84,7 @@ class Administrador(Empleado):
             raise ValueError("El empleado ya está dado de baja")
 
         empleado.set_fecha_baja(date.today())
-
+        return f"Empleado {empleado.get_nombre()} dado de baja."
 
     def modificar_empleado(self, empleado, empleados, nombre=None,telefono=None, email=None, usuario=None, clave=None):
         if empleado not in empleados:
@@ -107,6 +101,13 @@ class Administrador(Empleado):
         if clave is not None:
             empleado.set_clave(clave)
 
+    def cargar_precio_proveedor(self, proveedor, material, precio, proveedores):
+        if proveedor not in proveedores:
+            raise ValueError("Este proveedor no está registrado")
+        if proveedor.get_fecha_baja() is not None:
+            raise ValueError("El proveedor está dado de baja")
+        proveedor.agregar_material(material, precio)
+        return f"{proveedor.get_nombre()} ahora vende {material.get_nombre()} a ${precio}"
 
     def baja_proveedor(self, proveedor, proveedores):
         if proveedor not in proveedores:
@@ -116,7 +117,7 @@ class Administrador(Empleado):
             raise ValueError("El proveedor ya está dado de baja")
 
         proveedor.set_fecha_baja(date.today())
-
+        return f"Proveedor {proveedor.get_nombre()} dado de baja."
 
     def baja_cliente(self, cliente, clientes):
         if cliente not in clientes:
@@ -126,7 +127,7 @@ class Administrador(Empleado):
             raise ValueError("Este cliente ya está dado de baja")
 
         cliente.set_fecha_baja(date.today())
-
+        return f"Cliente {cliente.get_nombre()} dado de baja."
 
     def generar_reporte_empleados(self, empleados):
         reporte = "Reporte de empleados:\n"
@@ -144,7 +145,6 @@ class Administrador(Empleado):
                 f"Usuario: {empleado.get_usuario()}\n"
                 f"Estado: {estado}\n")
         return reporte
-
 
     def generar_reporte_proveedores(self, proveedores):
         reporte = "Reporte de proveedores:\n"
@@ -164,7 +164,6 @@ class Administrador(Empleado):
                 f"Estado: {estado}\n")
         return reporte
 
-
     def generar_reporte_clientes(self, clientes):
         reporte = "Reporte de clientes:\n"
 
@@ -180,7 +179,6 @@ class Administrador(Empleado):
                 f"Email: {cliente.get_email()}\n"
                 f"Estado: {estado}\n")
         return reporte
-
 
     @staticmethod
     def validar_listas(materiales, cantidades):

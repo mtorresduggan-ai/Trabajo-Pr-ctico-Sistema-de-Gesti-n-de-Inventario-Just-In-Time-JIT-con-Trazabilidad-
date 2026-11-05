@@ -5,12 +5,9 @@ class GestorArchivos:
     @staticmethod
     def leer_csv_dict(ruta):
         try:
-            with open(ruta, mode="r", encoding="utf-8", newline="") as archivo:
+            with open(ruta, mode="r", encoding="utf-8-sig", newline="") as archivo:
                 return list(csv.DictReader(archivo))
         except FileNotFoundError:
-            return []
-        except Exception as e:
-            print(f"Error al leer {ruta}: {e}")
             return []
 
     @staticmethod

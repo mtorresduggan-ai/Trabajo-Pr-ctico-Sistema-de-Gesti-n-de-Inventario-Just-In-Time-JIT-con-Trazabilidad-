@@ -24,7 +24,13 @@ class Menu:
     def mostrar_menu(self):
         Menu.pila.append(self.pantalla_general)
         while Menu.pila:
-            Menu.pila[-1]()  # ejecuta la pantalla del tope
+            Menu.pila[-1]() 
+
+    def login(self):
+        usuario = self.pedir("Usuario: ")
+        clave = self.pedir("Contraseña: ")
+
+        return self.sistema.autenticar(usuario, clave)
 
 
     def pantalla_general(self):
@@ -85,6 +91,8 @@ class Menu:
             print("Operación cancelada. Volviendo al menú...")
         except (ValueError, TypeError, IndexError) as error:
             print(f"Error: {error}")
+        except Exception as error:
+            print(f"Error inesperado ({type(error).__name__}): {error}")
 
     def buscar_material(self, nombre):
         material = self.sistema.buscar_material_por_nombre(nombre)
@@ -97,67 +105,178 @@ class Menu:
         return material
 
     def input_materiales_cantidades(self, permitir_nuevo=True):
-        print('---MATERIALES---')
-        materiales, cantidades = [], []
+        print("\n--- SELECCIÓN DE MATERIALES ---")
+        materiales_seleccionados, cantidades = [], []
 
         while True:
-            try:
-                if permitir_nuevo:
-                    texto = self.pedir("\nNombre del material ('nuevo' para registrar uno, o 'volver'): ")
-                else:
-                    texto = self.pedir("\nNombre del material (o 'volver'): ")
+            print("\n--- BÚSQUEDA Y FILTRADO ---")
+            print("Presioná ENTER sin escribir para omitir un filtro.")
+            filtro_nombre = self.pedir("Filtrar por nombre (ej: 'tornillo'): ")
+            filtro_comp = self.pedir("Filtrar por composición (ej: 'acero'): ")
 
-                if permitir_nuevo and texto.lower() == "nuevo":
-                    nombre = self.pedir("Nombre: ")
-                    composicion = self.pedir("Composición: ")
-                    unidad = self.pedir("Unidad: ")
-                    material = Material(nombre, composicion, unidad, punto_reposicion=0)
-                    self.sistema.agregar_material(material)
-                else:
-                    material = self.buscar_material(texto)
+            resultados = self.sistema.filtrar_materiales(nombre=filtro_nombre, composicion=filtro_comp)
 
-                cant = self.pedir_int("Cantidad (> 0): ")
-                if cant <= 0:
-                    raise ValueError("La cantidad debe ser mayor a 0")
-
-                materiales.append(material)
-                cantidades.append(cant)
-
-            except ValueError as error:
-                print(f" Entrada inválida: {error}")
+            if not resultados:
+                print("No se encontraron materiales con esos criterios.")
+                if self.pedir("¿Intentar otra búsqueda? (si/no): ").lower() != "si":
+                    break
                 continue
 
-            if self.pedir("¿Agregar otro material? (si/no): ").lower() != "si":
+            pagina_actual = 0
+            por_pagina = 20
+            material_elegido = None
+
+            while material_elegido is None:
+                total = len(resultados)
+                total_paginas = ((total - 1) // por_pagina) + 1
+                inicio = pagina_actual * por_pagina
+                sub_lista = resultados[inicio:inicio + por_pagina]
+
+                print(f"\n--- RESULTADOS ({total} encontrados) - Página {pagina_actual + 1} de {total_paginas} ---")
+                for idx, mat in enumerate(sub_lista, start=1):
+                    print(f"{idx}. {mat.get_nombre()} | Comp: {mat.get_composicion()} | Unidad: {mat.get_unidad_medida()}")
+
+                controles = []
+                if pagina_actual < total_paginas - 1:
+                    controles.append("S: Siguiente")
+                if pagina_actual > 0:
+                    controles.append("A: Anterior")
+                controles.append("F: Cambiar Filtros")
+                if permitir_nuevo:
+                    controles.append("0: Nuevo Material (temporal)")
+
+                prompt = f"\nSeleccionar [1-{len(sub_lista)}] | " + " | ".join(controles) + ": "
+                opcion = self.pedir(prompt).strip().lower()
+
+                if opcion == "s" and pagina_actual < total_paginas - 1:
+                    pagina_actual += 1
+                elif opcion == "a" and pagina_actual > 0:
+                    pagina_actual -= 1
+                elif opcion == "f":
+                    break 
+                elif opcion == "0" and permitir_nuevo:
+                    nombre_temp = self.pedir("Nombre: ")
+                    comp_temp = self.pedir("Composición: ")
+                    unidad_temp = self.pedir("Unidad de medida: ")
+                    from material import Material
+                    material_elegido = Material(nombre_temp, comp_temp, unidad_temp, punto_reposicion=0)
+                elif opcion.isdigit() and 1 <= int(opcion) <= len(sub_lista):
+                    material_elegido = sub_lista[int(opcion) - 1]
+                else:
+                    print("Opción inválida.")
+
+            if material_elegido is None:
+                continue
+
+            cant = self.pedir_int(f"Cantidad para '{material_elegido.get_nombre()}': ")
+            if cant <= 0:
+                print("La cantidad debe ser mayor a 0.")
+                continue
+
+            materiales_seleccionados.append(material_elegido)
+            cantidades.append(cant)
+
+            if self.pedir("¿Agregar otro material al pedido/solicitud? (si/no): ").lower() != "si":
                 break
 
-        return materiales, cantidades
+        return materiales_seleccionados, cantidades
+    
+    def elegir(self, titulo, items, formatear=str):
+        if not items:
+            raise ValueError("No hay opciones disponibles")
+        print(f"\n--- {titulo} ---")
+        for i, item in enumerate(items, start=1):
+            print(f"{i}. {formatear(item)}")
+        opcion = self.pedir_int("Ingrese el número (o 'volver'): ")
+        if not 1 <= opcion <= len(items):
+            raise ValueError("Opción fuera de rango")
+        return items[opcion - 1]
+
 
     def input_proveedor(self):
-        print('---SELECCIONAR PROOVEDOR---')
-        for i, proveedor in enumerate(self.sistema.get_proveedores(), start=1):
-            print(f"{i}. {proveedor}")
-
-        opcion = self.pedir_int("Ingrese el número del proveedor (o 'volver'): ")
-        return self.sistema.get_proveedores()[opcion - 1]
+        activos = list(filter(lambda p: p.get_fecha_baja() is None, self.sistema.get_proveedores()))
+        return self.elegir("SELECCIONAR PROVEEDOR", activos)
 
     def input_cliente(self):
-        print('---SELECCIONAR CLIENTE---')
-        for i, cliente in enumerate(self.sistema.get_clientes(), start=1):
-            print(f"{i}. {cliente}")
+        activos = list(filter(lambda c: c.get_fecha_baja() is None, self.sistema.get_clientes()))
+        return self.elegir("SELECCIONAR CLIENTE", activos)
+    
+    def seleccionar_material(self, nombre_inicial=None):
+        nombre = nombre_inicial or ""
+        composicion = ""
 
-        opcion = self.pedir_int("Ingrese el número del cliente (o 'volver'): ")
-        return self.sistema.get_clientes()[opcion - 1]
+        while True:
+            nombre = self.pedir(
+                "\nParte del nombre (Enter para omitir): "
+            ) if not nombre else nombre
 
-    def login(self):
-        print("---INICIO DE SESIÓN---")
+            composicion = self.pedir(
+                "Composición (Enter para omitir): "
+            )
 
-        usuario_ingresado = input("Usuario: ").strip()
-        clave_ingresada = input("Clave: ").strip()
+            resultados = self.sistema.filtrar_materiales(
+                nombre, composicion
+            )
 
-        empleado = self.sistema.autenticar(usuario_ingresado, clave_ingresada)
+            if not resultados:
+                print("No se encontraron materiales.")
+                nombre = ""
+                continue
 
-        print(f"\n¡Bienvenido/a {empleado.get_nombre()}!")
-        return empleado
+            material = self.recorrer_resultados(resultados)
+
+            if material is not None:
+                return material
+
+            nombre = ""
+
+    def cambiar_pagina(self, pagina, movimiento, total, por_pagina):
+        nueva = pagina + movimiento
+        ultima = (total - 1) // por_pagina
+
+        if 0 <= nueva <= ultima:
+            return nueva
+
+        print("No hay más páginas.")
+        return pagina
+    
+    def recorrer_resultados(self, resultados):
+        pagina = 0
+        por_pagina = 20
+
+        while True:
+            total = len(resultados)
+            inicio = pagina * por_pagina
+            materiales = resultados[inicio:inicio + por_pagina]
+
+            print(f"\n--- RESULTADOS: {total} ---")
+            print(f"Página {pagina + 1} de {(total - 1) // por_pagina + 1}")
+
+            for i, material in enumerate(materiales, start=1):
+                print(f"{i}. {material.get_nombre()} | "f"{material.get_composicion()}")
+
+            opciones = {
+                "s": lambda: self.cambiar_pagina(pagina, 1, total, por_pagina),
+                "a": lambda: self.cambiar_pagina(pagina, -1, total, por_pagina),
+                "f": lambda: "filtros"}
+
+            opcion = self.pedir("\nNúmero para seleccionar | S: siguiente | A: anterior | F: filtros: ").lower()
+            accion = opciones.get(opcion)
+
+            if accion is not None:
+                resultado = accion()
+
+                if resultado == "filtros":
+                    return None
+
+                if resultado is not None:
+                    pagina = resultado
+
+            elif opcion.isdigit() and 1 <= int(opcion) <= len(materiales):
+                return materiales[int(opcion) - 1]
+
+            else:
+                print("Opción inválida.")
 
 
     @staticmethod
@@ -174,4 +293,7 @@ class Menu:
 
     @staticmethod
     def pedir_int(mensaje):
-        return int(Menu.pedir(mensaje))
+        try:
+            return int(Menu.pedir(mensaje))
+        except ValueError:
+            raise ValueError("Ingresá un número entero válido")

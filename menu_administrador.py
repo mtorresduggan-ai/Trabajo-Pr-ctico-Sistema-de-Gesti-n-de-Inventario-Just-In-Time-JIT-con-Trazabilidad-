@@ -1,4 +1,3 @@
-######################## HAY QUE HACER LAS VALIDACIONES ########################################
 from menu import Menu
 from empleado import Empleado
 from deposito import Deposito
@@ -25,7 +24,8 @@ class MenuAdministrador(Menu):
             '7': lambda: self.administrador.baja_cliente(self.input_cliente(), self.sistema.get_clientes()),
             '8': lambda: self.administrador.generar_reporte_empleados(self.sistema.get_empleados()),
             '9': lambda: self.administrador.generar_reporte_proveedores(self.sistema.get_proveedores()),
-            '10': lambda: self.administrador.generar_reporte_clientes(self.sistema.get_clientes())}
+            '10': lambda: self.administrador.generar_reporte_clientes(self.sistema.get_clientes()),
+            '11': self.input_cargar_precio}
 
         self.pantalla("MENÚ ADMINISTRADOR", [
             "1. Mostrar tareas pendientes",
@@ -37,23 +37,16 @@ class MenuAdministrador(Menu):
             "7. Dar de baja un cliente",
             "8. Reporte de empleados",
             "9. Reporte de proveedores",
-            "10. Reporte de clientes"], opciones)
+            "10. Reporte de clientes",
+            "11. Cargar precio de un material a un proveedor"], opciones)
 
     def input_empleado(self):
-        print("\nSeleccione un empleado:")
-        for i, emp in enumerate(self.sistema.get_empleados(), start=1):
-            print(f"{i}. {emp.get_nombre()} (DNI: {emp.get_dni()})")
+        activos = list(filter(lambda e: e.get_fecha_baja() is None, self.sistema.get_empleados()))
+        return self.elegir("SELECCIONAR EMPLEADO", activos,
+            lambda e: f"{e.get_nombre()} (DNI: {e.get_dni()})")
 
-        opcion = self.pedir_int("Ingrese el número del empleado (o 'volver'): ")
-        return self.sistema.get_empleados()[opcion - 1]
-
-    def input_deposito(self, mensaje="Seleccione un depósito:"):
-        print(f"\n{mensaje}")
-        for i, dep in enumerate(self.sistema.get_depositos(), start=1):
-            print(f"{i}. {dep.get_nombre()}")
-
-        opcion = self.pedir_int("Ingrese el número del depósito (o 'volver'): ")
-        return self.sistema.get_depositos()[opcion - 1]
+    def input_deposito(self, mensaje="SELECCIONAR DEPÓSITO"):
+        return self.elegir(mensaje, self.sistema.get_depositos(), lambda d: d.get_nombre())
 
     def input_ejecutar_tarea(self):
         tarea = self.tareas_admin.ver_primera()
@@ -95,3 +88,12 @@ class MenuAdministrador(Menu):
             clave=clave)
         
         return f"Empleado {empleado.get_nombre()} modificado con éxito."
+
+    def input_cargar_precio(self):
+        proveedor = self.input_proveedor()
+        material = self.buscar_material(self.pedir("Nombre del material: "))
+        try:
+            precio = float(self.pedir("Precio unitario: "))
+        except ValueError:
+            raise ValueError("Ingresá un número válido")
+        return self.administrador.cargar_precio_proveedor(proveedor, material, precio, self.sistema.get_proveedores())

@@ -101,8 +101,18 @@ class Supervisor(Empleado):
 
         if tipo not in acciones:
             raise ValueError("Tipo de tarea desconocido")
-        acciones[tipo]()
+
+        try:
+            acciones[tipo]()
+        except ValueError as error:
+            if tipo == "pedido":
+                objeto.set_estado("Cancelado")
+                tareas_pendientes_supervisor.sacar()
+                return f"Pedido {objeto.get_id_pedido()} cancelado: {error}"
+            raise
+
         tareas_pendientes_supervisor.sacar()
+        return f"Tarea '{tipo}' ejecutada correctamente."
 
     def mostrar_tareas_pendientes(self, tareas_pendientes_supervisor):
         cantidades = tareas_pendientes_supervisor.contar_tareas()
@@ -111,9 +121,13 @@ class Supervisor(Empleado):
             print(tipo, ":", cantidad)
         
     def revisar_vencimientos(self, deposito, tareas_supervisor):
-        fecha_actual = date.today()
-        if deposito.hay_vencidos(fecha_actual) and not tareas_supervisor.existe_tarea("retirar_vencidos", deposito):
-            tareas_supervisor.agregar(Tarea("retirar_vencidos", deposito))
+        if not deposito.hay_vencidos(date.today()):
+            return "No hay materiales vencidos."
+        if tareas_supervisor.existe_tarea("retirar_vencidos", deposito):
+            return "Ya hay una tarea de retiro de vencidos pendiente."
+        tareas_supervisor.agregar(Tarea("retirar_vencidos", deposito))
+        return "Se generó la tarea de retirar vencidos."
+
         
     def retirar_vencidos(self, deposito):
         deposito.retirar_vencidos(date.today())

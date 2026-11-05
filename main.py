@@ -147,12 +147,32 @@ def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprado
     remesa = Remesa([aluminio, acero], proveedor, solicitud, [150, 80],[date(2027, 12, 31), date(2028, 6, 30)], deposito, tareas_supervisor, date(2026, 10, 4))
     sistema.agregar_remesa(remesa)
     supervisor.ejecutar_siguiente_tarea(tareas_supervisor, tareas_comprador)    
+    
     pedido = vendedor.crear_pedido_salida(date(2026, 10, 5), [aluminio, acero],[50, 20], cliente, clientes, tareas_admin)
     sistema.agregar_pedido(pedido)
     administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor, "aceptar")
     supervisor.ejecutar_siguiente_tarea(tareas_supervisor, tareas_comprador)
+
+    #NO QUEDARON CARGADOS!!
     pedido2 = vendedor.crear_pedido_salida(date(2026, 10, 6), [acero], [30], cliente, clientes, tareas_admin)
     sistema.agregar_pedido(pedido2)
+    administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor, "aceptar")
+    supervisor.ejecutar_siguiente_tarea(tareas_supervisor, tareas_comprador)
+
+    solicitud2 = comprador.crear_solicitud(date(2026, 10, 7), [botones, cierres], [200, 60], proveedor2, proveedores, tareas_admin)
+    sistema.agregar_solicitud(solicitud2)
+    administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor, "aceptar")
+    remesa2 = Remesa([botones, cierres], proveedor2, solicitud2, [200, 60], [None, None], deposito, tareas_supervisor, date(2026, 10, 12))
+    sistema.agregar_remesa(remesa2)
+
+    pedido3 = vendedor.crear_pedido_salida(date(2026, 10, 8), [aluminio], [10], cliente1, clientes, tareas_admin)
+    sistema.agregar_pedido(pedido3)
+    administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor, "aceptar")
+
+    solicitud3 = comprador.crear_solicitud(date(2026, 10, 9), [algodon, poliester], [100, 60], proveedor1, proveedores, tareas_admin)
+    sistema.agregar_solicitud(solicitud3)
+    pedido4 = vendedor.crear_pedido_salida(date(2026, 10, 10), [hilo_blanco], [5], cliente2, clientes, tareas_admin)
+    sistema.agregar_pedido(pedido4)
 
     return deposito
     

@@ -95,7 +95,11 @@ class Sistema:
         return self.buscar_id(self._materiales, id_material)
 
     def buscar_material_por_nombre(self, nombre):
-        return self._arbol_materiales.buscar(nombre.strip().lower())
+        try:
+            return self._arbol_materiales.buscar(nombre.strip().lower())
+        except ValueError:
+            pasos = self._arbol_materiales.get_pasos_ultima_busqueda()
+            raise ValueError(f"No se encontró el material '{nombre}' (se revisaron {pasos} nodos)")
 
     def get_pasos_ultima_busqueda(self):
         return self._arbol_materiales.get_pasos_ultima_busqueda()
@@ -489,13 +493,23 @@ class Sistema:
             "remesa": self.cargar_tarea_remesa,
             "reponer": self.cargar_tarea_reponer,
             "retirar_vencidos": self.cargar_tarea_retirar,
-            "transferencia": self.cargar_tarea_transferencia
-        }
+            "transferencia": self.cargar_tarea_transferencia}
 
         filas_validas = filter(lambda fila: fila["tipo"] in funciones, filas)
+        tareas = map(lambda fila: funciones[fila["tipo"]](fila), filas_validas)
 
-        for fila in filas_validas:
-            cola.agregar(funciones[fila["tipo"]](fila))
+        for tarea in tareas:
+            if tarea.get_objeto() is not None or tarea.get_tipo() == "transferencia":
+                cola.agregar(tarea)
+
+    def filtrar_materiales(self, nombre=None, composicion=None):
+        nombre = nombre.casefold().strip() if nombre else ""
+        composicion = composicion.casefold().strip() if composicion else ""
+
+        return list(filter(
+            lambda m: nombre in m.get_nombre().casefold() and composicion in m.get_composicion().casefold(),
+            self._materiales.values()))
+
 
     def guardar_tareas_todas(self, tareas_admin, tareas_supervisor, tareas_comprador, tareas_vendedor):
         self.guardar_tareas("tareas_admin.csv", tareas_admin)

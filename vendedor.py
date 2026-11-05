@@ -39,7 +39,7 @@ class Vendedor(Empleado):
     def cancelar_pedido(self, id_pedido, pedidos):
         pedido = self.consultar_pedido(id_pedido, pedidos)
 
-        if pedido.get_estado() in ("Entregado", "Cancelado", "Rechazado"):
+        if pedido.get_estado() in ("Despachado", "Entregado", "Cancelado", "Rechazado"):
             raise ValueError(f"No se puede cancelar un pedido en estado "f"'{pedido.get_estado()}'")
 
         pedido.set_estado("Cancelado")
