@@ -158,8 +158,8 @@ class Menu:
                     nombre_temp = self.pedir("Nombre: ")
                     comp_temp = self.pedir("Composición: ")
                     unidad_temp = self.pedir("Unidad de medida: ")
-                    from material import Material
                     material_elegido = Material(nombre_temp, comp_temp, unidad_temp, punto_reposicion=0)
+                    self.sistema.agregar_material(material_elegido)
                 elif opcion.isdigit() and 1 <= int(opcion) <= len(sub_lista):
                     material_elegido = sub_lista[int(opcion) - 1]
                 else:
@@ -200,84 +200,6 @@ class Menu:
     def input_cliente(self):
         activos = list(filter(lambda c: c.get_fecha_baja() is None, self.sistema.get_clientes()))
         return self.elegir("SELECCIONAR CLIENTE", activos)
-    
-    def seleccionar_material(self, nombre_inicial=None):
-        nombre = nombre_inicial or ""
-        composicion = ""
-
-        while True:
-            nombre = self.pedir(
-                "\nParte del nombre (Enter para omitir): "
-            ) if not nombre else nombre
-
-            composicion = self.pedir(
-                "Composición (Enter para omitir): "
-            )
-
-            resultados = self.sistema.filtrar_materiales(
-                nombre, composicion
-            )
-
-            if not resultados:
-                print("No se encontraron materiales.")
-                nombre = ""
-                continue
-
-            material = self.recorrer_resultados(resultados)
-
-            if material is not None:
-                return material
-
-            nombre = ""
-
-    def cambiar_pagina(self, pagina, movimiento, total, por_pagina):
-        nueva = pagina + movimiento
-        ultima = (total - 1) // por_pagina
-
-        if 0 <= nueva <= ultima:
-            return nueva
-
-        print("No hay más páginas.")
-        return pagina
-    
-    def recorrer_resultados(self, resultados):
-        pagina = 0
-        por_pagina = 20
-
-        while True:
-            total = len(resultados)
-            inicio = pagina * por_pagina
-            materiales = resultados[inicio:inicio + por_pagina]
-
-            print(f"\n--- RESULTADOS: {total} ---")
-            print(f"Página {pagina + 1} de {(total - 1) // por_pagina + 1}")
-
-            for i, material in enumerate(materiales, start=1):
-                print(f"{i}. {material.get_nombre()} | "f"{material.get_composicion()}")
-
-            opciones = {
-                "s": lambda: self.cambiar_pagina(pagina, 1, total, por_pagina),
-                "a": lambda: self.cambiar_pagina(pagina, -1, total, por_pagina),
-                "f": lambda: "filtros"}
-
-            opcion = self.pedir("\nNúmero para seleccionar | S: siguiente | A: anterior | F: filtros: ").lower()
-            accion = opciones.get(opcion)
-
-            if accion is not None:
-                resultado = accion()
-
-                if resultado == "filtros":
-                    return None
-
-                if resultado is not None:
-                    pagina = resultado
-
-            elif opcion.isdigit() and 1 <= int(opcion) <= len(materiales):
-                return materiales[int(opcion) - 1]
-
-            else:
-                print("Opción inválida.")
-
 
     @staticmethod
     def volver():

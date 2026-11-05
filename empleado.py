@@ -68,3 +68,5 @@ class Empleado(Individuo):
     def validar_materiales(materiales):
         if not isinstance(materiales, list):
             raise TypeError("Los materiales deben estar en una lista")
+        if not materiales:
+            raise ValueError("Debe ingresar al menos un material")
