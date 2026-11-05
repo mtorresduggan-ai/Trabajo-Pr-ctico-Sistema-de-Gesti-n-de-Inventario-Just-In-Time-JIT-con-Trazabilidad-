@@ -97,7 +97,7 @@ class Administrador(Empleado):
         if email is not None:
             empleado.set_email(email)
         if usuario is not None:
-            empleado.actualizar_usuario(usuario)
+            empleado.set_usuario(usuario)
         if clave is not None:
             empleado.set_clave(clave)
 
