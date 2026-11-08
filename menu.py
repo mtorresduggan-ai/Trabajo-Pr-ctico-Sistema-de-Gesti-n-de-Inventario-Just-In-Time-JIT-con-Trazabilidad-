@@ -30,7 +30,7 @@ class Menu:
         usuario = self.pedir("Usuario: ")
         clave = self.pedir("Contraseña: ")
 
-        return self.sistema.autenticar(usuario, clave)
+        return self.sistema.get_gestor_empleados().autenticar(usuario, clave)
 
 
     def pantalla_general(self):
@@ -95,10 +95,10 @@ class Menu:
             print(f"Error inesperado ({type(error).__name__}): {error}")
 
     def buscar_material(self, nombre):
-        material = self.sistema.buscar_material_por_nombre(nombre)
+        material = self.sistema.get_gestor_materiales().buscar_material_por_nombre(nombre)
 
-        pasos = self.sistema.get_pasos_ultima_busqueda()
-        n = self.sistema.get_cantidad_materiales()
+        pasos = self.sistema.get_gestor_materiales().get_pasos_ultima_busqueda()
+        n = self.sistema.get_gestor_materiales().get_cantidad_materiales()
         print(f"[Árbol] '{material.get_nombre()}' encontrado en {pasos} saltos | n = {n} materiales | "
             f"log2(n) = {round(math.log2(n), 2)} | una búsqueda lineal revisaría hasta {n}")
 
@@ -114,7 +114,7 @@ class Menu:
             filtro_nombre = self.pedir("Filtrar por nombre (ej: 'tornillo'): ")
             filtro_comp = self.pedir("Filtrar por composición (ej: 'acero'): ")
 
-            resultados = self.sistema.filtrar_materiales(nombre=filtro_nombre, composicion=filtro_comp)
+            resultados = self.sistema.get_gestor_materiales().filtrar_materiales(nombre=filtro_nombre, composicion=filtro_comp)
 
             if not resultados:
                 print("No se encontraron materiales con esos criterios.")
@@ -159,7 +159,7 @@ class Menu:
                     comp_temp = self.pedir("Composición: ")
                     unidad_temp = self.pedir("Unidad de medida: ")
                     material_elegido = Material(nombre_temp, comp_temp, unidad_temp, punto_reposicion=0)
-                    self.sistema.agregar_material(material_elegido)
+                    self.sistema.get_gestor_materiales().agregar_material(material_elegido)
                 elif opcion.isdigit() and 1 <= int(opcion) <= len(sub_lista):
                     material_elegido = sub_lista[int(opcion) - 1]
                 else:
@@ -194,11 +194,11 @@ class Menu:
 
 
     def input_proveedor(self):
-        activos = list(filter(lambda p: p.get_fecha_baja() is None, self.sistema.get_proveedores()))
+        activos = list(filter(lambda p: p.get_fecha_baja() is None, self.sistema.get_gestor_proveedores().get_proveedores()))
         return self.elegir("SELECCIONAR PROVEEDOR", activos)
 
     def input_cliente(self):
-        activos = list(filter(lambda c: c.get_fecha_baja() is None, self.sistema.get_clientes()))
+        activos = list(filter(lambda c: c.get_fecha_baja() is None, self.sistema.get_gestor_clientes().get_clientes()))
         return self.elegir("SELECCIONAR CLIENTE", activos)
 
     @staticmethod

@@ -14,9 +14,9 @@ class MenuVendedor(Menu):
     def menu_vendedor(self):
         opciones = {
             '1': self.input_crear_pedido,
-            '2': lambda: self.vendedor.cancelar_pedido(self.pedir_int("ID del pedido a cancelar: "), self.sistema.get_pedidos()),
+            '2': lambda: self.vendedor.cancelar_pedido(self.pedir_int("ID del pedido a cancelar: "), self.sistema.get_gestor_pedidos().get_pedidos()),
             '3': self.input_consultar_todos,
-            '4': lambda: self.vendedor.consultar_pedido(self.pedir_int("ID del pedido: "), self.sistema.get_pedidos()),
+            '4': lambda: self.vendedor.consultar_pedido(self.pedir_int("ID del pedido: "), self.sistema.get_gestor_pedidos().get_pedidos()),
             '5': self.input_modificar_pedido}
 
         self.pantalla("MENÚ VENDEDOR", [
@@ -30,13 +30,13 @@ class MenuVendedor(Menu):
         materiales, cantidades = self.input_materiales_cantidades(permitir_nuevo=False)
         cliente = self.input_cliente()
 
-        pedido = self.vendedor.crear_pedido_salida(date.today(), materiales, cantidades, cliente, self.sistema.get_clientes(), self.tareas_admin)
-        self.sistema.agregar_pedido(pedido)
+        pedido = self.vendedor.crear_pedido_salida(date.today(), materiales, cantidades, cliente, self.sistema.get_gestor_clientes().get_clientes(), self.tareas_admin)
+        self.sistema.get_gestor_pedidos().agregar_pedido(pedido)
 
         return f"\n ¡Pedido N° {pedido.get_id_pedido()} generado con éxito!"
 
     def input_consultar_todos(self):
-        pedidos = self.vendedor.consultar_pedido_todos(self.sistema.get_pedidos())
+        pedidos = self.vendedor.consultar_pedido_todos(self.sistema.get_gestor_pedidos().get_pedidos())
         if not pedidos:
             return "\nNo tenés pedidos registrados."
 
@@ -63,8 +63,8 @@ class MenuVendedor(Menu):
 
         return self.vendedor.modificar_pedido(
             id_pedido=id_movimiento,
-            pedidos=self.sistema.get_pedidos(),
-            clientes=self.sistema.get_clientes(),
+            pedidos=self.sistema.get_gestor_pedidos().get_pedidos(),
+            clientes=self.sistema.get_gestor_clientes().get_clientes(),
             materiales=materiales,
             cantidades=cantidades,
             fecha=fecha,

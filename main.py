@@ -36,18 +36,18 @@ def main():
 
     else:
         print("Datos recuperados desde los archivos CSV.")
-        depositos = sistema.get_depositos()
+        depositos = sistema.get_gestor_depositos().get_depositos()
 
         if len(depositos) > 0:
             deposito = depositos[0]
         else:
             deposito = Deposito('Deposito central')
-            sistema.agregar_deposito(deposito)
+            sistema.get_gestor_depositos().agregar_deposito(deposito)
 
     
     sistema.guardar_estado_total(tareas_admin, tareas_supervisor, tareas_comprador, tareas_vendedor)
     
-    print(f"Materiales cargados en el árbol: {sistema.get_cantidad_materiales()}")
+    print(f"Materiales cargados en el árbol: {sistema.get_gestor_materiales().get_cantidad_materiales()}")
     
     menu = Menu(
         tareas_comprador,
@@ -95,7 +95,7 @@ def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprado
     bulon = next(m for m in catalogo if m.get_nombre() == "Bulón M10x50 acero")
     perno = next(m for m in catalogo if m.get_nombre() == "Perno M12x40 acero inoxidable")
 
-    sistema.agregar_materiales(materiales_base + catalogo)
+    sistema.get_gestor_materiales().agregar_materiales(materiales_base + catalogo)
 
 
     proveedor = Proveedor("Metalúrgica Sur", 5, "1123456789", 30123456, "metalurgicasur@gmail.com", date(2026, 9, 1))
@@ -107,7 +107,7 @@ def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprado
     proveedores = [proveedor, proveedor1, proveedor2, proveedor3, proveedor4]
 
     for p in proveedores:
-        sistema.agregar_proveedor(p)
+        sistema.get_gestor_proveedores().agregar_proveedor(p)
 
     proveedor.agregar_material(aluminio, 5000)
     proveedor.agregar_material(acero, 3000)
@@ -140,7 +140,7 @@ def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprado
     clientes = [cliente, cliente1, cliente2, cliente3, cliente4, cliente5]
 
     for c in clientes:
-        sistema.agregar_cliente(c)
+        sistema.get_gestor_clientes().agregar_cliente(c)
 
     comprador = Comprador("Juan Pérez", "1112345678", 40123456, date(2026, 9, 1), "juan@empresa.com", "jperez", "Juan123!")
     vendedor = Vendedor("María López", "1155555555", 40234567, date(2026, 9, 1), "maria@empresa.com", "mlopez", "Maria123!")
@@ -148,43 +148,43 @@ def crear_datos_prueba(sistema, tareas_admin, tareas_supervisor, tareas_comprado
     supervisor = Supervisor("Juana Fernandez", "1177777777", 40456789, date(2026, 9, 1), "juana@empresa.com", "jfernandez", "Juana123!")
 
     for empleado in [comprador, vendedor, administrador, supervisor]:
-        sistema.agregar_empleado(empleado)
+        sistema.get_gestor_empleados().agregar_empleado(empleado)
 
     deposito = Deposito("Depósito central")
-    sistema.agregar_deposito(deposito)
+    sistema.get_gestor_depositos().agregar_deposito(deposito)
 
     solicitud1 = comprador.crear_solicitud(date(2026, 11, 3), [aluminio, tornillo], [100, 200], proveedor, proveedores, tareas_admin)
-    sistema.agregar_solicitud(solicitud1)
+    sistema.get_gestor_solicitudes().agregar_solicitud(solicitud1)
     administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor, "aceptar")
     remesa1 = Remesa([aluminio, tornillo], proveedor, solicitud1, [100, 200], [None, None], deposito, tareas_supervisor, date(2026, 11, 6))
-    sistema.agregar_remesa(remesa1)
+    sistema.get_gestor_remesas().agregar_remesa(remesa1)
     supervisor.ejecutar_siguiente_tarea(tareas_supervisor, tareas_comprador)
 
     solicitud2 = comprador.crear_solicitud(date(2026, 11, 4), [disco_corte, mecha], [50, 20], proveedor1, proveedores, tareas_admin)
-    sistema.agregar_solicitud(solicitud2)
+    sistema.get_gestor_solicitudes().agregar_solicitud(solicitud2)
     administrador.ejecutar_siguiente_tarea(tareas_admin, deposito, tareas_supervisor, "aceptar")
     remesa2 = Remesa([disco_corte, mecha], proveedor1, solicitud2, [50, 20], [None, None], deposito, tareas_supervisor, date(2026, 11, 9))
-    sistema.agregar_remesa(remesa2)
+    sistema.get_gestor_remesas().agregar_remesa(remesa2)
 
     solicitud3 = comprador.crear_solicitud(date(2026, 11, 4), [guantes, antiparras], [100, 50], proveedor2, proveedores, tareas_admin)
-    sistema.agregar_solicitud(solicitud3)
+    sistema.get_gestor_solicitudes().agregar_solicitud(solicitud3)
 
     pedido1 = vendedor.crear_pedido_salida(date(2026, 11, 4), [aluminio, tornillo], [20, 30], clientes[0], clientes, tareas_admin)
-    sistema.agregar_pedido(pedido1)
+    sistema.get_gestor_pedidos().agregar_pedido(pedido1)
 
     pedido2 = vendedor.crear_pedido_salida(date(2026, 11, 4), [tornillo, bulon], [180, 50], clientes[1], clientes, tareas_admin)
-    sistema.agregar_pedido(pedido2)
+    sistema.get_gestor_pedidos().agregar_pedido(pedido2)
 
     return deposito
    
 
 
 def hay_datos(sistema):
-    listas = [sistema.get_materiales(),
-        sistema.get_proveedores(),
-        sistema.get_clientes(),
-        sistema.get_empleados(),
-        sistema.get_depositos()]
+    listas = [sistema.get_gestor_materiales().get_materiales(),
+        sistema.get_gestor_proveedores().get_proveedores(),
+        sistema.get_gestor_clientes().get_clientes(),
+        sistema.get_gestor_empleados().get_empleados(),
+        sistema.get_gestor_depositos().get_depositos()]
 
     return any(map(bool, listas))
 

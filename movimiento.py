@@ -1,14 +1,11 @@
 class Movimiento:
-    contador=0
 
     def __init__(self, fecha, materiales, cantidades):
         self._fecha = fecha
         self._materiales = materiales
         self._cantidades = cantidades
 
-    def a_fila(self):
-        return [self.get_fecha()]
- 
+
     def get_fecha(self):
         return self._fecha
     def get_materiales(self):

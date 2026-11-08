@@ -18,7 +18,7 @@ class MenuComprador(Menu):
             '1': lambda: self.tareas_comprador.mostrar_cantidades(),
             '2': self.input_ejecutar_tarea,
             '3': self.input_crear_solicitud,
-            '4': lambda: self.comprador.cancelar_solicitud(self.pedir_int("ID de solicitud a cancelar: "), self.sistema.get_solicitudes()),
+            '4': lambda: self.comprador.cancelar_solicitud(self.pedir_int("ID de solicitud a cancelar: "), self.sistema.get_gestor_solicitudes().get_solicitudes()),
             '5': self.input_consultar_todas,
             '6': self.input_consultar_por_id,
             '7': self.input_modificar_solicitud}
@@ -34,8 +34,8 @@ class MenuComprador(Menu):
 
     def input_ejecutar_tarea(self):
         proveedor = self.input_proveedor()
-        solicitud = self.comprador.ejecutar_siguiente_tarea(self.tareas_comprador, date.today(), proveedor, self.sistema.get_proveedores(), self.tareas_admin)
-        self.sistema.agregar_solicitud(solicitud)
+        solicitud = self.comprador.ejecutar_siguiente_tarea(self.tareas_comprador, date.today(), proveedor, self.sistema.get_gestor_proveedores().get_proveedores(), self.tareas_admin)
+        self.sistema.get_gestor_solicitudes().agregar_solicitud(solicitud)
         return solicitud
 
     def input_modificar_solicitud(self):
@@ -56,8 +56,8 @@ class MenuComprador(Menu):
 
         return self.comprador.modificar_solicitud(
             id_solicitud=id_movimiento,
-            solicitudes=self.sistema.get_solicitudes(),
-            proveedores=self.sistema.get_proveedores(),
+            solicitudes=self.sistema.get_gestor_solicitudes().get_solicitudes(),
+            proveedores=self.sistema.get_gestor_proveedores().get_proveedores(),
             materiales=materiales,
             cantidades=cantidades,
             fecha=fecha,
@@ -72,15 +72,15 @@ class MenuComprador(Menu):
             materiales,
             cantidades,
             proveedor,
-            self.sistema.get_proveedores(),
+            self.sistema.get_gestor_proveedores().get_proveedores(),
             self.tareas_admin)
 
-        self.sistema.agregar_solicitud(solicitud)
+        self.sistema.get_gestor_solicitudes().agregar_solicitud(solicitud)
         
         return f"\n ¡Solicitud N° {solicitud.get_id_solicitud()} generada con éxito!"
 
     def input_consultar_todas(self):
-        solicitudes = self.comprador.consultar_solicitudes_todas(self.sistema.get_solicitudes())
+        solicitudes = self.comprador.consultar_solicitudes_todas(self.sistema.get_gestor_solicitudes().get_solicitudes())
         if not solicitudes:
             return "\nNo tenés solicitudes registradas."
         
@@ -90,7 +90,7 @@ class MenuComprador(Menu):
 
     def input_consultar_por_id(self):
         id_sol = self.pedir_int("ID de solicitud: ")
-        solicitud = self.comprador.consultar_solicitud(id_sol, self.sistema.get_solicitudes())
+        solicitud = self.comprador.consultar_solicitud(id_sol, self.sistema.get_gestor_solicitudes().get_solicitudes())
         
         lineas = [
             f"\n=== DETALLE DE SOLICITUD N° {solicitud.get_id_solicitud()} ===",

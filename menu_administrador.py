@@ -18,13 +18,13 @@ class MenuAdministrador(Menu):
             '1': lambda: self.tareas_admin.mostrar_cantidades(), 
             '2': self.input_ejecutar_tarea,
             '3': self.input_crear_transferencia,
-            '4': lambda: self.administrador.baja_empleado(self.input_empleado(), self.sistema.get_empleados()),
+            '4': lambda: self.administrador.baja_empleado(self.input_empleado(), self.sistema.get_gestor_empleados().get_empleados()),
             '5': self.input_modificar_empleado,
-            '6': lambda: self.administrador.baja_proveedor(self.input_proveedor(), self.sistema.get_proveedores()),
-            '7': lambda: self.administrador.baja_cliente(self.input_cliente(), self.sistema.get_clientes()),
-            '8': lambda: self.administrador.generar_reporte_empleados(self.sistema.get_empleados()),
-            '9': lambda: self.administrador.generar_reporte_proveedores(self.sistema.get_proveedores()),
-            '10': lambda: self.administrador.generar_reporte_clientes(self.sistema.get_clientes()),
+            '6': lambda: self.administrador.baja_proveedor(self.input_proveedor(), self.sistema.get_gestor_proveedores().get_proveedores()),
+            '7': lambda: self.administrador.baja_cliente(self.input_cliente(), self.sistema.get_gestor_clientes().get_clientes()),
+            '8': lambda: self.administrador.generar_reporte_empleados(self.sistema.get_gestor_empleados().get_empleados()),
+            '9': lambda: self.administrador.generar_reporte_proveedores(self.sistema.get_gestor_proveedores().get_proveedores()),
+            '10': lambda: self.administrador.generar_reporte_clientes(self.sistema.get_gestor_clientes().get_clientes()),
             '11': self.input_cargar_precio}
 
         self.pantalla("MENÚ ADMINISTRADOR", [
@@ -41,12 +41,12 @@ class MenuAdministrador(Menu):
             "11. Cargar precio de un material a un proveedor"], opciones)
 
     def input_empleado(self):
-        activos = list(filter(lambda e: e.get_fecha_baja() is None, self.sistema.get_empleados()))
+        activos = list(filter(lambda e: e.get_fecha_baja() is None, self.sistema.get_gestor_empleados().get_empleados()))
         return self.elegir("SELECCIONAR EMPLEADO", activos,
             lambda e: f"{e.get_nombre()} (DNI: {e.get_dni()})")
 
     def input_deposito(self, mensaje="SELECCIONAR DEPÓSITO"):
-        return self.elegir(mensaje, self.sistema.get_depositos(), lambda d: d.get_nombre())
+        return self.elegir(mensaje, self.sistema.get_gestor_depositos().get_depositos(), lambda d: d.get_nombre())
 
     def input_ejecutar_tarea(self):
         tarea = self.tareas_admin.ver_primera()
@@ -80,7 +80,7 @@ class MenuAdministrador(Menu):
         clave = self.pedir("Nueva clave: ") or None
 
         self.administrador.modificar_empleado(empleado=empleado,
-            empleados = self.sistema.get_empleados(),
+            empleados = self.sistema.get_gestor_empleados().get_empleados(),
             nombre=nombre,
             telefono=telefono,
             email=email,
@@ -96,4 +96,4 @@ class MenuAdministrador(Menu):
             precio = float(self.pedir("Precio unitario: "))
         except ValueError:
             raise ValueError("Ingresá un número válido")
-        return self.administrador.cargar_precio_proveedor(proveedor, material, precio, self.sistema.get_proveedores())
+        return self.administrador.cargar_precio_proveedor(proveedor, material, precio, self.sistema.get_gestor_proveedores().get_proveedores())

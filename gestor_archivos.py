@@ -1,7 +1,20 @@
 import csv
+from datetime import date
 
 class GestorArchivos:
 
+    @staticmethod
+    def convertir_fecha(texto_fecha):
+        if texto_fecha == "":
+            return None
+
+        partes = texto_fecha.split("-")
+        anio = int(partes[0])
+        mes = int(partes[1])
+        dia = int(partes[2])
+
+        return date(anio, mes, dia)
+        
     @staticmethod
     def leer_csv_dict(ruta):
         try:
