@@ -1,4 +1,3 @@
-
 # -----------------------------------------
 # ANALISIS 2: DESEMPEÑO DE PROVEEDORES
 # -----------------------------------------
@@ -78,7 +77,7 @@ remesas_sin_proveedor = 0
 
 for remesa in remesas:
 
-    pedido = pedidos_por_id.get(remesa["id_pedido"])
+    pedido = pedidos_por_id.get(remesa["id_pedido"].strip())
 
     if pedido is None:
         remesas_sin_pedido += 1
@@ -144,6 +143,7 @@ for proveedor in suministradores:
     if not entregas:
         continue
 
+    # Tiempos de entrega
     tiempos_reales = [
         e["tiempo_real"] for e in entregas
     ]
@@ -156,20 +156,33 @@ for proveedor in suministradores:
         e["demora"] for e in entregas
     ]
 
-    lead_time = convertir_numero(proveedor["lead_time_dias"])
-    confiabilidad = convertir_numero(
-        proveedor["indice_confiabilidad"]
+    # Lead time estimado del proveedor
+    lead_time = convertir_numero(
+        proveedor["lead_time_dias"]
     )
 
-    promedio_real = np.mean(tiempos_reales)
-    promedio_previsto = np.mean(tiempos_previstos)
-    demora_promedio = np.mean(demoras)
-
+    # Porcentaje de entregas a tiempo o adelantadas
     porcentaje_cumplimiento = (
         sum(1 for d in demoras if d <= 0)
         / len(demoras)
     ) * 100
 
+    # Demora promedio, considerando solo entregas tardías
+    demoras_tardias = [
+        d for d in demoras if d > 0
+    ]
+
+    demora_tardias = (
+        np.mean(demoras_tardias)
+        if demoras_tardias else 0
+    )
+
+    # Promedios generales
+    promedio_real = np.mean(tiempos_reales)
+    promedio_previsto = np.mean(tiempos_previstos)
+    demora_promedio = np.mean(demoras)
+
+    # Guardar métricas del proveedor
     metricas.append({
         "id_proveedor": id_proveedor,
         "nombre": proveedor["nombre"],
@@ -178,8 +191,8 @@ for proveedor in suministradores:
         "tiempo_real": promedio_real,
         "tiempo_previsto": promedio_previsto,
         "demora": demora_promedio,
-        "confiabilidad": confiabilidad,
-        "cumplimiento": porcentaje_cumplimiento
+        "cumplimiento": porcentaje_cumplimiento,
+        "demora_tardias": demora_tardias
     })
 
 
@@ -187,7 +200,7 @@ for proveedor in suministradores:
 # 5. MOSTRAR RESULTADOS
 # -----------------------------------------
 
-metricas.sort(key=lambda m: m["demora"])
+metricas.sort(key=lambda m: m["cumplimiento"])
 
 print("\nANALISIS DE DESEMPEÑO DE PROVEEDORES")
 print("------------------------------------")
@@ -204,9 +217,9 @@ for m in metricas:
     print(f"  Lead time estimado: {m['lead_time']:.1f} días")
     print(f"  Tiempo real promedio: {m['tiempo_real']:.1f} días")
     print(f"  Tiempo previsto promedio: {m['tiempo_previsto']:.1f} días")
-    print(f"  Demora promedio: {m['demora']:.1f} días")
-    print(f"  Cumplimiento de fechas: {m['cumplimiento']:.1f}%")
-    print(f"  Confiabilidad: {m['confiabilidad']:.2f}")
+    print(f"  Demora promedio general: {m['demora']:.1f} días")
+    print(f"  Porcentaje de cumplimiento: {m['cumplimiento']:.1f}%")
+    print(f"  Demora promedio de entregas tardías: {m['demora_tardias']:.1f} días")
 
 
 # -----------------------------------------
@@ -271,48 +284,47 @@ plt.close()
 
 
 # -----------------------------------------
-# 7. GRAFICO 2: CONFIABILIDAD Y DEMORAS
+# 7. GRAFICO 2: CUMPLIMIENTO Y DEMORAS
 # -----------------------------------------
 
 plt.figure(figsize=(13, 8))
 ax = plt.gca()
 
 # Limites de los ejes
-ax.set_xlim(-2, 5)
-ax.set_ylim(0, 1)
+ax.set_xlim(0, 8)
+ax.set_ylim(0, 100)
 
 # Fondos de los cuatro cuadrantes
-ax.axvspan(-2, 0, ymin=0.5, ymax=1,
+ax.axvspan(0, 3, ymin=0.6, ymax=1,
            color="#B1E4CC", alpha=0.8)
 
-ax.axvspan(0, 5, ymin=0.5, ymax=1,
+ax.axvspan(3, 8, ymin=0.6, ymax=1,
            color="#FFE0B2", alpha=0.8)
 
-ax.axvspan(0, 5, ymin=0, ymax=0.5,
+ax.axvspan(3, 8, ymin=0, ymax=0.6,
            color="#F5C6C6", alpha=0.8)
 
-ax.axvspan(-2, 0, ymin=0, ymax=0.5,
+ax.axvspan(0, 3, ymin=0, ymax=0.6,
            color="#B7D5EF", alpha=0.8)
-
 
 # Agregar proveedores
 for m in metricas:
 
-    demora = m["demora"]
-    confiabilidad = m["confiabilidad"]
+    demora = m["demora_tardias"]
+    cumplimiento = m["cumplimiento"]
 
-    if demora <= 0 and confiabilidad >= 0.5:
+    if cumplimiento >= 60 and demora < 3:
         color = "#16866F"
-    elif demora > 0 and confiabilidad < 0.5:
-        color = "#C74440"
-    elif demora > 0 and confiabilidad >= 0.5:
+    elif cumplimiento >= 60 and demora >= 3:
         color = "#D9822B"
+    elif cumplimiento < 60 and demora >= 3:
+        color = "#C74440"
     else:
         color = "#3478A8"
 
-    plt.scatter(
+    ax.scatter(
         demora,
-        confiabilidad,
+        cumplimiento,
         color=color,
         s=100,
         edgecolor="black",
@@ -320,83 +332,50 @@ for m in metricas:
         zorder=3
     )
 
-    plt.annotate(
+    ax.annotate(
         m["nombre"],
-        (demora, confiabilidad),
+        (demora, cumplimiento),
         xytext=(5, 5),
         textcoords="offset points",
         fontsize=8
     )
 
-
 # Lineas divisorias
-ax.axvline(x=0, color="black", linestyle="--", linewidth=1)
-ax.axhline(y=0.5, color="black", linestyle="--", linewidth=1)
-
+ax.axvline(x=3, color="black", linestyle="--", linewidth=1)
+ax.axhline(y=60, color="black", linestyle="--", linewidth=1)
 
 # Nombres de los cuadrantes
-ax.text(0.02, 0.97, "Confiable y cumple",
+ax.text(0.02, 0.97, "Buen cumplimiento y pocas demoras",
         transform=ax.transAxes, ha="left", va="top",
         fontsize=9, fontweight="bold", color="#187C70")
 
-ax.text(0.98, 0.97, "Confiable, pero no cumple",
+ax.text(0.98, 0.97, "Buen cumplimiento, pero demoras largas",
         transform=ax.transAxes, ha="right", va="top",
         fontsize=9, fontweight="bold", color="#A65D25")
 
-ax.text(0.02, 0.03, "No confiable, pero cumple",
+ax.text(0.02, 0.03, "Bajo cumplimiento y pocas demoras",
         transform=ax.transAxes, ha="left", va="bottom",
         fontsize=9, fontweight="bold", color="#356B91")
 
-ax.text(0.98, 0.03, "No confiable y no cumple",
+ax.text(0.98, 0.03, "Bajo cumplimiento y demoras largas",
         transform=ax.transAxes, ha="right", va="bottom",
         fontsize=9, fontweight="bold", color="#B94343")
 
-
 # Titulos y formato
-plt.xlabel("Demora promedio respecto de la fecha prevista (días)")
-plt.ylabel("Índice de confiabilidad")
-plt.title("Confiabilidad y cumplimiento de entregas por proveedor")
+plt.xlabel("Demora promedio de las entregas tardías (días)")
+plt.ylabel("Porcentaje de cumplimiento (%)")
+plt.title("Cumplimiento y demoras por proveedor")
 
 plt.grid(alpha=0.2)
 plt.tight_layout()
 
-# Guardar grafico
 plt.savefig(
-    CARPETA_GRAFICOS / "02_confiabilidad_demoras.png",
+    CARPETA_GRAFICOS / "02_cumplimiento_demoras.png",
     dpi=300,
     bbox_inches="tight"
 )
 
 plt.close()
-
-# -----------------------------------------
-# 8. GUARDAR TABLA DE METRICAS
-# -----------------------------------------
-
-ruta_metricas = CARPETA_GRAFICOS / "metricas_proveedores.csv"
-
-with open(
-    ruta_metricas,
-    "w",
-    encoding="utf-8-sig",
-    newline=""
-) as archivo:
-
-    campos = [
-        "id_proveedor",
-        "nombre",
-        "cantidad_entregas",
-        "lead_time",
-        "tiempo_real",
-        "tiempo_previsto",
-        "demora",
-        "confiabilidad",
-        "cumplimiento"
-    ]
-
-    escritor = csv.DictWriter(archivo, fieldnames=campos)
-    escritor.writeheader()
-    escritor.writerows(metricas)
 
 
 print("\nANALISIS TERMINADO.")

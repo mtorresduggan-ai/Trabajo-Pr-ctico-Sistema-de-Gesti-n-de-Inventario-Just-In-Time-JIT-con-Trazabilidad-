@@ -1,21 +1,21 @@
-id_proveedor,nombre,lead_time_dias,indice_confiabilidad
-PROV-001,AeroSupply,8,0.94
-PROV-002,TechMaterials,12,0.88
-PROV-003,GlobalComponents,15,0.91
-PROV-004,MetalWorks,10,0.85
-PROV-005,AdvancedPolymers,18,0.82
-PROV-006,ElectroParts,7,0.97
-PROV-007,IndustrialSolutions,14,0.89
-PROV-008,PrecisionMec,9,0.93
-PROV-009,ChemSupply,20,0.78
-PROV-010,AeroTechParts,11,0.90
-PROV-011,MicroSystems,6,0.96
-PROV-012,StructuralMaterials,16,0.84
-PROV-013,GlobalAero,13,0.92
-PROV-014,ProveedoraSur,17,0.81
-PROV-015,NextGenComponents,8,0.95
-PROV-016,Metalúrgica Central,12,0.87
-PROV-017,Química Industrial,19,0.80
-PROV-018,ElectroWorld,10,0.93
-PROV-019,Materiales del Sur,15,0.86
-PROV-020,PrecisionSupply,7,0.98
+id_proveedor,nombre,lead_time_dias,porcentaje_cumplimiento,demora_promedio_dias_tardias
+PROV-001,AeroSupply,8,40.0,5.67
+PROV-002,TechMaterials,12,85.7,1.00
+PROV-003,GlobalComponents,15,63.3,1.73
+PROV-004,MetalWorks,10,55.6,3.25
+PROV-005,AdvancedPolymers,18,68.8,5.00
+PROV-006,ElectroParts,7,40.0,7.08
+PROV-007,IndustrialSolutions,14,53.8,4.50
+PROV-008,PrecisionMec,9,67.7,3.50
+PROV-009,ChemSupply,20,78.3,2.60
+PROV-010,AeroTechParts,11,65.0,1.00
+PROV-011,MicroSystems,6,64.7,2.50
+PROV-012,StructuralMaterials,16,68.8,4.00
+PROV-013,GlobalAero,13,41.2,4.60
+PROV-014,ProveedoraSur,17,61.5,4.60
+PROV-015,NextGenComponents,8,64.0,1.89
+PROV-016,Metalúrgica Central,12,66.7,2.71
+PROV-017,Química Industrial,19,50.0,3.62
+PROV-018,ElectroWorld,10,48.0,5.46
+PROV-019,Materiales del Sur,15,72.0,1.14
+PROV-020,PrecisionSupply,7,60.5,3.20
