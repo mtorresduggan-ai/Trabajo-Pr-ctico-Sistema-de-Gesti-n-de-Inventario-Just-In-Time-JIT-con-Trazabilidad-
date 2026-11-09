@@ -1,0 +1,21 @@
+id_proveedor,nombre,lead_time_dias,indice_confiabilidad
+PROV-001,AeroSupply,8,0.94
+PROV-002,TechMaterials,12,0.88
+PROV-003,GlobalComponents,15,0.91
+PROV-004,MetalWorks,10,0.85
+PROV-005,AdvancedPolymers,18,0.82
+PROV-006,ElectroParts,7,0.97
+PROV-007,IndustrialSolutions,14,0.89
+PROV-008,PrecisionMec,9,0.93
+PROV-009,ChemSupply,20,0.78
+PROV-010,AeroTechParts,11,0.90
+PROV-011,MicroSystems,6,0.96
+PROV-012,StructuralMaterials,16,0.84
+PROV-013,GlobalAero,13,0.92
+PROV-014,ProveedoraSur,17,0.81
+PROV-015,NextGenComponents,8,0.95
+PROV-016,Metalúrgica Central,12,0.87
+PROV-017,Química Industrial,19,0.80
+PROV-018,ElectroWorld,10,0.93
+PROV-019,Materiales del Sur,15,0.86
+PROV-020,PrecisionSupply,7,0.98
