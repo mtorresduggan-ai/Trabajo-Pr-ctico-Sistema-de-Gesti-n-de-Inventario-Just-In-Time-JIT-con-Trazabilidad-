@@ -1,0 +1,7 @@
+﻿estado,pedidos,cantidad_solicitada,porcentaje_pedidos
+Pendiente,2,184,1.3
+En preparacion,2,178,1.3
+Despachado,6,481,4.0
+Entregado,110,6879,73.3
+Cancelado,15,974,10.0
+Rechazado,15,698,10.0

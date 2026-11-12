@@ -1,0 +1,10 @@
+﻿indicador,valor
+Pedidos registrados analizados,150.0
+Clientes registrados,30.0
+Clientes que realizaron pedidos,26.0
+Cantidad total solicitada (exploratoria),9394.0
+Materiales diferentes solicitados,84.0
+Líneas de detalle,351.0
+Materiales por pedido (promedio),2.34
+Cantidad por línea (promedio),26.8
+Cantidad por línea (mediana),21.0
